@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in | Shark Squad</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --shark-dark: #0a0a0f;
+    --shark-card: #13131a;
+    --shark-border: #1e1e2e;
+    --shark-accent: #00e5ff;
+    --shark-accent2: #7c4dff;
+    --shark-muted: #4a4a6a;
+    --shark-text: #e8e8f0;
+    --shark-subtext: #8888aa;
+    --progress-h: 3px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--shark-dark);
+    color: var(--shark-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background mesh */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,229,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 10% 80%, rgba(124,77,255,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    padding: 48px 0 40px;
+    text-align: center;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    color: var(--shark-text);
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 6vw, 38px);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .header h1 span {
+    background: linear-gradient(90deg, var(--shark-accent), var(--shark-accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: var(--shark-subtext);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    padding: 14px 0;
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--shark-subtext);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .progress-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--shark-accent);
+  }
+
+  .progress-bar {
+    height: var(--progress-h);
+    background: var(--shark-border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--shark-accent), var(--shark-accent2));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 10px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 36px;
+  }
+
+  .section-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--shark-accent);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 6px;
+    padding: 4px 8px;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--shark-subtext);
+    letter-spacing: 0.02em;
+  }
+
+  /* Card question */
+  .q-card {
+    background: var(--shark-card);
+    border: 1px solid var(--shark-border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .q-card.active {
+    border-color: rgba(0,229,255,0.25);
+  }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--shark-accent);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--shark-text);
+    margin-bottom: 18px;
+  }
+
+  /* Text input */
+  .field-text {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--shark-border);
+    border-radius: 10px;
+    color: var(--shark-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    resize: vertical;
+  }
+
+  .field-text:focus {
+    border-color: var(--shark-accent);
+    background: rgba(0,229,255,0.04);
+  }
+
+  .field-text::placeholder { color: var(--shark-muted); }
+
+  /* Pill options */
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    cursor: pointer;
+    padding: 9px 16px;
+    border-radius: 99px;
+    border: 1px solid var(--shark-border);
+    background: rgba(255,255,255,0.03);
+    color: var(--shark-subtext);
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.18s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pill:hover { border-color: var(--shark-muted); color: var(--shark-text); }
+
+  .pill.selected {
+    background: rgba(0,229,255,0.1);
+    border-color: var(--shark-accent);
+    color: var(--shark-accent);
+    font-weight: 500;
+  }
+
+  /* Slider */
+  .slider-wrap { padding: 4px 0 8px; }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--shark-muted);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--shark-border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    box-shadow: 0 0 0 4px rgba(0,229,255,0.15);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 6px rgba(0,229,255,0.2);
+  }
+
+  .slider-value {
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--shark-accent);
+    line-height: 1;
+  }
+
+  .slider-value span {
+    font-size: 14px;
+    color: var(--shark-subtext);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  /* Number input */
+  .number-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .num-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--shark-border);
+    background: rgba(255,255,255,0.04);
+    color: var(--shark-text);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .num-btn:hover { border-color: var(--shark-accent); color: var(--shark-accent); }
+
+  .num-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--shark-text);
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .num-label { font-size: 13px; color: var(--shark-muted); }
+
+  /* Sleep cards */
+  .sleep-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sleep-card {
+    cursor: pointer;
+    border: 1px solid var(--shark-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+    transition: all 0.18s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sleep-card .icon { font-size: 22px; margin-bottom: 6px; }
+  .sleep-card .label { font-size: 13px; font-weight: 500; color: var(--shark-subtext); }
+
+  .sleep-card:hover { border-color: var(--shark-muted); }
+
+  .sleep-card.selected {
+    background: rgba(0,229,255,0.08);
+    border-color: var(--shark-accent);
+  }
+
+  .sleep-card.selected .label { color: var(--shark-accent); }
+
+  /* Textarea */
+  .field-textarea {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--shark-border);
+    border-radius: 10px;
+    color: var(--shark-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .field-textarea:focus { border-color: var(--shark-accent); }
+  .field-textarea::placeholder { color: var(--shark-muted); }
+
+  /* Submit */
+  .submit-wrap {
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    padding: 16px 40px;
+    border-radius: 99px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+
+  .submit-note {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--shark-muted);
+  }
+
+  /* Success */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .success-screen.show { display: block; }
+
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 32px;
+  }
+
+  .success-screen h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .success-screen p {
+    color: var(--shark-subtext);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* Loading */
+  .btn-submit.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-submit.loading .spinner { display: block; }
+  .btn-submit.loading .btn-text { opacity: 0.7; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Required asterisk */
+  .req { color: var(--shark-accent); margin-left: 2px; }
+
+  /* Error state */
+  .q-card.error { border-color: #ff4d6d; }
+  .error-msg { font-size: 12px; color: #ff4d6d; margin-top: 8px; }
+
+  @media (max-width: 480px) {
+    .sleep-grid { grid-template-columns: 1fr 1fr; }
+    .pill { font-size: 13px; padding: 8px 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🦈</div>
+      <div class="logo-text">SHARK SQUAD</div>
+    </div>
+    <h1>Check-in <span>quinzenal</span></h1>
+    <p>Responda com honestidade — isso é o que vai tornar<br>a nossa próxima consulta ainda mais eficiente.</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span class="progress-label">Progresso</span>
+      <span class="progress-count" id="progressCount">0 / 15</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <form id="checkinForm" novalidate>
+
+    <!-- SEÇÃO 1 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">01</span>
+        <span class="section-title">Identificação</span>
+      </div>
+
+      <!-- Q1 -->
+      <div class="q-card" id="card-1">
+        <div class="q-label">Pergunta 1</div>
+        <div class="q-text">Qual o seu nome? <span class="req">*</span></div>
+        <input class="field-text" type="text" id="q1" placeholder="Seu nome completo" autocomplete="name">
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-card" id="card-2">
+        <div class="q-label">Pergunta 2</div>
+        <div class="q-text">Esses 15 dias foram… <span class="req">*</span></div>
+        <div class="pill-group" data-q="q2" data-type="single">
+          <div class="pill" data-value="Rotina normal">📅 Rotina normal</div>
+          <div class="pill" data-value="Período agitado">⚡ Período agitado</div>
+          <div class="pill" data-value="Período difícil">🌧️ Período difícil</div>
+          <div class="pill" data-value="Período especial">🎉 Período especial</div>
+        </div>
+        <input type="hidden" id="q2">
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">02</span>
+        <span class="section-title">Alimentação</span>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-card" id="card-3">
+        <div class="q-label">Pergunta 3</div>
+        <div class="q-text">De 0 a 10, como você avalia sua adesão ao plano alimentar nesses 15 dias?</div>
+        <div class="slider-wrap">
+          <div class="slider-labels"><span>0 — Nenhuma</span><span>10 — Perfeita</span></div>
+          <input type="range" id="q3" min="0" max="10" value="7" step="1">
+          <div class="slider-value" id="q3-val">7<span>/ 10</span></div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-card" id="card-4">
+        <div class="q-label">Pergunta 4</div>
+        <div class="q-text">Quantas vezes você saiu do plano nesses 15 dias?</div>
+        <div class="number-field">
+          <button type="button" class="num-btn" onclick="changeNum('q4', -1)">−</button>
+          <div class="num-display" id="q4-display">0</div>
+          <input type="hidden" id="q4" value="0">
+          <button type="button" class="num-btn" onclick="changeNum('q4', 1)">+</button>
+          <span class="num-label">vezes</span>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-card" id="card-5">
+        <div class="q-label">Pergunta 5</div>
+        <div class="q-text">Quando você sai do plano, geralmente é em qual momento? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="pill-group" data-q="q5" data-type="multi">
+          <div class="pill" data-value="Final de semana">Final de semana</div>
+          <div class="pill" data-value="Eventos sociais">Eventos sociais</div>
+          <div class="pill" data-value="Estresse">Estresse</div>
+          <div class="pill" data-value="À noite">À noite</div>
+          <div class="pill" data-value="No trabalho">No trabalho</div>
+          <div class="pill" data-value="Em viagem">Em viagem</div>
+          <div class="pill" data-value="Tédio">Tédio</div>
+          <div class="pill" data-value="Não se aplica">Não se aplica</div>
+        </div>
+        <input type="hidden" id="q5">
+      </div>
+
+      <!-- Q6 -->
+      <div class="q-card" id="card-6">
+        <div class="q-label">Pergunta 6</div>
+        <div class="q-text">Qual refeição foi mais difícil de manter no plano?</div>
+        <div class="pill-group" data-q="q6" data-type="single">
+          <div class="pill" data-value="Café da manhã">Café da manhã</div>
+          <div class="pill" data-value="Lanche manhã">Lanche manhã</div>
+          <div class="pill" data-value="Almoço">Almoço</div>
+          <div class="pill" data-value="Lanche tarde">Lanche tarde</div>
+          <div class="pill" data-value="Jantar">Jantar</div>
+          <div class="pill" data-value="Ceia">Ceia</div>
+          <div class="pill" data-value="Nenhuma">Nenhuma</div>
+        </div>
+        <input type="hidden" id="q6">
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">03</span>
+        <span class="section-title">Treino</span>
+      </div>
+
+      <!-- Q7 -->
+      <div class="q-card" id="card-7">
+        <div class="q-label">Pergunta 7</div>
+        <div class="q-text">Quantas vezes você treinou nesses 15 dias?</div>
+        <div class="number-field">
+          <button type="button" class="num-btn" onclick="changeNum('q7', -1)">−</button>
+          <div class="num-display" id="q7-display">0</div>
+          <input type="hidden" id="q7" value="0">
+          <button type="button" class="num-btn" onclick="changeNum('q7', 1)">+</button>
+          <span class="num-label">treinos</span>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="q-card" id="card-8">
+        <div class="q-label">Pergunta 8</div>
+        <div class="q-text">Quando deixou de treinar, qual foi o motivo principal? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="pill-group" data-q="q8" data-type="multi">
+          <div class="pill" data-value="Falta de tempo">Falta de tempo</div>
+          <div class="pill" data-value="Cansaço">Cansaço</div>
+          <div class="pill" data-value="Dor ou lesão">Dor ou lesão</div>
+          <div class="pill" data-value="Desmotivação">Desmotivação</div>
+          <div class="pill" data-value="Trabalho">Trabalho</div>
+          <div class="pill" data-value="Doença">Doença</div>
+          <div class="pill" data-value="Não faltei">Não faltei nenhum</div>
+        </div>
+        <input type="hidden" id="q8">
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">04</span>
+        <span class="section-title">Sono & Energia</span>
+      </div>
+
+      <!-- Q9 -->
+      <div class="q-card" id="card-9">
+        <div class="q-label">Pergunta 9</div>
+        <div class="q-text">Como foi seu sono nesses 15 dias?</div>
+        <div class="sleep-grid" data-q="q9" data-type="single">
+          <div class="sleep-card" data-value="Ótimo">
+            <div class="icon">😴</div>
+            <div class="label">Ótimo</div>
+          </div>
+          <div class="sleep-card" data-value="Bom">
+            <div class="icon">🙂</div>
+            <div class="label">Bom</div>
+          </div>
+          <div class="sleep-card" data-value="Regular">
+            <div class="icon">😐</div>
+            <div class="label">Regular</div>
+          </div>
+          <div class="sleep-card" data-value="Ruim">
+            <div class="icon">😓</div>
+            <div class="label">Ruim</div>
+          </div>
+        </div>
+        <input type="hidden" id="q9">
+      </div>
+
+      <!-- Q10 -->
+      <div class="q-card" id="card-10">
+        <div class="q-label">Pergunta 10</div>
+        <div class="q-text">Como foi sua disposição e energia no geral?</div>
+        <div class="slider-wrap">
+          <div class="slider-labels"><span>1 — Sem energia</span><span>10 — Ótima energia</span></div>
+          <input type="range" id="q10" min="1" max="10" value="6" step="1">
+          <div class="slider-value" id="q10-val">6<span>/ 10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 5 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">05</span>
+        <span class="section-title">Estresse & Gatilhos</span>
+      </div>
+
+      <!-- Q11 -->
+      <div class="q-card" id="card-11">
+        <div class="q-label">Pergunta 11</div>
+        <div class="q-text">Como foi seu nível de estresse nesses 15 dias?</div>
+        <div class="slider-wrap">
+          <div class="slider-labels"><span>1 — Muito baixo</span><span>10 — Muito alto</span></div>
+          <input type="range" id="q11" min="1" max="10" value="5" step="1">
+          <div class="slider-value" id="q11-val">5<span>/ 10</span></div>
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="q-card" id="card-12">
+        <div class="q-label">Pergunta 12</div>
+        <div class="q-text">O que mais te tirou do trilho nesses 15 dias? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="pill-group" data-q="q12" data-type="multi">
+          <div class="pill" data-value="Trabalho / pressão">Trabalho / pressão</div>
+          <div class="pill" data-value="Família">Família</div>
+          <div class="pill" data-value="Finanças">Finanças</div>
+          <div class="pill" data-value="Relacionamento">Relacionamento</div>
+          <div class="pill" data-value="Saúde">Saúde</div>
+          <div class="pill" data-value="Ansiedade">Ansiedade</div>
+          <div class="pill" data-value="Nada / fiquei no trilho">Nada</div>
+        </div>
+        <input type="hidden" id="q12">
+      </div>
+    </div>
+
+    <!-- SEÇÃO 6 -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-num">06</span>
+        <span class="section-title">Percepção</span>
+      </div>
+
+      <!-- Q13 -->
+      <div class="q-card" id="card-13">
+        <div class="q-label">Pergunta 13</div>
+        <div class="q-text">O que funcionou bem nesses 15 dias? O que você conseguiu manter?</div>
+        <textarea class="field-textarea" id="q13" placeholder="Conte o que deu certo, mesmo que pareça pequeno…"></textarea>
+      </div>
+
+      <!-- Q14 -->
+      <div class="q-card" id="card-14">
+        <div class="q-label">Pergunta 14</div>
+        <div class="q-text">Tem algo que você quer me contar antes da nossa próxima consulta?</div>
+        <textarea class="field-textarea" id="q14" placeholder="Pode falar à vontade — esse espaço é seu…"></textarea>
+      </div>
+
+      <!-- Q15 -->
+      <div class="q-card" id="card-15">
+        <div class="q-label">Pergunta 15</div>
+        <div class="q-text">De 0 a 10, como está sua motivação hoje?</div>
+        <div class="slider-wrap">
+          <div class="slider-labels"><span>0 — Sem motivação</span><span>10 — Muito motivado</span></div>
+          <input type="range" id="q15" min="0" max="10" value="7" step="1">
+          <div class="slider-value" id="q15-val">7<span>/ 10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-submit" id="btnSubmit">
+        <div class="spinner"></div>
+        <span class="btn-text">Enviar check-in ✦</span>
+      </button>
+      <p class="submit-note">Suas respostas vão direto para o seu nutricionista.</p>
+    </div>
+
+  </form>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Check-in enviado!</h2>
+    <p>Obrigado por preencher, <span id="successName"></span>. Seu nutricionista já recebeu suas respostas e vai revisá-las antes da sua próxima consulta. 💪</p>
+  </div>
+
+</div>
+
+<script>
+  // ── APPS SCRIPT URL ──────────────────────────────────────────
+  // Cole aqui a URL gerada após publicar o Apps Script como Web App
+  const APPS_SCRIPT_URL = 'SUA_URL_AQUI';
+  // ─────────────────────────────────────────────────────────────
+
+  // Progress tracking
+  const totalQ = 15;
+  const answered = new Set();
+
+  function updateProgress() {
+    const count = answered.size;
+    document.getElementById('progressCount').textContent = `${count} / ${totalQ}`;
+    document.getElementById('progressFill').style.width = `${(count / totalQ) * 100}%`;
+  }
+
+  function markAnswered(id, hasValue) {
+    if (hasValue) answered.add(id); else answered.delete(id);
+    updateProgress();
+  }
+
+  // Sliders
+  document.querySelectorAll('input[type=range]').forEach(slider => {
+    const id = slider.id;
+    const valEl = document.getElementById(`${id}-val`);
+    const max = slider.max;
+    slider.addEventListener('input', () => {
+      valEl.innerHTML = `${slider.value}<span>/ ${max}</span>`;
+      markAnswered(id, true);
+    });
+    markAnswered(id, true); // sliders start with a value
+  });
+
+  // Text inputs
+  document.getElementById('q1').addEventListener('input', function () {
+    markAnswered('q1', this.value.trim().length > 0);
+    const card = document.getElementById('card-1');
+    card.classList.toggle('active', this.value.trim().length > 0);
+  });
+
+  document.getElementById('q13').addEventListener('input', function () {
+    markAnswered('q13', this.value.trim().length > 0);
+  });
+
+  document.getElementById('q14').addEventListener('input', function () {
+    markAnswered('q14', this.value.trim().length > 0);
+  });
+
+  // Pills (single & multi)
+  document.querySelectorAll('.pill-group, .sleep-grid').forEach(group => {
+    const qId = group.dataset.q;
+    const type = group.dataset.type;
+    const input = document.getElementById(qId);
+    const items = group.querySelectorAll('.pill, .sleep-card');
+
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        if (type === 'single') {
+          items.forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          input.value = item.dataset.value;
+          markAnswered(qId, true);
+          document.getElementById(`card-${qId.replace('q','')}`).classList.add('active');
+        } else {
+          item.classList.toggle('selected');
+          const selected = [...items]
+            .filter(i => i.classList.contains('selected'))
+            .map(i => i.dataset.value);
+          input.value = selected.join(', ');
+          markAnswered(qId, selected.length > 0);
+        }
+      });
+    });
+  });
+
+  // Number fields
+  function changeNum(id, delta) {
+    const input = document.getElementById(id);
+    const display = document.getElementById(`${id}-display`);
+    let val = parseInt(input.value || 0) + delta;
+    if (val < 0) val = 0;
+    input.value = val;
+    display.textContent = val;
+    markAnswered(id, true);
+  }
+
+  // Init number fields as answered
+  markAnswered('q4', true);
+  markAnswered('q7', true);
+
+  // Form submit
+  document.getElementById('checkinForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Validate required fields
+    const name = document.getElementById('q1').value.trim();
+    const period = document.getElementById('q2').value;
+
+    let valid = true;
+    if (!name) {
+      document.getElementById('card-1').classList.add('error');
+      valid = false;
+    } else {
+      document.getElementById('card-1').classList.remove('error');
+    }
+    if (!period) {
+      document.getElementById('card-2').classList.add('error');
+      valid = false;
+    } else {
+      document.getElementById('card-2').classList.remove('error');
+    }
+
+    if (!valid) {
+      document.getElementById('card-1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const btn = document.getElementById('btnSubmit');
+    btn.classList.add('loading');
+
+    const payload = {
+      timestamp: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
+      q1_nome: name,
+      q2_periodo: period,
+      q3_adesao: document.getElementById('q3').value,
+      q4_saidas: document.getElementById('q4').value,
+      q5_momento_saida: document.getElementById('q5').value,
+      q6_refeicao_dificil: document.getElementById('q6').value,
+      q7_treinos: document.getElementById('q7').value,
+      q8_motivo_falta: document.getElementById('q8').value,
+      q9_sono: document.getElementById('q9').value,
+      q10_disposicao: document.getElementById('q10').value,
+      q11_estresse: document.getElementById('q11').value,
+      q12_gatilhos: document.getElementById('q12').value,
+      q13_funcionou: document.getElementById('q13').value,
+      q14_recado: document.getElementById('q14').value,
+      q15_motivacao: document.getElementById('q15').value,
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      document.getElementById('checkinForm').style.display = 'none';
+      document.querySelector('.header').style.display = 'none';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.getElementById('successName').textContent = name.split(' ')[0];
+      document.getElementById('successScreen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+      btn.classList.remove('loading');
+      alert('Erro ao enviar. Tente novamente ou entre em contato com seu nutricionista.');
+    }
+  });
+</script>
+
+</body>
+</html>
