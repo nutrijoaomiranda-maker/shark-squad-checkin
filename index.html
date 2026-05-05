@@ -4,48 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Check-in | Shark Squad</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --shark-dark: #0a0a0f;
-    --shark-card: #13131a;
-    --shark-border: #1e1e2e;
-    --shark-accent: #00e5ff;
-    --shark-accent2: #7c4dff;
-    --shark-muted: #4a4a6a;
-    --shark-text: #e8e8f0;
-    --shark-subtext: #8888aa;
-    --progress-h: 3px;
+    --navy: #0d2b5e;
+    --navy-light: #1a3f7a;
+    --navy-pale: #e8eef7;
+    --yellow: #f5c400;
+    --yellow-light: #fff8d6;
+    --bg: #f4f6fa;
+    --surface: #ffffff;
+    --border: #dde3ee;
+    --text: #0d1b2e;
+    --subtext: #5a6a82;
+    --muted: #9aaabb;
+    --error: #c0392b;
+    --progress-h: 4px;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
-    background: var(--shark-dark);
-    color: var(--shark-text);
-    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 16px;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Background mesh */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,229,255,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 10% 80%, rgba(124,77,255,0.07) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   .wrap {
-    position: relative;
-    z-index: 1;
     max-width: 640px;
     margin: 0 auto;
     padding: 0 20px 80px;
@@ -53,71 +42,109 @@
 
   /* Header */
   .header {
-    padding: 48px 0 40px;
-    text-align: center;
-    animation: fadeDown 0.6s ease both;
+    padding: 40px 0 32px;
+    animation: fadeDown 0.5s ease both;
   }
 
   .logo {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
 
   .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    width: 38px;
+    height: 38px;
+    background: var(--navy);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .logo-text {
-    font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: 18px;
-    letter-spacing: 0.04em;
-    color: var(--shark-text);
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    color: var(--navy);
+    text-transform: uppercase;
   }
 
-  .header h1 {
-    font-family: 'Syne', sans-serif;
+  .header-card {
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-card::after {
+    content: '';
+    position: absolute;
+    right: -24px;
+    top: -24px;
+    width: 160px;
+    height: 160px;
+    background: var(--yellow);
+    opacity: 0.09;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .header-card::before {
+    content: '';
+    position: absolute;
+    right: 40px;
+    bottom: -40px;
+    width: 120px;
+    height: 120px;
+    background: var(--yellow);
+    opacity: 0.05;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .header-tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+  }
+
+  .header-card h1 {
     font-weight: 800;
-    font-size: clamp(28px, 6vw, 38px);
-    line-height: 1.1;
-    margin-bottom: 12px;
+    font-size: clamp(22px, 5vw, 30px);
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 10px;
   }
 
-  .header h1 span {
-    background: linear-gradient(90deg, var(--shark-accent), var(--shark-accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .header p {
-    color: var(--shark-subtext);
-    font-size: 15px;
-    font-weight: 300;
+  .header-card p {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
     line-height: 1.6;
   }
 
-  /* Progress bar */
+  /* Progress */
   .progress-wrap {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(12px);
-    padding: 14px 0;
+    background: rgba(244,246,250,0.94);
+    backdrop-filter: blur(10px);
+    padding: 12px 0;
     margin: 0 -20px;
     padding-left: 20px;
     padding-right: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border);
   }
 
   .progress-meta {
@@ -128,162 +155,154 @@
   }
 
   .progress-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--shark-subtext);
-    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--subtext);
+    letter-spacing: 0.07em;
     text-transform: uppercase;
   }
 
   .progress-count {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--shark-accent);
+    color: var(--navy);
   }
 
   .progress-bar {
     height: var(--progress-h);
-    background: var(--shark-border);
+    background: var(--border);
     border-radius: 99px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--shark-accent), var(--shark-accent2));
+    background: linear-gradient(90deg, var(--navy), var(--yellow));
     border-radius: 99px;
     width: 0%;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Section */
-  .section {
-    margin-bottom: 10px;
-    animation: fadeUp 0.5s ease both;
-  }
+  .section { margin-bottom: 8px; }
 
   .section-label {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 20px;
-    margin-top: 36px;
+    margin-bottom: 16px;
+    margin-top: 32px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
   }
 
   .section-num {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
     font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--shark-accent);
-    background: rgba(0,229,255,0.08);
-    border: 1px solid rgba(0,229,255,0.15);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    background: var(--navy);
     border-radius: 6px;
-    padding: 4px 8px;
+    padding: 4px 9px;
     text-transform: uppercase;
   }
 
   .section-title {
-    font-family: 'Syne', sans-serif;
     font-weight: 700;
-    font-size: 15px;
-    color: var(--shark-subtext);
-    letter-spacing: 0.02em;
+    font-size: 13px;
+    color: var(--navy);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
-  /* Card question */
+  /* Card */
   .q-card {
-    background: var(--shark-card);
-    border: 1px solid var(--shark-border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 12px;
-    transition: border-color 0.2s;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
   .q-card.active {
-    border-color: rgba(0,229,255,0.25);
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(13,43,94,0.07);
   }
 
+  .q-card.error { border-color: var(--error); }
+
   .q-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--shark-accent);
-    margin-bottom: 8px;
-    letter-spacing: 0.04em;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
   }
 
   .q-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 1.4;
-    color: var(--shark-text);
-    margin-bottom: 18px;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--text);
+    margin-bottom: 16px;
   }
 
   /* Text input */
   .field-text {
     width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--shark-border);
+    background: var(--bg);
+    border: 1.5px solid var(--border);
     border-radius: 10px;
-    color: var(--shark-text);
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 15px;
     padding: 12px 16px;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
-    resize: vertical;
   }
 
-  .field-text:focus {
-    border-color: var(--shark-accent);
-    background: rgba(0,229,255,0.04);
-  }
+  .field-text:focus { border-color: var(--navy); background: #fff; }
+  .field-text::placeholder { color: var(--muted); }
 
-  .field-text::placeholder { color: var(--shark-muted); }
-
-  /* Pill options */
-  .pill-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  /* Pills */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .pill {
     cursor: pointer;
-    padding: 9px 16px;
-    border-radius: 99px;
-    border: 1px solid var(--shark-border);
-    background: rgba(255,255,255,0.03);
-    color: var(--shark-subtext);
-    font-size: 14px;
-    font-weight: 400;
-    transition: all 0.18s;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--subtext);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.15s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .pill:hover { border-color: var(--shark-muted); color: var(--shark-text); }
+  .pill:hover { border-color: var(--navy-light); color: var(--navy); background: var(--navy-pale); }
 
   .pill.selected {
-    background: rgba(0,229,255,0.1);
-    border-color: var(--shark-accent);
-    color: var(--shark-accent);
-    font-weight: 500;
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #ffffff;
+    font-weight: 600;
   }
 
   /* Slider */
-  .slider-wrap { padding: 4px 0 8px; }
+  .slider-wrap { padding: 4px 0 6px; }
 
   .slider-labels {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 12px;
-    color: var(--shark-muted);
+    font-weight: 500;
+    color: var(--muted);
   }
 
   input[type=range] {
@@ -291,7 +310,7 @@
     width: 100%;
     height: 4px;
     border-radius: 99px;
-    background: var(--shark-border);
+    background: var(--border);
     outline: none;
     cursor: pointer;
   }
@@ -301,150 +320,141 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
-    box-shadow: 0 0 0 4px rgba(0,229,255,0.15);
+    background: var(--navy);
+    border: 3px solid var(--yellow);
     cursor: pointer;
-    transition: box-shadow 0.2s;
+    transition: transform 0.15s;
   }
 
-  input[type=range]::-webkit-slider-thumb:hover {
-    box-shadow: 0 0 0 6px rgba(0,229,255,0.2);
-  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
   .slider-value {
     text-align: center;
-    margin-top: 12px;
-    font-family: 'Syne', sans-serif;
+    margin-top: 14px;
     font-weight: 800;
-    font-size: 28px;
-    color: var(--shark-accent);
+    font-size: 32px;
+    color: var(--navy);
     line-height: 1;
   }
 
   .slider-value span {
     font-size: 14px;
-    color: var(--shark-subtext);
-    font-weight: 400;
+    color: var(--muted);
+    font-weight: 500;
     margin-left: 4px;
   }
 
-  /* Number input */
-  .number-field {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  /* Number */
+  .number-field { display: flex; align-items: center; gap: 14px; }
 
   .num-btn {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
-    border: 1px solid var(--shark-border);
-    background: rgba(255,255,255,0.04);
-    color: var(--shark-text);
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--navy);
     font-size: 20px;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.15s;
     flex-shrink: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
-  .num-btn:hover { border-color: var(--shark-accent); color: var(--shark-accent); }
+  .num-btn:hover { border-color: var(--navy); background: var(--navy-pale); }
 
   .num-display {
-    font-family: 'Syne', sans-serif;
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 800;
-    color: var(--shark-text);
-    min-width: 48px;
+    color: var(--navy);
+    min-width: 52px;
     text-align: center;
   }
 
-  .num-label { font-size: 13px; color: var(--shark-muted); }
+  .num-label { font-size: 13px; color: var(--muted); font-weight: 500; }
 
-  /* Sleep cards */
-  .sleep-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
+  /* Sleep grid */
+  .sleep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
   .sleep-card {
     cursor: pointer;
-    border: 1px solid var(--shark-border);
+    border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 14px 16px;
+    padding: 16px;
     text-align: center;
-    transition: all 0.18s;
+    background: var(--bg);
+    transition: all 0.15s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .sleep-card .icon { font-size: 22px; margin-bottom: 6px; }
-  .sleep-card .label { font-size: 13px; font-weight: 500; color: var(--shark-subtext); }
+  .sleep-card .icon { font-size: 24px; margin-bottom: 6px; }
+  .sleep-card .label { font-size: 13px; font-weight: 600; color: var(--subtext); }
 
-  .sleep-card:hover { border-color: var(--shark-muted); }
+  .sleep-card:hover { border-color: var(--navy-light); background: var(--navy-pale); }
 
-  .sleep-card.selected {
-    background: rgba(0,229,255,0.08);
-    border-color: var(--shark-accent);
-  }
-
-  .sleep-card.selected .label { color: var(--shark-accent); }
+  .sleep-card.selected { background: var(--navy); border-color: var(--navy); }
+  .sleep-card.selected .label { color: #ffffff; }
 
   /* Textarea */
   .field-textarea {
     width: 100%;
     min-height: 100px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--shark-border);
+    background: var(--bg);
+    border: 1.5px solid var(--border);
     border-radius: 10px;
-    color: var(--shark-text);
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 15px;
     padding: 14px 16px;
     outline: none;
     transition: border-color 0.2s;
     resize: vertical;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  .field-textarea:focus { border-color: var(--shark-accent); }
-  .field-textarea::placeholder { color: var(--shark-muted); }
+  .field-textarea:focus { border-color: var(--navy); background: #fff; }
+  .field-textarea::placeholder { color: var(--muted); }
 
   /* Submit */
-  .submit-wrap {
-    margin-top: 40px;
-    text-align: center;
-  }
+  .submit-wrap { margin-top: 40px; text-align: center; }
 
   .btn-submit {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
-    color: #000;
-    font-family: 'Syne', sans-serif;
+    background: var(--navy);
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     font-size: 15px;
-    letter-spacing: 0.04em;
-    padding: 16px 40px;
-    border-radius: 99px;
+    padding: 16px 44px;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: background 0.2s, transform 0.15s;
+    position: relative;
   }
 
-  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 10px;
+    right: 10px;
+    height: 4px;
+    background: var(--yellow);
+    border-radius: 99px;
+  }
+
+  .btn-submit:hover { background: var(--navy-light); transform: translateY(-1px); }
   .btn-submit:active { transform: translateY(0); }
 
-  .submit-note {
-    margin-top: 14px;
-    font-size: 13px;
-    color: var(--shark-muted);
-  }
+  .submit-note { margin-top: 20px; font-size: 13px; color: var(--muted); }
 
   /* Success */
   .success-screen {
@@ -459,24 +469,20 @@
   .success-icon {
     width: 72px;
     height: 72px;
-    background: linear-gradient(135deg, var(--shark-accent), var(--shark-accent2));
+    background: var(--navy);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 28px;
-    font-size: 32px;
+    font-size: 30px;
+    border: 4px solid var(--yellow);
   }
 
-  .success-screen h2 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    margin-bottom: 12px;
-  }
+  .success-screen h2 { font-weight: 800; font-size: 28px; color: var(--navy); margin-bottom: 12px; }
 
   .success-screen p {
-    color: var(--shark-subtext);
+    color: var(--subtext);
     font-size: 15px;
     line-height: 1.6;
     max-width: 360px;
@@ -484,16 +490,13 @@
   }
 
   /* Loading */
-  .btn-submit.loading {
-    opacity: 0.7;
-    pointer-events: none;
-  }
+  .btn-submit.loading { opacity: 0.7; pointer-events: none; }
 
   .spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(0,0,0,0.3);
-    border-top-color: #000;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
     display: none;
@@ -502,31 +505,15 @@
   .btn-submit.loading .spinner { display: block; }
   .btn-submit.loading .btn-text { opacity: 0.7; }
 
-  /* Animations */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  /* Required asterisk */
-  .req { color: var(--shark-accent); margin-left: 2px; }
-
-  /* Error state */
-  .q-card.error { border-color: #ff4d6d; }
-  .error-msg { font-size: 12px; color: #ff4d6d; margin-top: 8px; }
+  .req { color: var(--error); margin-left: 2px; }
 
   @media (max-width: 480px) {
-    .sleep-grid { grid-template-columns: 1fr 1fr; }
-    .pill { font-size: 13px; padding: 8px 13px; }
+    .header-card { padding: 28px 20px; }
+    .q-card { padding: 18px; }
   }
 </style>
 </head>
@@ -537,10 +524,13 @@
   <div class="header">
     <div class="logo">
       <div class="logo-icon">🦈</div>
-      <div class="logo-text">SHARK SQUAD</div>
+      <div class="logo-text">Shark Squad</div>
     </div>
-    <h1>Check-in <span>quinzenal</span></h1>
-    <p>Responda com honestidade — isso é o que vai tornar<br>a nossa próxima consulta ainda mais eficiente.</p>
+    <div class="header-card">
+      <div class="header-tag">Check-in quinzenal</div>
+      <h1>Como foram seus últimos 15 dias?</h1>
+      <p>Responda com honestidade — suas respostas tornam nossa próxima consulta muito mais eficiente.</p>
+    </div>
   </div>
 
   <div class="progress-wrap">
@@ -562,14 +552,12 @@
         <span class="section-title">Identificação</span>
       </div>
 
-      <!-- Q1 -->
       <div class="q-card" id="card-1">
         <div class="q-label">Pergunta 1</div>
         <div class="q-text">Qual o seu nome? <span class="req">*</span></div>
         <input class="field-text" type="text" id="q1" placeholder="Seu nome completo" autocomplete="name">
       </div>
 
-      <!-- Q2 -->
       <div class="q-card" id="card-2">
         <div class="q-label">Pergunta 2</div>
         <div class="q-text">Esses 15 dias foram… <span class="req">*</span></div>
@@ -590,10 +578,9 @@
         <span class="section-title">Alimentação</span>
       </div>
 
-      <!-- Q3 -->
       <div class="q-card" id="card-3">
         <div class="q-label">Pergunta 3</div>
-        <div class="q-text">De 0 a 10, como você avalia sua adesão ao plano alimentar nesses 15 dias?</div>
+        <div class="q-text">De 0 a 10, como você avalia sua adesão ao plano alimentar?</div>
         <div class="slider-wrap">
           <div class="slider-labels"><span>0 — Nenhuma</span><span>10 — Perfeita</span></div>
           <input type="range" id="q3" min="0" max="10" value="7" step="1">
@@ -601,7 +588,6 @@
         </div>
       </div>
 
-      <!-- Q4 -->
       <div class="q-card" id="card-4">
         <div class="q-label">Pergunta 4</div>
         <div class="q-text">Quantas vezes você saiu do plano nesses 15 dias?</div>
@@ -614,10 +600,9 @@
         </div>
       </div>
 
-      <!-- Q5 -->
       <div class="q-card" id="card-5">
         <div class="q-label">Pergunta 5</div>
-        <div class="q-text">Quando você sai do plano, geralmente é em qual momento? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="q-text">Quando você sai do plano, geralmente é em qual momento? <span style="color:var(--muted);font-size:13px;font-weight:400;">(pode marcar mais de um)</span></div>
         <div class="pill-group" data-q="q5" data-type="multi">
           <div class="pill" data-value="Final de semana">Final de semana</div>
           <div class="pill" data-value="Eventos sociais">Eventos sociais</div>
@@ -631,7 +616,6 @@
         <input type="hidden" id="q5">
       </div>
 
-      <!-- Q6 -->
       <div class="q-card" id="card-6">
         <div class="q-label">Pergunta 6</div>
         <div class="q-text">Qual refeição foi mais difícil de manter no plano?</div>
@@ -655,7 +639,6 @@
         <span class="section-title">Treino</span>
       </div>
 
-      <!-- Q7 -->
       <div class="q-card" id="card-7">
         <div class="q-label">Pergunta 7</div>
         <div class="q-text">Quantas vezes você treinou nesses 15 dias?</div>
@@ -668,10 +651,9 @@
         </div>
       </div>
 
-      <!-- Q8 -->
       <div class="q-card" id="card-8">
         <div class="q-label">Pergunta 8</div>
-        <div class="q-text">Quando deixou de treinar, qual foi o motivo principal? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="q-text">Quando deixou de treinar, qual foi o motivo principal? <span style="color:var(--muted);font-size:13px;font-weight:400;">(pode marcar mais de um)</span></div>
         <div class="pill-group" data-q="q8" data-type="multi">
           <div class="pill" data-value="Falta de tempo">Falta de tempo</div>
           <div class="pill" data-value="Cansaço">Cansaço</div>
@@ -679,7 +661,7 @@
           <div class="pill" data-value="Desmotivação">Desmotivação</div>
           <div class="pill" data-value="Trabalho">Trabalho</div>
           <div class="pill" data-value="Doença">Doença</div>
-          <div class="pill" data-value="Não faltei">Não faltei nenhum</div>
+          <div class="pill" data-value="Não faltei nenhum">Não faltei nenhum</div>
         </div>
         <input type="hidden" id="q8">
       </div>
@@ -692,32 +674,18 @@
         <span class="section-title">Sono & Energia</span>
       </div>
 
-      <!-- Q9 -->
       <div class="q-card" id="card-9">
         <div class="q-label">Pergunta 9</div>
         <div class="q-text">Como foi seu sono nesses 15 dias?</div>
         <div class="sleep-grid" data-q="q9" data-type="single">
-          <div class="sleep-card" data-value="Ótimo">
-            <div class="icon">😴</div>
-            <div class="label">Ótimo</div>
-          </div>
-          <div class="sleep-card" data-value="Bom">
-            <div class="icon">🙂</div>
-            <div class="label">Bom</div>
-          </div>
-          <div class="sleep-card" data-value="Regular">
-            <div class="icon">😐</div>
-            <div class="label">Regular</div>
-          </div>
-          <div class="sleep-card" data-value="Ruim">
-            <div class="icon">😓</div>
-            <div class="label">Ruim</div>
-          </div>
+          <div class="sleep-card" data-value="Ótimo"><div class="icon">😴</div><div class="label">Ótimo</div></div>
+          <div class="sleep-card" data-value="Bom"><div class="icon">🙂</div><div class="label">Bom</div></div>
+          <div class="sleep-card" data-value="Regular"><div class="icon">😐</div><div class="label">Regular</div></div>
+          <div class="sleep-card" data-value="Ruim"><div class="icon">😓</div><div class="label">Ruim</div></div>
         </div>
         <input type="hidden" id="q9">
       </div>
 
-      <!-- Q10 -->
       <div class="q-card" id="card-10">
         <div class="q-label">Pergunta 10</div>
         <div class="q-text">Como foi sua disposição e energia no geral?</div>
@@ -736,7 +704,6 @@
         <span class="section-title">Estresse & Gatilhos</span>
       </div>
 
-      <!-- Q11 -->
       <div class="q-card" id="card-11">
         <div class="q-label">Pergunta 11</div>
         <div class="q-text">Como foi seu nível de estresse nesses 15 dias?</div>
@@ -747,10 +714,9 @@
         </div>
       </div>
 
-      <!-- Q12 -->
       <div class="q-card" id="card-12">
         <div class="q-label">Pergunta 12</div>
-        <div class="q-text">O que mais te tirou do trilho nesses 15 dias? <span style="color:var(--shark-muted);font-size:13px;">(pode marcar mais de um)</span></div>
+        <div class="q-text">O que mais te tirou do trilho nesses 15 dias? <span style="color:var(--muted);font-size:13px;font-weight:400;">(pode marcar mais de um)</span></div>
         <div class="pill-group" data-q="q12" data-type="multi">
           <div class="pill" data-value="Trabalho / pressão">Trabalho / pressão</div>
           <div class="pill" data-value="Família">Família</div>
@@ -771,21 +737,18 @@
         <span class="section-title">Percepção</span>
       </div>
 
-      <!-- Q13 -->
       <div class="q-card" id="card-13">
         <div class="q-label">Pergunta 13</div>
         <div class="q-text">O que funcionou bem nesses 15 dias? O que você conseguiu manter?</div>
         <textarea class="field-textarea" id="q13" placeholder="Conte o que deu certo, mesmo que pareça pequeno…"></textarea>
       </div>
 
-      <!-- Q14 -->
       <div class="q-card" id="card-14">
         <div class="q-label">Pergunta 14</div>
         <div class="q-text">Tem algo que você quer me contar antes da nossa próxima consulta?</div>
         <textarea class="field-textarea" id="q14" placeholder="Pode falar à vontade — esse espaço é seu…"></textarea>
       </div>
 
-      <!-- Q15 -->
       <div class="q-card" id="card-15">
         <div class="q-label">Pergunta 15</div>
         <div class="q-text">De 0 a 10, como está sua motivação hoje?</div>
@@ -800,7 +763,7 @@
     <div class="submit-wrap">
       <button type="submit" class="btn-submit" id="btnSubmit">
         <div class="spinner"></div>
-        <span class="btn-text">Enviar check-in ✦</span>
+        <span class="btn-text">Enviar check-in</span>
       </button>
       <p class="submit-note">Suas respostas vão direto para o seu nutricionista.</p>
     </div>
@@ -816,12 +779,8 @@
 </div>
 
 <script>
-  // ── APPS SCRIPT URL ──────────────────────────────────────────
-  // Cole aqui a URL gerada após publicar o Apps Script como Web App
-  const APPS_SCRIPT_URL =https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec;
-  // ─────────────────────────────────────────────────────────────
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
 
-  // Progress tracking
   const totalQ = 15;
   const answered = new Set();
 
@@ -836,7 +795,6 @@
     updateProgress();
   }
 
-  // Sliders
   document.querySelectorAll('input[type=range]').forEach(slider => {
     const id = slider.id;
     const valEl = document.getElementById(`${id}-val`);
@@ -845,25 +803,17 @@
       valEl.innerHTML = `${slider.value}<span>/ ${max}</span>`;
       markAnswered(id, true);
     });
-    markAnswered(id, true); // sliders start with a value
+    markAnswered(id, true);
   });
 
-  // Text inputs
   document.getElementById('q1').addEventListener('input', function () {
     markAnswered('q1', this.value.trim().length > 0);
-    const card = document.getElementById('card-1');
-    card.classList.toggle('active', this.value.trim().length > 0);
+    document.getElementById('card-1').classList.toggle('active', this.value.trim().length > 0);
   });
 
-  document.getElementById('q13').addEventListener('input', function () {
-    markAnswered('q13', this.value.trim().length > 0);
-  });
+  document.getElementById('q13').addEventListener('input', function () { markAnswered('q13', this.value.trim().length > 0); });
+  document.getElementById('q14').addEventListener('input', function () { markAnswered('q14', this.value.trim().length > 0); });
 
-  document.getElementById('q14').addEventListener('input', function () {
-    markAnswered('q14', this.value.trim().length > 0);
-  });
-
-  // Pills (single & multi)
   document.querySelectorAll('.pill-group, .sleep-grid').forEach(group => {
     const qId = group.dataset.q;
     const type = group.dataset.type;
@@ -880,9 +830,7 @@
           document.getElementById(`card-${qId.replace('q','')}`).classList.add('active');
         } else {
           item.classList.toggle('selected');
-          const selected = [...items]
-            .filter(i => i.classList.contains('selected'))
-            .map(i => i.dataset.value);
+          const selected = [...items].filter(i => i.classList.contains('selected')).map(i => i.dataset.value);
           input.value = selected.join(', ');
           markAnswered(qId, selected.length > 0);
         }
@@ -890,7 +838,6 @@
     });
   });
 
-  // Number fields
   function changeNum(id, delta) {
     const input = document.getElementById(id);
     const display = document.getElementById(`${id}-display`);
@@ -901,36 +848,23 @@
     markAnswered(id, true);
   }
 
-  // Init number fields as answered
   markAnswered('q4', true);
   markAnswered('q7', true);
 
-  // Form submit
   document.getElementById('checkinForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // Validate required fields
     const name = document.getElementById('q1').value.trim();
     const period = document.getElementById('q2').value;
-
     let valid = true;
-    if (!name) {
-      document.getElementById('card-1').classList.add('error');
-      valid = false;
-    } else {
-      document.getElementById('card-1').classList.remove('error');
-    }
-    if (!period) {
-      document.getElementById('card-2').classList.add('error');
-      valid = false;
-    } else {
-      document.getElementById('card-2').classList.remove('error');
-    }
 
-    if (!valid) {
-      document.getElementById('card-1').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
+    if (!name) { document.getElementById('card-1').classList.add('error'); valid = false; }
+    else { document.getElementById('card-1').classList.remove('error'); }
+
+    if (!period) { document.getElementById('card-2').classList.add('error'); valid = false; }
+    else { document.getElementById('card-2').classList.remove('error'); }
+
+    if (!valid) { document.getElementById('card-1').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
 
     const btn = document.getElementById('btnSubmit');
     btn.classList.add('loading');
