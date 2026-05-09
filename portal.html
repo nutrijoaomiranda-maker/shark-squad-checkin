@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Shark Squad</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1c3054;
+    --navy-light: #243d6a;
+    --yellow: #e8b400;
+    --yellow-pale: #fdf6dc;
+    --bg: #f0ede8;
+    --surface: #f7f5f2;
+    --border: #ddd8d0;
+    --text: #1a1a1a;
+    --subtext: #6b6560;
+    --muted: #a09890;
+    --success: #2d7a4f;
+    --success-bg: #eaf5ef;
+    --danger: #c0392b;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --bottom-nav-h: 68px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── SCREENS ──────────────────────────────────────── */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .screen.active { display: flex; }
+
+  /* ── LOGIN SCREEN ─────────────────────────────────── */
+  #screenLogin {
+    background: var(--navy);
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+  }
+
+  .login-top {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .login-shark {
+    font-size: 52px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .login-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .login-box {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .login-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .login-input {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 16px 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .login-input:focus { border-color: var(--yellow); }
+  .login-input::placeholder { color: rgba(255,255,255,0.25); font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+  .login-btn {
+    width: 100%;
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .login-btn:active { opacity: 0.85; }
+
+  .login-error {
+    color: #ff8080;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .login-loading {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ── APP SCREEN ───────────────────────────────────── */
+  #screenApp {
+    background: var(--bg);
+    flex-direction: column;
+  }
+
+  /* Scroll area */
+  .app-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--bottom-nav-h) + 16px);
+  }
+
+  /* ── BOTTOM NAV ───────────────────────────────────── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 8px 4px;
+    transition: all 0.15s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-tab-icon { font-size: 22px; transition: transform 0.15s; }
+  .nav-tab-label { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+  .nav-tab.active .nav-tab-label { color: var(--navy); }
+  .nav-tab.active .nav-tab-icon { transform: scale(1.12); }
+
+  .nav-tab-checkin {
+    flex: 0 0 72px;
+    position: relative;
+  }
+
+  .nav-checkin-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 16px rgba(28,48,84,0.35);
+    margin-bottom: 2px;
+    border: 3px solid var(--yellow);
+    transition: transform 0.15s;
+  }
+
+  .nav-tab-checkin:active .nav-checkin-btn { transform: scale(0.93); }
+
+  /* ── PAGES ────────────────────────────────────────── */
+  .page { display: none; }
+  .page.active { display: block; animation: slideUp 0.25s ease; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HOME PAGE ────────────────────────────────────── */
+  .hero {
+    background: var(--navy);
+    padding: 56px 24px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 180px;
+    height: 180px;
+    background: var(--yellow);
+    opacity: 0.07;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: -20px;
+    bottom: -40px;
+    width: 140px;
+    height: 140px;
+    background: var(--yellow);
+    opacity: 0.04;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-greeting {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .hero-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .hero-points {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .hero-points-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--yellow);
+    line-height: 1;
+  }
+
+  .hero-points-info { padding-bottom: 4px; }
+  .hero-points-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+  .hero-points-level {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .home-body { padding: 20px 16px; }
+
+  /* Quick actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .quick-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .quick-card:active { transform: scale(0.97); }
+
+  .quick-card.highlight {
+    background: var(--navy);
+    border-color: var(--navy);
+    grid-column: 1 / -1;
+  }
+
+  .quick-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .quick-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .quick-card.highlight .quick-title { color: #fff; }
+  .quick-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .quick-card.highlight .quick-sub { color: rgba(255,255,255,0.55); }
+
+  /* Section */
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* Próxima consulta */
+  .consulta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .consulta-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--yellow-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .consulta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
+  .consulta-date { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .consulta-num { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Last checkin */
+  .last-checkin {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .last-checkin-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .last-checkin-date { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .last-checkin-period { font-size: 12px; color: var(--muted); }
+
+  .scores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .score-item {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .score-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 3px; }
+  .score-val { font-size: 18px; font-weight: 800; color: var(--navy); }
+  .score-val span { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+  /* ── CHECK-IN PAGE ────────────────────────────────── */
+  .checkin-header {
+    background: var(--navy);
+    padding: 56px 24px 24px;
+  }
+
+  .checkin-header-tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+  }
+
+  .checkin-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .checkin-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+
+  /* Progress */
+  .checkin-progress {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+
+  .checkin-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .checkin-progress-meta span:last-child { color: var(--navy); }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), var(--yellow));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Checkin body */
+  .checkin-body { padding: 16px; }
+
+  /* Section divider */
+  .sec-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 14px;
+  }
+
+  .sec-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
+    background: var(--navy);
+    border-radius: 6px;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .sec-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Q card */
+  .q-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .q-card.active { border-color: var(--navy); }
+  .q-card.error { border-color: var(--danger); }
+
+  .q-num { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .q-text { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 14px; }
+  .q-hint { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  /* Field */
+  .field {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    padding: 13px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field:focus { border-color: var(--navy); background: #fff; }
+  .field::placeholder { color: var(--muted); }
+
+  textarea.field { resize: none; min-height: 90px; line-height: 1.5; }
+
+  /* Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .pill {
+    padding: 9px 15px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--subtext);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pill:active { transform: scale(0.96); }
+  .pill.sel { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+
+  /* Slider */
+  .slider-wrap { padding: 2px 0 4px; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 12px; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 3px solid var(--yellow);
+    cursor: pointer;
+  }
+
+  .slider-val {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+  }
+
+  .slider-val span { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 3px; }
+
+  /* Number */
+  .num-row { display: flex; align-items: center; gap: 16px; }
+
+  .num-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--navy);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+
+  .num-btn:active { background: var(--navy); color: #fff; }
+  .num-display { font-size: 38px; font-weight: 800; color: var(--navy); min-width: 56px; text-align: center; }
+  .num-label { font-size: 13px; color: var(--muted); }
+
+  /* Sleep grid */
+  .sleep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .sleep-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sleep-card:active { transform: scale(0.96); }
+  .sleep-card .si { font-size: 26px; margin-bottom: 5px; }
+  .sleep-card .sl { font-size: 13px; font-weight: 600; color: var(--subtext); }
+  .sleep-card.sel { background: var(--navy); border-color: var(--navy); }
+  .sleep-card.sel .sl { color: #fff; }
+
+  /* Submit */
+  .submit-wrap { padding: 8px 0 24px; }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 17px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 12px;
+    right: 12px;
+    height: 4px;
+    background: var(--yellow);
+    border-radius: 99px;
+  }
+
+  .btn-submit:active { opacity: 0.85; }
+  .btn-submit.loading { opacity: 0.6; pointer-events: none; }
+
+  /* ── EVOLUÇÃO PAGE ────────────────────────────────── */
+  .page-header-simple {
+    background: var(--navy);
+    padding: 56px 24px 24px;
+  }
+
+  .page-header-simple h2 { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .page-header-simple p { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+  .evo-body { padding: 16px; }
+
+  .checkin-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .checkin-item:active { transform: scale(0.98); }
+
+  .ci-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .ci-date { font-size: 12px; color: var(--muted); }
+  .ci-period { font-size: 14px; font-weight: 700; color: var(--text); }
+  .ci-arrow { color: var(--muted); }
+
+  .ci-scores { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .score-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #e8eef7;
+    color: var(--navy);
+  }
+
+  .score-tag.y { background: var(--yellow-pale); color: #7a5c00; }
+  .score-tag.g { background: var(--success-bg); color: var(--success); }
+  .score-tag.r { background: #fdf0ee; color: var(--danger); }
+
+  /* ── CONQUISTAS PAGE ──────────────────────────────── */
+  .conq-body { padding: 16px; }
+
+  .timeline { display: flex; flex-direction: column; }
+
+  .tl-item { display: flex; gap: 14px; padding-bottom: 20px; }
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+
+  .tl-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .tl-line { width: 2px; flex: 1; background: var(--border); margin-top: 6px; min-height: 16px; }
+  .tl-item:last-child .tl-line { display: none; }
+
+  .tl-body { padding-top: 8px; flex: 1; }
+  .tl-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.4; }
+  .tl-meta { font-size: 12px; color: var(--muted); }
+  .tl-pts { display: inline-block; background: var(--yellow-pale); color: #7a5c00; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-top: 4px; }
+
+  /* ── DETAIL MODAL ─────────────────────────────────── */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    backdrop-filter: blur(3px);
+  }
+
+  .drawer-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  .drawer {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 12px 20px 40px;
+    animation: slideDrawer 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes slideDrawer { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .drawer-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin: 8px auto 20px;
+  }
+
+  .drawer-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .drawer-date { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+
+  .detail-item {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .detail-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
+  .detail-val { font-size: 15px; font-weight: 700; color: var(--text); }
+
+  .detail-full { background: var(--bg); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 8px; }
+
+  /* ── SUCCESS ──────────────────────────────────────── */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--navy);
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+
+  .success-emoji { font-size: 64px; margin-bottom: 24px; }
+  .success-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+  .success-text { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 40px; }
+
+  .success-btn {
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 16px 40px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ── EMPTY ────────────────────────────────────────── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; line-height: 1.5; }
+
+  /* ── LOADING ──────────────────────────────────────── */
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    gap: 16px;
+  }
+
+  .loading-screen.hide { display: none; }
+
+  .loading-shark { font-size: 48px; animation: pulse 1.2s ease infinite; }
+
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+  .loading-text { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 500; }
+
+  /* Req */
+  .req { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-shark">🦈</div>
+  <div class="loading-text">Carregando...</div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen" id="screenLogin">
+  <div class="login-top">
+    <span class="login-shark">🦈</span>
+    <div class="login-brand">Shark Squad</div>
+    <div class="login-title">Seu portal<br>de acompanhamento</div>
+  </div>
+  <div class="login-box">
+    <label class="login-label">Seu código de acesso</label>
+    <input class="login-input" type="text" id="loginCode" placeholder="Ex: SHARK123" maxlength="12" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') fazerLogin()">
+    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <div class="login-error" id="loginError">Código não encontrado. Verifique com seu nutricionista.</div>
+    <div class="login-loading" id="loginLoading">Verificando...</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="screen" id="screenApp">
+  <div class="app-scroll" id="appScroll">
+
+    <!-- HOME -->
+    <div class="page active" id="pageHome">
+      <div class="hero">
+        <div class="hero-greeting">Olá 👋</div>
+        <div class="hero-name" id="heroName">—</div>
+        <div class="hero-points">
+          <div class="hero-points-num" id="heroPontos">0</div>
+          <div class="hero-points-info">
+            <div class="hero-points-label">pontos acumulados</div>
+            <div class="hero-points-level" id="heroLevel">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="home-body">
+        <div class="quick-actions">
+          <div class="quick-card highlight" onclick="showPage('pageCheckin')">
+            <span class="quick-icon">📋</span>
+            <div class="quick-title">Fazer check-in</div>
+            <div class="quick-sub">Quinzenal · leva ~3 min</div>
+          </div>
+          <div class="quick-card" onclick="showPage('pageEvolucao')">
+            <span class="quick-icon">📈</span>
+            <div class="quick-title">Minha evolução</div>
+            <div class="quick-sub">Ver histórico</div>
+          </div>
+          <div class="quick-card" onclick="showPage('pageConquistas')">
+            <span class="quick-icon">🏆</span>
+            <div class="quick-title">Conquistas</div>
+            <div class="quick-sub">Seus marcos</div>
+          </div>
+        </div>
+
+        <div class="section-title">Próxima consulta</div>
+        <div class="consulta-card" id="proximaConsulta">
+          <div class="consulta-icon">📅</div>
+          <div>
+            <div class="consulta-label">Data prevista</div>
+            <div class="consulta-date" id="consultaDate">—</div>
+            <div class="consulta-num" id="consultaNum">—</div>
+          </div>
+        </div>
+
+        <div class="section-title">Último check-in</div>
+        <div id="lastCheckinHome">
+          <div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.<br>Que tal fazer o primeiro?</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECK-IN -->
+    <div class="page" id="pageCheckin">
+      <div class="checkin-header">
+        <div class="checkin-header-tag">Check-in quinzenal</div>
+        <h2>Como foram seus últimos 15 dias?</h2>
+        <p>Responda com honestidade — isso torna nossa consulta muito mais eficiente.</p>
+      </div>
+
+      <div class="checkin-progress">
+        <div class="checkin-progress-meta">
+          <span>Progresso</span>
+          <span id="ciProgressCount">0 / 15</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="ciProgressFill"></div></div>
+      </div>
+
+      <div class="checkin-body">
+        <!-- SEÇ 1 -->
+        <div class="sec-divider"><span class="sec-num">01</span><span class="sec-name">Identificação</span></div>
+
+        <div class="q-card" id="card-q1">
+          <div class="q-num">Pergunta 1</div>
+          <div class="q-text">Confirme seu nome <span class="req">*</span></div>
+          <input class="field" type="text" id="q1" placeholder="Seu nome" autocomplete="name">
+        </div>
+
+        <div class="q-card" id="card-q2">
+          <div class="q-num">Pergunta 2</div>
+          <div class="q-text">Esses 15 dias foram… <span class="req">*</span></div>
+          <div class="pills" data-q="q2" data-t="single">
+            <div class="pill" data-v="Rotina normal">📅 Rotina normal</div>
+            <div class="pill" data-v="Período agitado">⚡ Agitado</div>
+            <div class="pill" data-v="Período difícil">🌧️ Difícil</div>
+            <div class="pill" data-v="Período especial">🎉 Especial</div>
+          </div>
+          <input type="hidden" id="q2">
+        </div>
+
+        <!-- SEÇ 2 -->
+        <div class="sec-divider"><span class="sec-num">02</span><span class="sec-name">Alimentação</span></div>
+
+        <div class="q-card" id="card-q3">
+          <div class="q-num">Pergunta 3</div>
+          <div class="q-text">Adesão ao plano alimentar</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>0 — Nenhuma</span><span>10 — Perfeita</span></div>
+            <input type="range" id="q3" min="0" max="10" value="7">
+            <div class="slider-val" id="q3v">7<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q4">
+          <div class="q-num">Pergunta 4</div>
+          <div class="q-text">Quantas vezes saiu do plano?</div>
+          <div class="num-row">
+            <button type="button" class="num-btn" onclick="changeNum('q4',-1)">−</button>
+            <div class="num-display" id="q4d">0</div>
+            <input type="hidden" id="q4" value="0">
+            <button type="button" class="num-btn" onclick="changeNum('q4',1)">+</button>
+            <span class="num-label">vezes</span>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q5">
+          <div class="q-num">Pergunta 5</div>
+          <div class="q-text">Em qual momento saiu do plano? <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q5" data-t="multi">
+            <div class="pill" data-v="Final de semana">Final de semana</div>
+            <div class="pill" data-v="Eventos sociais">Eventos sociais</div>
+            <div class="pill" data-v="Estresse">Estresse</div>
+            <div class="pill" data-v="À noite">À noite</div>
+            <div class="pill" data-v="No trabalho">No trabalho</div>
+            <div class="pill" data-v="Em viagem">Em viagem</div>
+            <div class="pill" data-v="Tédio">Tédio</div>
+            <div class="pill" data-v="Não se aplica">Não se aplica</div>
+          </div>
+          <input type="hidden" id="q5">
+        </div>
+
+        <div class="q-card" id="card-q6">
+          <div class="q-num">Pergunta 6</div>
+          <div class="q-text">Refeição mais difícil de manter</div>
+          <div class="pills" data-q="q6" data-t="single">
+            <div class="pill" data-v="Café da manhã">Café da manhã</div>
+            <div class="pill" data-v="Lanche manhã">Lanche manhã</div>
+            <div class="pill" data-v="Almoço">Almoço</div>
+            <div class="pill" data-v="Lanche tarde">Lanche tarde</div>
+            <div class="pill" data-v="Jantar">Jantar</div>
+            <div class="pill" data-v="Ceia">Ceia</div>
+            <div class="pill" data-v="Nenhuma">Nenhuma</div>
+          </div>
+          <input type="hidden" id="q6">
+        </div>
+
+        <!-- SEÇ 3 -->
+        <div class="sec-divider"><span class="sec-num">03</span><span class="sec-name">Treino</span></div>
+
+        <div class="q-card" id="card-q7">
+          <div class="q-num">Pergunta 7</div>
+          <div class="q-text">Quantas vezes treinou?</div>
+          <div class="num-row">
+            <button type="button" class="num-btn" onclick="changeNum('q7',-1)">−</button>
+            <div class="num-display" id="q7d">0</div>
+            <input type="hidden" id="q7" value="0">
+            <button type="button" class="num-btn" onclick="changeNum('q7',1)">+</button>
+            <span class="num-label">treinos</span>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q8">
+          <div class="q-num">Pergunta 8</div>
+          <div class="q-text">Motivo de faltar treino <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q8" data-t="multi">
+            <div class="pill" data-v="Falta de tempo">Falta de tempo</div>
+            <div class="pill" data-v="Cansaço">Cansaço</div>
+            <div class="pill" data-v="Dor ou lesão">Dor ou lesão</div>
+            <div class="pill" data-v="Desmotivação">Desmotivação</div>
+            <div class="pill" data-v="Trabalho">Trabalho</div>
+            <div class="pill" data-v="Doença">Doença</div>
+            <div class="pill" data-v="Não faltei nenhum">Não faltei</div>
+          </div>
+          <input type="hidden" id="q8">
+        </div>
+
+        <!-- SEÇ 4 -->
+        <div class="sec-divider"><span class="sec-num">04</span><span class="sec-name">Sono & Energia</span></div>
+
+        <div class="q-card" id="card-q9">
+          <div class="q-num">Pergunta 9</div>
+          <div class="q-text">Como foi seu sono?</div>
+          <div class="sleep-grid" data-q="q9" data-t="single">
+            <div class="sleep-card" data-v="Ótimo"><div class="si">😴</div><div class="sl">Ótimo</div></div>
+            <div class="sleep-card" data-v="Bom"><div class="si">🙂</div><div class="sl">Bom</div></div>
+            <div class="sleep-card" data-v="Regular"><div class="si">😐</div><div class="sl">Regular</div></div>
+            <div class="sleep-card" data-v="Ruim"><div class="si">😓</div><div class="sl">Ruim</div></div>
+          </div>
+          <input type="hidden" id="q9">
+        </div>
+
+        <div class="q-card" id="card-q10">
+          <div class="q-num">Pergunta 10</div>
+          <div class="q-text">Disposição e energia geral</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>1 — Sem energia</span><span>10 — Ótima</span></div>
+            <input type="range" id="q10" min="1" max="10" value="6">
+            <div class="slider-val" id="q10v">6<span>/10</span></div>
+          </div>
+        </div>
+
+        <!-- SEÇ 5 -->
+        <div class="sec-divider"><span class="sec-num">05</span><span class="sec-name">Estresse & Gatilhos</span></div>
+
+        <div class="q-card" id="card-q11">
+          <div class="q-num">Pergunta 11</div>
+          <div class="q-text">Nível de estresse</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>1 — Baixo</span><span>10 — Muito alto</span></div>
+            <input type="range" id="q11" min="1" max="10" value="5">
+            <div class="slider-val" id="q11v">5<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q12">
+          <div class="q-num">Pergunta 12</div>
+          <div class="q-text">O que te tirou do trilho? <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q12" data-t="multi">
+            <div class="pill" data-v="Trabalho / pressão">Trabalho</div>
+            <div class="pill" data-v="Família">Família</div>
+            <div class="pill" data-v="Finanças">Finanças</div>
+            <div class="pill" data-v="Relacionamento">Relacionamento</div>
+            <div class="pill" data-v="Saúde">Saúde</div>
+            <div class="pill" data-v="Ansiedade">Ansiedade</div>
+            <div class="pill" data-v="Nada">Nada</div>
+          </div>
+          <input type="hidden" id="q12">
+        </div>
+
+        <!-- SEÇ 6 -->
+        <div class="sec-divider"><span class="sec-num">06</span><span class="sec-name">Percepção</span></div>
+
+        <div class="q-card" id="card-q13">
+          <div class="q-num">Pergunta 13</div>
+          <div class="q-text">O que funcionou bem?</div>
+          <textarea class="field" id="q13" placeholder="Conte o que deu certo, mesmo que pequeno…"></textarea>
+        </div>
+
+        <div class="q-card" id="card-q14">
+          <div class="q-num">Pergunta 14</div>
+          <div class="q-text">Quer me contar algo antes da consulta?</div>
+          <textarea class="field" id="q14" placeholder="Esse espaço é seu…"></textarea>
+        </div>
+
+        <div class="q-card" id="card-q15">
+          <div class="q-num">Pergunta 15</div>
+          <div class="q-text">Como está sua motivação hoje?</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>0 — Sem motivação</span><span>10 — Muito motivado</span></div>
+            <input type="range" id="q15" min="0" max="10" value="7">
+            <div class="slider-val" id="q15v">7<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="submit-wrap">
+          <button class="btn-submit" id="btnEnviar" onclick="enviarCheckin()">Enviar check-in</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVOLUÇÃO -->
+    <div class="page" id="pageEvolucao">
+      <div class="page-header-simple">
+        <h2>Minha evolução</h2>
+        <p>Histórico completo dos seus check-ins</p>
+      </div>
+      <div class="evo-body" id="evoBody">
+        <div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.</p></div>
+      </div>
+    </div>
+
+    <!-- CONQUISTAS -->
+    <div class="page" id="pageConquistas">
+      <div class="page-header-simple">
+        <h2>Conquistas</h2>
+        <p>Seus marcos ao longo do acompanhamento</p>
+      </div>
+      <div class="conq-body" id="conqBody">
+        <div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.<br>Continue firme!</p></div>
+      </div>
+    </div>
+
+  </div><!-- end app-scroll -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="navTo('pageHome', this)">
+      <span class="nav-tab-icon">🏠</span>
+      <span class="nav-tab-label">Início</span>
+    </button>
+    <button class="nav-tab" onclick="navTo('pageEvolucao', this)">
+      <span class="nav-tab-icon">📈</span>
+      <span class="nav-tab-label">Evolução</span>
+    </button>
+    <button class="nav-tab nav-tab-checkin" onclick="navTo('pageCheckin', this)">
+      <div class="nav-checkin-btn">📋</div>
+      <span class="nav-tab-label">Check-in</span>
+    </button>
+    <button class="nav-tab" onclick="navTo('pageConquistas', this)">
+      <span class="nav-tab-icon">🏆</span>
+      <span class="nav-tab-label">Conquistas</span>
+    </button>
+    <button class="nav-tab" onclick="sair()">
+      <span class="nav-tab-icon">↩</span>
+      <span class="nav-tab-label">Sair</span>
+    </button>
+  </nav>
+</div>
+
+<!-- DRAWER: DETALHE DO CHECK-IN -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="fecharDrawer(event)">
+  <div class="drawer" id="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawerTitle">—</div>
+    <div class="drawer-date" id="drawerDate">—</div>
+    <div id="drawerContent"></div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-emoji">🎉</div>
+  <div class="success-title">Check-in enviado!</div>
+  <div class="success-text" id="successText">Obrigado! Seu nutricionista já recebeu suas respostas.</div>
+  <button class="success-btn" onclick="fecharSuccess()">Voltar ao início</button>
+</div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
+
+const NIVEIS = [
+  { min: 0,   nome: '🐟 Peixinho',      proximo: 100  },
+  { min: 100, nome: '🦈 Tubarão Filhote', proximo: 250  },
+  { min: 250, nome: '🦈 Tubarão',        proximo: 500  },
+  { min: 500, nome: '🦈 Tubarão Touro',  proximo: 800  },
+  { min: 800, nome: '🦈 Tubarão Tigre',  proximo: 1200 },
+  { min: 1200,nome: '🦈 Grande Branco',  proximo: null },
+];
+
+// ── STATE ────────────────────────────────────────────────────
+let paciente = null;
+let checkins = [];
+let consultas = [];
+let conquistas = [];
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const codigo = localStorage.getItem('ss_codigo');
+  if (codigo) {
+    carregarPaciente(codigo);
+  } else {
+    esconderLoading();
+    mostrarScreen('screenLogin');
+  }
+});
+
+function esconderLoading() {
+  document.getElementById('loadingScreen').classList.add('hide');
+}
+
+function mostrarScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── LOGIN ────────────────────────────────────────────────────
+async function fazerLogin() {
+  const codigo = document.getElementById('loginCode').value.trim().toUpperCase();
+  if (!codigo) return;
+
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginLoading').style.display = 'block';
+
+  try {
+    const res = await fetch(`${SCRIPT_URL}?acao=paciente&codigo=${codigo}`);
+    const data = await res.json();
+
+    if (data.erro || !data.paciente) {
+      document.getElementById('loginLoading').style.display = 'none';
+      document.getElementById('loginError').style.display = 'block';
+      return;
+    }
+
+    localStorage.setItem('ss_codigo', codigo);
+    await carregarPaciente(codigo);
+
+  } catch (err) {
+    document.getElementById('loginLoading').style.display = 'none';
+    document.getElementById('loginError').textContent = 'Erro de conexão. Tente novamente.';
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+async function carregarPaciente(codigo) {
+  try {
+    const [resPac, resCI, resCon, resConq] = await Promise.all([
+      fetch(`${SCRIPT_URL}?acao=paciente&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=checkins&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=consultas&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=conquistas&codigo=${codigo}`),
+    ]);
+
+    const [dataPac, dataCI, dataCon, dataConq] = await Promise.all([
+      resPac.json(), resCI.json(), resCon.json(), resConq.json()
+    ]);
+
+    if (dataPac.erro || !dataPac.paciente) {
+      localStorage.removeItem('ss_codigo');
+      esconderLoading();
+      mostrarScreen('screenLogin');
+      return;
+    }
+
+    paciente   = dataPac.paciente;
+    checkins   = dataCI.checkins || [];
+    consultas  = dataCon.consultas || [];
+    conquistas = dataConq.conquistas || [];
+
+    renderHome();
+    renderEvolucao();
+    renderConquistas();
+    preencherNomeCheckin();
+
+    esconderLoading();
+    mostrarScreen('screenApp');
+
+  } catch (err) {
+    esconderLoading();
+    mostrarScreen('screenLogin');
+  }
+}
+
+function sair() {
+  localStorage.removeItem('ss_codigo');
+  paciente = null;
+  mostrarScreen('screenLogin');
+}
+
+// ── RENDER HOME ──────────────────────────────────────────────
+function renderHome() {
+  const nome = paciente.nome.split(' ')[0];
+  document.getElementById('heroName').textContent = nome;
+
+  const pontos = Number(paciente.pontos) || 0;
+  document.getElementById('heroPontos').textContent = pontos;
+
+  const nivel = NIVEIS.slice().reverse().find(n => pontos >= n.min) || NIVEIS[0];
+  document.getElementById('heroLevel').textContent = nivel.nome;
+
+  // Próxima consulta
+  const proxima = consultas.find(c => c.status === 'Agendada' && c.dataprevista);
+  if (proxima) {
+    document.getElementById('consultaDate').textContent = proxima.dataprevista || '—';
+    document.getElementById('consultaNum').textContent = `Consulta ${proxima.numero} de ${paciente.consultasincluidas}`;
+  } else {
+    document.getElementById('consultaDate').textContent = 'Não agendada';
+    document.getElementById('consultaNum').textContent = 'Aguarde contato do seu nutricionista';
+  }
+
+  // Último check-in
+  const el = document.getElementById('lastCheckinHome');
+  if (!checkins.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.<br>Que tal fazer o primeiro?</p></div>';
+    return;
+  }
+
+  const c = checkins[0];
+  el.innerHTML = `
+    <div class="last-checkin">
+      <div class="last-checkin-top">
+        <div class="last-checkin-date">${c.data_hora || '—'}</div>
+        <div class="last-checkin-period">${c['2_como_foram_os_15_dias'] || '—'}</div>
+      </div>
+      <div class="scores-grid">
+        <div class="score-item">
+          <div class="score-label">Adesão</div>
+          <div class="score-val">${c['3_adesao_ao_plano_0_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Motivação</div>
+          <div class="score-val">${c['15_motivacao_hoje_0_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Energia</div>
+          <div class="score-val">${c['10_disposicao_energia_1_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Estresse</div>
+          <div class="score-val">${c['11_nivel_de_estresse_1_10'] || '—'}<span>/10</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── RENDER EVOLUÇÃO ──────────────────────────────────────────
+function renderEvolucao() {
+  const el = document.getElementById('evoBody');
+  if (!checkins.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.</p></div>';
+    return;
+  }
+
+  el.innerHTML = checkins.map((c, i) => {
+    const adesao = Number(c['3_adesao_ao_plano_0_10']);
+    const estresse = Number(c['11_nivel_de_estresse_1_10']);
+    return `
+      <div class="checkin-item" onclick="abrirCheckin(${i})">
+        <div class="ci-top">
+          <div>
+            <div class="ci-date">${c.data_hora || '—'}</div>
+            <div class="ci-period">${c['2_como_foram_os_15_dias'] || '—'}</div>
+          </div>
+          <span class="ci-arrow">›</span>
+        </div>
+        <div class="ci-scores">
+          <span class="score-tag ${adesao >= 7 ? 'g' : adesao >= 5 ? '' : 'r'}">Adesão ${adesao}/10</span>
+          <span class="score-tag y">Motivação ${c['15_motivacao_hoje_0_10']}/10</span>
+          <span class="score-tag ${estresse >= 7 ? 'r' : ''}">Estresse ${estresse}/10</span>
+          <span class="score-tag">${c['7_treinos_realizados']} treinos</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── RENDER CONQUISTAS ────────────────────────────────────────
+function renderConquistas() {
+  const el = document.getElementById('conqBody');
+  if (!conquistas.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.<br>Continue firme!</p></div>';
+    return;
+  }
+
+  el.innerHTML = `<div class="timeline">` + conquistas.map(c => `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-dot">🏆</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-text">${c.texto}</div>
+        <div class="tl-meta">${c.data}</div>
+        ${c.pontos > 0 ? `<span class="tl-pts">+${c.pontos} pontos</span>` : ''}
+      </div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+// ── DRAWER CHECK-IN ──────────────────────────────────────────
+function abrirCheckin(idx) {
+  const c = checkins[idx];
+  if (!c) return;
+
+  document.getElementById('drawerTitle').textContent = c['1_nome'] || paciente.nome;
+  document.getElementById('drawerDate').textContent = c.data_hora || '—';
+
+  const campos = [
+    ['Como foram os 15 dias', c['2_como_foram_os_15_dias']],
+    ['Adesão ao plano', `${c['3_adesao_ao_plano_0_10']}/10`],
+    ['Saídas do plano', `${c['4_saidas_do_plano']} vez(es)`],
+    ['Momento de saída', c['5_momento_da_saida']],
+    ['Refeição mais difícil', c['6_refeicao_mais_dificil']],
+    ['Treinos realizados', c['7_treinos_realizados']],
+    ['Motivo de faltar', c['8_motivo_de_faltar_treino']],
+    ['Sono', c['9_sono']],
+    ['Energia', `${c['10_disposicao_energia_1_10']}/10`],
+    ['Estresse', `${c['11_nivel_de_estresse_1_10']}/10`],
+    ['O que tirou do trilho', c['12_o_que_tirou_do_trilho']],
+    ['Motivação', `${c['15_motivacao_hoje_0_10']}/10`],
+  ];
+
+  const grid = campos.map(([l, v]) => `
+    <div class="detail-item">
+      <div class="detail-lbl">${l}</div>
+      <div class="detail-val">${v || '—'}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('drawerContent').innerHTML = `
+    <div class="detail-grid">${grid}</div>
+    ${c['13_o_que_funcionou_bem'] ? `<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['13_o_que_funcionou_bem']}</div></div>` : ''}
+    ${c['14_recado_para_a_consulta'] ? `<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['14_recado_para_a_consulta']}</div></div>` : ''}
+  `;
+
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+
+function fecharDrawer(e) {
+  if (e.target === document.getElementById('drawerOverlay')) {
+    document.getElementById('drawerOverlay').classList.remove('open');
+  }
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('appScroll').scrollTo(0, 0);
+}
+
+function navTo(pageId, btn) {
+  showPage(pageId);
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── CHECK-IN FORM ────────────────────────────────────────────
+const answered = new Set();
+
+function preencherNomeCheckin() {
+  if (paciente) {
+    document.getElementById('q1').value = paciente.nome;
+    markAnswered('q1', true);
+  }
+}
+
+function updateProgress() {
+  const total = 15;
+  const count = answered.size;
+  document.getElementById('ciProgressCount').textContent = `${count} / ${total}`;
+  document.getElementById('ciProgressFill').style.width = `${(count / total) * 100}%`;
+}
+
+function markAnswered(id, has) {
+  if (has) answered.add(id); else answered.delete(id);
+  updateProgress();
+}
+
+// Sliders
+document.querySelectorAll('input[type=range]').forEach(s => {
+  const id = s.id;
+  const el = document.getElementById(id + 'v');
+  s.addEventListener('input', () => {
+    el.innerHTML = `${s.value}<span>/${s.max}</span>`;
+    markAnswered(id, true);
+  });
+  markAnswered(id, true);
+});
+
+// Text
+document.getElementById('q1').addEventListener('input', function() {
+  markAnswered('q1', this.value.trim().length > 0);
+});
+
+['q13','q14'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    markAnswered(id, this.value.trim().length > 0);
+  });
+});
+
+// Pills
+document.querySelectorAll('.pills, .sleep-grid').forEach(group => {
+  const qId = group.dataset.q;
+  const type = group.dataset.t;
+  const input = document.getElementById(qId);
+  const items = group.querySelectorAll('.pill, .sleep-card');
+
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      if (type === 'single') {
+        items.forEach(i => i.classList.remove('sel'));
+        item.classList.add('sel');
+        input.value = item.dataset.v;
+        markAnswered(qId, true);
+      } else {
+        item.classList.toggle('sel');
+        const sel = [...items].filter(i => i.classList.contains('sel')).map(i => i.dataset.v);
+        input.value = sel.join(', ');
+        markAnswered(qId, sel.length > 0);
+      }
+    });
+  });
+});
+
+// Number
+function changeNum(id, delta) {
+  const input = document.getElementById(id);
+  const display = document.getElementById(id + 'd');
+  let val = parseInt(input.value || 0) + delta;
+  if (val < 0) val = 0;
+  input.value = val;
+  display.textContent = val;
+  markAnswered(id, true);
+}
+
+markAnswered('q4', true);
+markAnswered('q7', true);
+
+// ── ENVIAR CHECK-IN ──────────────────────────────────────────
+async function enviarCheckin() {
+  const nome = document.getElementById('q1').value.trim();
+  const periodo = document.getElementById('q2').value;
+
+  if (!nome) { document.getElementById('card-q1').classList.add('error'); document.getElementById('card-q1').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  if (!periodo) { document.getElementById('card-q2').classList.add('error'); document.getElementById('card-q2').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  document.getElementById('card-q1').classList.remove('error');
+  document.getElementById('card-q2').classList.remove('error');
+
+  const btn = document.getElementById('btnEnviar');
+  btn.classList.add('loading');
+  btn.textContent = 'Enviando…';
+
+  const payload = {
+    acao: 'checkin',
+    timestamp: new Date().toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'}),
+    codigo: paciente.codigo,
+    q1_nome: nome,
+    q2_periodo: periodo,
+    q3_adesao: document.getElementById('q3').value,
+    q4_saidas: document.getElementById('q4').value,
+    q5_momento_saida: document.getElementById('q5').value,
+    q6_refeicao_dificil: document.getElementById('q6').value,
+    q7_treinos: document.getElementById('q7').value,
+    q8_motivo_falta: document.getElementById('q8').value,
+    q9_sono: document.getElementById('q9').value,
+    q10_disposicao: document.getElementById('q10').value,
+    q11_estresse: document.getElementById('q11').value,
+    q12_gatilhos: document.getElementById('q12').value,
+    q13_funcionou: document.getElementById('q13').value,
+    q14_recado: document.getElementById('q14').value,
+    q15_motivacao: document.getElementById('q15').value,
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+    });
+
+    document.getElementById('successText').textContent = `Obrigado, ${nome.split(' ')[0]}! Seu nutricionista já recebeu suas respostas.`;
+    document.getElementById('successOverlay').classList.add('show');
+
+  } catch(err) {
+    alert('Erro ao enviar. Tente novamente.');
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Enviar check-in';
+}
+
+function fecharSuccess() {
+  document.getElementById('successOverlay').classList.remove('show');
+  navTo('pageHome', document.querySelector('.nav-tab'));
+  // Recarrega dados
+  carregarPaciente(paciente.codigo);
+}
+</script>
+</body>
+</html>
