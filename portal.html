@@ -843,6 +843,53 @@
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
   .empty p { font-size: 14px; line-height: 1.5; }
 
+  /* ── CHART ─────────────────────────────────────────── */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px 16px;
+    margin: 16px 16px 0;
+  }
+
+  .chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .chart-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 14px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--subtext);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   /* ── LOADING ──────────────────────────────────────── */
   .loading-screen {
     position: fixed;
@@ -1157,7 +1204,7 @@
     <div class="page" id="pageEvolucao">
       <div class="page-header-simple">
         <h2>Minha evolução</h2>
-        <p>Histórico completo dos seus check-ins</p>
+        <p>Acompanhe suas métricas ao longo dos check-ins</p>
       </div>
       <div class="evo-body" id="evoBody">
         <div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.</p></div>
@@ -1392,32 +1439,156 @@ function renderHome() {
 // ── RENDER EVOLUÇÃO ──────────────────────────────────────────
 function renderEvolucao() {
   const el = document.getElementById('evoBody');
+
   if (!checkins.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.</p></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.<br>Faça seu primeiro check-in!</p></div>';
     return;
   }
 
-  el.innerHTML = checkins.map((c, i) => {
-    const adesao = Number(c['3_adesao_ao_plano_0_10']);
-    const estresse = Number(c['11_nivel_de_estresse_1_10']);
-    return `
-      <div class="checkin-item" onclick="abrirCheckin(${i})">
-        <div class="ci-top">
-          <div>
-            <div class="ci-date">${c.data_hora || '—'}</div>
-            <div class="ci-period">${c['2_como_foram_os_15_dias'] || '—'}</div>
-          </div>
-          <span class="ci-arrow">›</span>
-        </div>
-        <div class="ci-scores">
-          <span class="score-tag ${adesao >= 7 ? 'g' : adesao >= 5 ? '' : 'r'}">Adesão ${adesao}/10</span>
-          <span class="score-tag y">Motivação ${c['15_motivacao_hoje_0_10']}/10</span>
-          <span class="score-tag ${estresse >= 7 ? 'r' : ''}">Estresse ${estresse}/10</span>
-          <span class="score-tag">${c['7_treinos_realizados']} treinos</span>
-        </div>
+  // Ordenar do mais antigo para o mais recente para o gráfico
+  const ordenados = checkins.slice().reverse();
+
+  // Labels = datas resumidas
+  const labels = ordenados.map(c => {
+    const raw = c.data_hora || '';
+    const partes = raw.split(',')[0].trim().split('/');
+    if (partes.length >= 2) return partes[0] + '/' + partes[1];
+    return raw.split(',')[0] || '—';
+  });
+
+  const adesao    = ordenados.map(c => Number(c['3_adesao_ao_plano_0_10'])       || 0);
+  const motivacao = ordenados.map(c => Number(c['15_motivacao_hoje_0_10'])        || 0);
+  const energia   = ordenados.map(c => Number(c['10_disposicao_energia_1_10'])    || 0);
+  const estresse  = ordenados.map(c => Number(c['11_nivel_de_estresse_1_10'])     || 0);
+  const treinos   = ordenados.map(c => Number(c['7_treinos_realizados'])          || 0);
+  const saidas    = ordenados.map(c => Number(c['4_saidas_do_plano'])             || 0);
+
+  const series = [
+    { label: 'Adesão',    data: adesao,    color: '#1c3054', axis: 'left'  },
+    { label: 'Motivação', data: motivacao, color: '#e8b400', axis: 'left'  },
+    { label: 'Energia',   data: energia,   color: '#2d7a4f', axis: 'left'  },
+    { label: 'Estresse',  data: estresse,  color: '#c0392b', axis: 'left'  },
+    { label: 'Treinos',   data: treinos,   color: '#7c5cbf', axis: 'right' },
+    { label: 'Saídas',    data: saidas,    color: '#d07020', axis: 'right' },
+  ];
+
+  const legendHTML = series.map(s =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div>${s.label}${s.axis === 'right' ? ' (→)' : ''}</div>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="chart-card">
+      <div class="chart-title">Evolução por check-in</div>
+      <div class="chart-wrap">
+        <canvas id="evoChart" height="220"></canvas>
       </div>
-    `;
-  }).join('');
+      <div class="chart-legend">${legendHTML}</div>
+    </div>
+  `;
+
+  // Aguarda o DOM renderizar antes de desenhar
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('evoChart');
+    if (!canvas) return;
+    canvas.width = canvas.parentElement.clientWidth || 320;
+
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    const PAD = { top: 16, right: 44, bottom: 40, left: 44 };
+    const chartW = W - PAD.left - PAD.right;
+    const chartH = H - PAD.top - PAD.bottom;
+    const n = labels.length;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid lines
+    const gridLines = 5;
+    ctx.strokeStyle = '#ddd8d0';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= gridLines; i++) {
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, y);
+      ctx.lineTo(W - PAD.right, y);
+      ctx.stroke();
+    }
+
+    // Eixo Y esquerdo (0-10)
+    ctx.fillStyle = '#a09890';
+    ctx.font = '10px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= gridLines; i++) {
+      const val = 10 - (10 / gridLines) * i;
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.fillText(val.toFixed(0), PAD.left - 6, y + 4);
+    }
+
+    // Eixo Y direito (0-maxRight)
+    const maxRight = Math.max(...treinos, ...saidas, 1);
+    const rightTop = Math.ceil(maxRight / 5) * 5 || 10;
+    ctx.textAlign = 'left';
+    for (let i = 0; i <= gridLines; i++) {
+      const val = rightTop - (rightTop / gridLines) * i;
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.fillText(val.toFixed(0), W - PAD.right + 6, y + 4);
+    }
+
+    // Labels X
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#a09890';
+    const step = n > 1 ? chartW / (n - 1) : chartW;
+    labels.forEach((lbl, i) => {
+      const x = PAD.left + (n > 1 ? step * i : chartW / 2);
+      ctx.fillText(lbl, x, H - 6);
+    });
+
+    // Função para converter valor em Y
+    function toY(val, axis) {
+      if (axis === 'left') {
+        return PAD.top + chartH - (val / 10) * chartH;
+      } else {
+        return PAD.top + chartH - (val / rightTop) * chartH;
+      }
+    }
+
+    function toX(i) {
+      return PAD.left + (n > 1 ? step * i : chartW / 2);
+    }
+
+    // Desenha cada série
+    series.forEach(s => {
+      if (!s.data.length) return;
+
+      // Linha
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      s.data.forEach((val, i) => {
+        const x = toX(i);
+        const y = toY(val, s.axis);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Pontos
+      s.data.forEach((val, i) => {
+        const x = toX(i);
+        const y = toY(val, s.axis);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    });
+  });
 }
 
 // ── RENDER CONQUISTAS ────────────────────────────────────────
