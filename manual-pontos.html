@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Pontos | Shark Squad</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1c3054;
+    --navy-light: #243d6a;
+    --yellow: #e8b400;
+    --yellow-pale: #fdf6dc;
+    --bg: #f0ede8;
+    --surface: #f7f5f2;
+    --border: #ddd8d0;
+    --text: #1a1a1a;
+    --subtext: #6b6560;
+    --muted: #a09890;
+    --success: #2d7a4f;
+    --success-bg: #eaf5ef;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--navy);
+    padding: 60px 24px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    background: var(--yellow);
+    opacity: 0.07; border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: -30px; bottom: -50px;
+    width: 180px; height: 180px;
+    background: var(--yellow);
+    opacity: 0.05; border-radius: 50%;
+  }
+
+  .hero-brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .hero-icon {
+    width: 44px; height: 44px; background: var(--yellow);
+    border-radius: 12px; display: flex; align-items: center;
+    justify-content: center; font-size: 22px;
+  }
+
+  .hero-name {
+    font-weight: 800; font-size: 16px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #fff;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--yellow); color: var(--navy);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 99px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(26px, 6vw, 40px);
+    font-weight: 800; color: #fff; line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.6);
+    font-size: 15px; max-width: 520px; margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* BODY */
+  .body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 40px; }
+
+  .section-label {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-num {
+    background: var(--navy); color: #fff;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 6px;
+  }
+
+  .section-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--navy); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* INTRO CARD */
+  .intro-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .intro-card p {
+    color: var(--subtext);
+    font-size: 15px; line-height: 1.7;
+  }
+
+  .intro-card p + p { margin-top: 12px; }
+
+  /* POINTS TABLE */
+  .pts-table { display: flex; flex-direction: column; gap: 10px; }
+
+  .pts-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .pts-icon { font-size: 26px; flex-shrink: 0; }
+
+  .pts-info { flex: 1; }
+  .pts-label { font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 3px; }
+  .pts-desc { font-size: 13px; color: var(--muted); }
+
+  .pts-val {
+    font-size: 22px; font-weight: 800;
+    color: var(--navy); flex-shrink: 0;
+    text-align: right;
+  }
+
+  .pts-val span { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+  .pts-row.highlight {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .pts-row.highlight .pts-label { color: #fff; }
+  .pts-row.highlight .pts-desc { color: rgba(255,255,255,0.55); }
+  .pts-row.highlight .pts-val { color: var(--yellow); }
+  .pts-row.highlight .pts-val span { color: rgba(255,255,255,0.4); }
+
+  .pts-row.yellow-row {
+    background: var(--yellow-pale);
+    border-color: var(--yellow);
+  }
+
+  .pts-row.yellow-row .pts-val { color: #7a5c00; }
+
+  /* BONUS */
+  .bonus-note {
+    background: var(--success-bg);
+    border: 1px solid #b8dfc9;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--success);
+    font-weight: 500;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .bonus-note span { flex-shrink: 0; font-size: 16px; }
+
+  /* LEVELS */
+  .levels { display: flex; flex-direction: column; gap: 10px; }
+
+  .level-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .level-item.current {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .level-emoji { font-size: 28px; flex-shrink: 0; }
+
+  .level-info { flex: 1; }
+  .level-name { font-weight: 700; font-size: 15px; color: var(--text); }
+  .level-item.current .level-name { color: #fff; }
+
+  .level-pts { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .level-item.current .level-pts { color: rgba(255,255,255,0.55); }
+
+  .level-badge {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 99px;
+    background: var(--yellow); color: var(--navy);
+    white-space: nowrap;
+  }
+
+  /* PROGRESS BAR VISUAL */
+  .progress-visual {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .progress-title {
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--muted); margin-bottom: 14px;
+  }
+
+  .progress-track {
+    display: flex;
+    height: 8px;
+    border-radius: 99px;
+    overflow: hidden;
+    background: var(--border);
+    margin-bottom: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), var(--yellow));
+    border-radius: 99px;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* RULES */
+  .rules-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .rule-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .rule-text { font-size: 14px; color: var(--subtext); line-height: 1.55; }
+  .rule-text strong { color: var(--text); font-weight: 600; }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    padding: 16px 18px;
+    font-weight: 600; font-size: 14px;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+    user-select: none;
+  }
+
+  .faq-q::after { content: '›'; font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-q::after { transform: rotate(90deg); }
+
+  .faq-a {
+    display: none;
+    padding: 0 18px 16px;
+    font-size: 14px; color: var(--subtext); line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  .faq-item.open .faq-a { display: block; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .footer-logo { font-size: 28px; margin-bottom: 8px; }
+  .footer-brand { font-weight: 800; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); margin-bottom: 6px; }
+  .footer-text { font-size: 13px; color: var(--muted); }
+
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .pts-row { flex-wrap: wrap; }
+    .pts-val { width: 100%; text-align: left; }
+    .level-item { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-brand">
+    <div class="hero-icon">🦈</div>
+    <div class="hero-name">Shark Squad</div>
+  </div>
+  <div class="hero-tag">Sistema de pontos</div>
+  <h1>Cada escolha<br>vale pontos</h1>
+  <p>Aqui no Shark Squad, cada ação positiva é reconhecida. Veja como funciona o sistema de pontuação e suba de nível.</p>
+</div>
+
+<div class="body">
+
+  <!-- INTRO -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">Intro</span>
+      <span class="section-title">Por que pontos?</span>
+    </div>
+    <div class="intro-card">
+      <p>O sistema de pontos existe para tornar visível o que muitas vezes passa despercebido: o seu esforço diário. Cada treino, cada check-in enviado, cada semana de aderência conta — e agora tem um número que comprova isso.</p>
+      <p>Os pontos não substituem os resultados, mas ajudam a mantê-los. Eles são um lembrete de que você está construindo algo maior do que uma dieta — está construindo um estilo de vida.</p>
+    </div>
+  </div>
+
+  <!-- COMO GANHAR -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">01</span>
+      <span class="section-title">Como ganhar pontos</span>
+    </div>
+
+    <div class="pts-table">
+
+      <div class="pts-row highlight">
+        <div class="pts-icon">📋</div>
+        <div class="pts-info">
+          <div class="pts-label">Enviar o check-in quinzenal</div>
+          <div class="pts-desc">A cada 15 dias, preenchendo o formulário completo</div>
+        </div>
+        <div class="pts-val">+10 <span>pts</span></div>
+      </div>
+
+      <div class="pts-row">
+        <div class="pts-icon">🥗</div>
+        <div class="pts-info">
+          <div class="pts-label">Adesão acima de 7/10 no check-in</div>
+          <div class="pts-desc">Quando sua nota de adesão ao plano for 7 ou mais</div>
+        </div>
+        <div class="pts-val">+20 <span>pts</span></div>
+      </div>
+
+      <div class="pts-row yellow-row">
+        <div class="pts-icon">⭐</div>
+        <div class="pts-info">
+          <div class="pts-label">Adesão perfeita — 10/10</div>
+          <div class="pts-desc">Bônus adicional quando a adesão for máxima</div>
+        </div>
+        <div class="pts-val">+10 <span>pts extra</span></div>
+      </div>
+
+      <div class="pts-row">
+        <div class="pts-icon">🏋️</div>
+        <div class="pts-info">
+          <div class="pts-label">Cada treino realizado</div>
+          <div class="pts-desc">Por sessão de treino completada no período</div>
+        </div>
+        <div class="pts-val">+2 <span>pts/treino</span></div>
+      </div>
+
+      <div class="pts-row yellow-row">
+        <div class="pts-icon">🎯</div>
+        <div class="pts-info">
+          <div class="pts-label">Meta de treinos batida</div>
+          <div class="pts-desc">Quando você atinge ou supera a meta definida na consulta</div>
+        </div>
+        <div class="pts-val">+20 <span>pts bônus</span></div>
+      </div>
+
+      <div class="pts-row">
+        <div class="pts-icon">🏆</div>
+        <div class="pts-info">
+          <div class="pts-label">Conquistas e marcos especiais</div>
+          <div class="pts-desc">Definidos pelo nutricionista a cada consulta — ex: perdeu 5kg, zerou saídas do plano, dormiu bem por 30 dias</div>
+        </div>
+        <div class="pts-val">livre <span>pts</span></div>
+      </div>
+
+    </div>
+
+    <div class="bonus-note">
+      <span>💡</span>
+      <div>Os pontos de conquistas são definidos pelo seu nutricionista com base nos seus objetivos e nos pontos de atenção trabalhados na consulta. Quanto mais você evoluiu, mais vale.</div>
+    </div>
+  </div>
+
+  <!-- NÍVEIS -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">02</span>
+      <span class="section-title">Níveis</span>
+    </div>
+
+    <div class="progress-visual">
+      <div class="progress-title">Jornada de evolução</div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="progress-labels">
+        <span>0 pts</span>
+        <span>100</span>
+        <span>250</span>
+        <span>500</span>
+        <span>800</span>
+        <span>1200+</span>
+      </div>
+    </div>
+
+    <div class="levels">
+
+      <div class="level-item">
+        <div class="level-emoji">🐟</div>
+        <div class="level-info">
+          <div class="level-name">Peixinho</div>
+          <div class="level-pts">0 — 99 pontos · Ponto de partida</div>
+        </div>
+      </div>
+
+      <div class="level-item">
+        <div class="level-emoji">🦈</div>
+        <div class="level-info">
+          <div class="level-name">Tubarão Filhote</div>
+          <div class="level-pts">100 — 249 pontos · Você está pegando o ritmo</div>
+        </div>
+      </div>
+
+      <div class="level-item">
+        <div class="level-emoji">🦈</div>
+        <div class="level-info">
+          <div class="level-name">Tubarão</div>
+          <div class="level-pts">250 — 499 pontos · Consistência comprovada</div>
+        </div>
+      </div>
+
+      <div class="level-item">
+        <div class="level-emoji">🦈</div>
+        <div class="level-info">
+          <div class="level-name">Tubarão Touro</div>
+          <div class="level-pts">500 — 799 pontos · Meio caminho andado</div>
+        </div>
+      </div>
+
+      <div class="level-item">
+        <div class="level-emoji">🦈</div>
+        <div class="level-info">
+          <div class="level-name">Tubarão Tigre</div>
+          <div class="level-pts">800 — 1199 pontos · Elite do acompanhamento</div>
+        </div>
+      </div>
+
+      <div class="level-item current">
+        <div class="level-emoji">🦈</div>
+        <div class="level-info">
+          <div class="level-name">Grande Branco</div>
+          <div class="level-pts">1200+ pontos · O topo. Poucos chegam aqui.</div>
+        </div>
+        <div class="level-badge">Nível máximo</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EXEMPLO PRÁTICO -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">03</span>
+      <span class="section-title">Exemplo prático</span>
+    </div>
+
+    <div class="intro-card">
+      <p><strong>Cenário:</strong> você teve uma quinzena excelente. Treinou 10 vezes (meta era 8), mandou o check-in com adesão 8/10, e na consulta seu nutricionista reconheceu que você zerou as saídas noturnas do plano — um ponto de atenção que estava sendo trabalhado.</p>
+      <p style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+        📋 Check-in enviado → <strong>+10 pts</strong><br>
+        🥗 Adesão 8/10 → <strong>+20 pts</strong><br>
+        🏋️ 10 treinos × 2 pts → <strong>+20 pts</strong><br>
+        🎯 Meta de treinos batida (8→10) → <strong>+20 pts</strong><br>
+        🏆 Zerou saídas noturnas → <strong>+30 pts</strong> (livre)<br>
+        <br>
+        <strong style="font-size:16px;color:var(--navy);">Total: +100 pts em uma quinzena ✦</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- REGRAS -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">04</span>
+      <span class="section-title">Regras importantes</span>
+    </div>
+
+    <div class="rules-list">
+      <div class="rule-item">
+        <div class="rule-icon">✅</div>
+        <div class="rule-text"><strong>Você só ganha pontos, nunca perde.</strong> O sistema é feito para motivar, não punir. Dias difíceis fazem parte do processo.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-icon">📋</div>
+        <div class="rule-text"><strong>O check-in precisa ser preenchido para os pontos serem contabilizados.</strong> É ele que gera os dados da quinzena — sem check-in, sem pontuação automática.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-icon">🎯</div>
+        <div class="rule-text"><strong>A meta de treinos é definida com o seu nutricionista na consulta.</strong> Ela é individual e pode mudar a cada ciclo dependendo da sua evolução.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-icon">🏆</div>
+        <div class="rule-text"><strong>Conquistas especiais são registradas na consulta.</strong> Seu nutricionista acompanha seus pontos de atenção e reconhece quando você os supera — isso vale pontos extras.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-icon">📊</div>
+        <div class="rule-text"><strong>Você pode ver seus pontos, nível e conquistas no portal.</strong> Acesse com o seu código de paciente e acompanhe tudo em tempo real.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">05</span>
+      <span class="section-title">Perguntas frequentes</span>
+    </div>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Os pontos têm alguma recompensa?</div>
+        <div class="faq-a">Por enquanto os pontos representam sua evolução e consistência — eles são o registro do seu esforço. No futuro, podem ser vinculados a benefícios dentro do acompanhamento. O mais importante agora é subir de nível e chegar ao Grande Branco.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">E se eu esquecer de mandar o check-in?</div>
+        <div class="faq-a">Sem problema — você não perde pontos. Mas também não ganha os pontos daquela quinzena. O check-in é a base do sistema, então vale sempre lembrar de preencher.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Como sei qual é minha meta de treinos?</div>
+        <div class="faq-a">Sua meta é definida na consulta com seu nutricionista, com base na sua rotina, objetivos e capacidade atual. Ela pode mudar a cada consulta dependendo da sua evolução.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Quanto tempo leva para chegar ao Grande Branco?</div>
+        <div class="faq-a">Depende da sua consistência. Com uma quinzena boa (check-in + adesão alta + treinos + conquistas), é possível ganhar entre 60 e 100+ pontos. Chegando a 1200 pontos em cerca de 6 a 12 meses de acompanhamento dedicado.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Onde vejo meus pontos e nível?</div>
+        <div class="faq-a">No portal do Shark Squad. Basta acessar o link que seu nutricionista te enviou e digitar seu código de acesso. Lá você vê seus pontos, nível atual, conquistas e o histórico completo dos check-ins.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">🦈</div>
+  <div class="footer-brand">Shark Squad</div>
+  <div class="footer-text">Nutrição de performance · Sistema de acompanhamento</div>
+</div>
+
+<script>
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
