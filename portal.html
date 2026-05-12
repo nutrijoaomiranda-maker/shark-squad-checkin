@@ -843,6 +843,60 @@
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
   .empty p { font-size: 14px; line-height: 1.5; }
 
+  /* ── METAS ─────────────────────────────────────────── */
+  .meta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 10px;
+  }
+
+  .meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .meta-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .meta-bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .meta-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .meta-bar-fill.green { background: linear-gradient(90deg, #2d7a4f, #4caf82); }
+  .meta-bar-fill.yellow { background: linear-gradient(90deg, var(--navy), var(--yellow)); }
+  .meta-bar-fill.red { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+  .meta-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
   /* ── CHART ─────────────────────────────────────────── */
   .chart-card {
     background: var(--surface);
@@ -984,6 +1038,9 @@
           </div>
           <div style="color:var(--muted);font-size:18px;">›</div>
         </a>
+
+        <div class="section-title">Metas da quinzena</div>
+        <div id="metasCard" style="margin-bottom:24px;"></div>
 
         <div class="section-title">Próxima consulta</div>
         <div class="consulta-card" id="proximaConsulta">
@@ -1370,6 +1427,7 @@ async function carregarPaciente(codigo) {
     conquistas = dataConq.conquistas || [];
 
     renderHome();
+    renderMetas();
     renderEvolucao();
     renderConquistas();
     preencherNomeCheckin();
@@ -1444,6 +1502,64 @@ function renderHome() {
       </div>
     </div>
   `;
+}
+
+// ── RENDER METAS ─────────────────────────────────────────────
+function renderMetas() {
+  const el = document.getElementById('metasCard');
+  if (!el) return;
+
+  // Pega a última consulta realizada que tenha metas definidas
+  const comMeta = consultas.filter(c => c.metaTreinos > 0 || c.metaAdesao > 0);
+  if (!comMeta.length) {
+    el.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;font-size:13px;color:var(--muted);">Metas ainda não definidas. Aguarde a próxima consulta.</div>';
+    return;
+  }
+
+  const ultima = comMeta[comMeta.length - 1];
+  const metaTreinos = Number(ultima.metaTreinos) || 0;
+  const metaAdesao = Number(ultima.metaAdesao) || 0;
+
+  // Pega dados do último check-in
+  const ultimoCI = checkins.length ? checkins[0] : null;
+  const treinosFeitos = ultimoCI ? Number(ultimoCI['7_treinos_realizados']) || 0 : 0;
+  const adesaoAtual = ultimoCI ? Number(ultimoCI['3_adesao_ao_plano_0_10']) || 0 : 0;
+
+  let html = '';
+
+  if (metaTreinos > 0) {
+    const pct = Math.min(100, Math.round((treinosFeitos / metaTreinos) * 100));
+    const cor = pct >= 100 ? 'green' : pct >= 60 ? 'yellow' : 'red';
+    html += `
+      <div class="meta-card">
+        <div class="meta-header">
+          <div class="meta-label">🏋️ Meta de treinos</div>
+          <div class="meta-value">${treinosFeitos} / ${metaTreinos}</div>
+        </div>
+        <div class="meta-bar-bg">
+          <div class="meta-bar-fill ${cor}" style="width:${pct}%"></div>
+        </div>
+        <div class="meta-sub">${pct >= 100 ? '✅ Meta batida! +20 pts bônus' : `${pct}% da meta — continue assim!`}</div>
+      </div>`;
+  }
+
+  if (metaAdesao > 0) {
+    const pct = Math.min(100, Math.round((adesaoAtual / metaAdesao) * 100));
+    const cor = adesaoAtual >= metaAdesao ? 'green' : adesaoAtual >= metaAdesao * 0.7 ? 'yellow' : 'red';
+    html += `
+      <div class="meta-card">
+        <div class="meta-header">
+          <div class="meta-label">🥗 Meta de adesão</div>
+          <div class="meta-value">${adesaoAtual} / ${metaAdesao} na escala</div>
+        </div>
+        <div class="meta-bar-bg">
+          <div class="meta-bar-fill ${cor}" style="width:${pct}%"></div>
+        </div>
+        <div class="meta-sub">${adesaoAtual >= metaAdesao ? '✅ Meta batida! +20 pts' : `Adesão atual: ${adesaoAtual}/10`}</div>
+      </div>`;
+  }
+
+  el.innerHTML = html || '<div style="font-size:13px;color:var(--muted);">Sem metas definidas ainda.</div>';
 }
 
 // ── RENDER EVOLUÇÃO ──────────────────────────────────────────
