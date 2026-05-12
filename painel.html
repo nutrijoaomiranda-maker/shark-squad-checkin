@@ -490,6 +490,22 @@
             <label>Motivo dos pontos</label>
             <input class="inp" type="text" id="regPontosMotivo" placeholder="Ex: Atingiu meta de hidratação">
           </div>
+          <div style="height:1px;background:var(--border);margin:20px 0;"></div>
+          <div class="card-title">Metas para a próxima quinzena</div>
+          <div class="form-row">
+            <label>Meta de treinos</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input class="inp" type="number" id="regMetaTreinos" placeholder="Ex: 8" min="0" max="30" style="max-width:110px;margin-bottom:0;">
+              <span style="font-size:13px;color:var(--muted)">treinos na quinzena</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Meta de adesão</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input class="inp" type="number" id="regMetaAdesao" placeholder="Ex: 7" min="0" max="10" style="max-width:110px;margin-bottom:0;">
+              <span style="font-size:13px;color:var(--muted)">/ 10 no check-in</span>
+            </div>
+          </div>
           <button class="btn btn-navy" onclick="salvarRegistro()" style="margin-top:4px;">Salvar consulta</button>
         </div>
       </div>
@@ -812,12 +828,14 @@ async function salvarRegistro() {
   const motivo = document.getElementById('regPontosMotivo').value.trim();
   const conquistas = [...document.querySelectorAll('#cqInputs input')].map(i=>i.value.trim()).filter(Boolean);
   const dataFmt = dataReal ? new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+  const metaTreinos = parseInt(document.getElementById('regMetaTreinos').value || 0);
+  const metaAdesao = parseInt(document.getElementById('regMetaAdesao').value || 0);
 
   try {
     const promises = [];
     if (idConsulta) {
       promises.push(fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ acao:'salvarConsulta', idConsulta, dataReal:dataFmt, status:'Realizada', anotacoes:notas }) }));
+        body: JSON.stringify({ acao:'salvarConsulta', idConsulta, dataReal:dataFmt, status:'Realizada', anotacoes:notas, metaTreinos, metaAdesao }) }));
     }
     for (const texto of conquistas) {
       promises.push(fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
@@ -832,6 +850,8 @@ async function salvarRegistro() {
     document.getElementById('regNotas').value = '';
     document.getElementById('regPontos').value = '';
     document.getElementById('regPontosMotivo').value = '';
+    document.getElementById('regMetaTreinos').value = '';
+    document.getElementById('regMetaAdesao').value = '';
     document.getElementById('cqInputs').innerHTML = `<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg desde o início 🎯"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>`;
     setTimeout(() => abrirPaciente(p.id), 1500);
   } catch(e) { toast('Erro ao salvar. Tente novamente.'); }
