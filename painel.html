@@ -124,6 +124,8 @@
   .score-tag.g{background:var(--success-bg);color:var(--success)}
   .cq-list{display:flex;flex-direction:column;gap:8px}
   .cq-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm)}
+  .cq-item-body{flex:1;min-width:0}
+  .cq-item-actions{display:flex;gap:6px;flex-shrink:0}
   .cq-icon{font-size:20px;flex-shrink:0}
   .cq-text{flex:1;font-size:14px;font-weight:500}
   .cq-date{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -340,6 +342,21 @@
   </div>
 </div>
 
+<!-- MODAL EDITAR CONQUISTA -->
+<div class="modal-overlay" id="modalEditarConquista">
+  <div class="modal" style="max-width:480px">
+    <h3>Editar conquista</h3><p id="modalEditCQSubtitle">Atualize o texto desta conquista.</p>
+    <input type="hidden" id="editCQId">
+    <div class="form-row"><label>Texto da conquista</label><textarea class="inp" id="editCQTexto" placeholder="Descreva a conquista…"></textarea></div>
+    <div class="form-row"><label>Data</label><input class="inp" type="date" id="editCQData"></div>
+    <div class="form-row"><label>Pontos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editCQPontos" min="0" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">pontos</span></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalEditarConquista')">Cancelar</button>
+      <button class="btn btn-navy" onclick="salvarEdicaoConquista()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CI -->
 <div class="modal-overlay" id="modalCI">
   <div class="modal" style="max-width:560px">
@@ -461,7 +478,7 @@ function renderProfile(){
 
   const cqEl=document.getElementById('profileCQs');
   if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
-  else{cqEl.innerHTML=currentCQs.map(c=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+'</div></div>').join('');}
+  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' · +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">✏️</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(''+c.id+'')">🗑️</button></div></div>').join('');}
 
   document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
 
@@ -525,6 +542,43 @@ async function salvarRegistro(){
     document.getElementById('cqInputs').innerHTML='<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>';
     setTimeout(()=>abrirPaciente(p.id),1500);
   }catch(e){toast('Erro ao salvar.');}
+}
+
+function abrirEdicaoConquista(idx){
+  const c=currentCQs[idx];if(!c)return;
+  const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
+  document.getElementById('editCQId').value=c.id;
+  document.getElementById('modalEditCQSubtitle').textContent='Conquista de '+currentPaciente.nome;
+  document.getElementById('editCQTexto').value=c.texto||'';
+  document.getElementById('editCQData').value=toInputDate(c.data);
+  document.getElementById('editCQPontos').value=c.pontos||0;
+  abrirModal('modalEditarConquista');
+}
+
+async function salvarEdicaoConquista(){
+  const id=document.getElementById('editCQId').value;
+  const texto=document.getElementById('editCQTexto').value.trim();
+  const dataInput=document.getElementById('editCQData').value;
+  const pontos=parseInt(document.getElementById('editCQPontos').value||0);
+  const dataFmt=dataInput?new Date(dataInput+'T12:00:00').toLocaleDateString('pt-BR'):'';
+  if(!texto){toast('Digite o texto da conquista.');return;}
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'editarConquista',id,texto,data:dataFmt,pontos})});
+    fecharModal('modalEditarConquista');
+    toast('Conquista atualizada!');
+    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
+  }catch(e){toast('Erro ao salvar.');}
+}
+
+async function excluirConquista(id){
+  if(!confirm('Excluir esta conquista?'))return;
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'excluirConquista',id})});
+    toast('Conquista excluída!');
+    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
+  }catch(e){toast('Erro ao excluir.');}
 }
 
 function addCqField(){const div=document.createElement('div');div.className='cq-form-row';div.innerHTML='<input class="inp" type="text" placeholder="Conquista..." style="margin-bottom:0">';document.getElementById('cqInputs').appendChild(div);}
