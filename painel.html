@@ -7,386 +7,224 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #1c3054;
-    --navy-hover: #243d6a;
-    --navy-pale: #e8eef7;
-    --yellow: #e8b400;
-    --yellow-pale: #fdf6dc;
-    --bg: #f0ede8;
-    --surface: #f7f5f2;
-    --surface2: #ede9e3;
-    --border: #ddd8d0;
-    --text: #1a1a1a;
-    --subtext: #6b6560;
-    --muted: #a09890;
-    --success: #2d7a4f;
-    --success-bg: #eaf5ef;
-    --danger: #c0392b;
-    --danger-bg: #fdf0ee;
-    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --r: 14px;
-    --r-sm: 8px;
-    --sidebar-w: 220px;
+    --navy:#1c3054;--navy-hover:#243d6a;--navy-pale:#e8eef7;
+    --yellow:#e8b400;--yellow-pale:#fdf6dc;
+    --bg:#f0ede8;--surface:#f7f5f2;--surface2:#ede9e3;--border:#ddd8d0;
+    --text:#1a1a1a;--subtext:#6b6560;--muted:#a09890;
+    --success:#2d7a4f;--success-bg:#eaf5ef;--danger:#c0392b;--danger-bg:#fdf0ee;
+    --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+    --r:14px;--r-sm:8px;--sidebar-w:220px;
   }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 15px;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;min-height:100vh;-webkit-font-smoothing:antialiased}
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+  .brand-icon{width:38px;height:38px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .brand-name{font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
+  .login-card h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;margin-bottom:6px}
+  .login-card>p{color:var(--subtext);font-size:14px;margin-bottom:28px}
+  .lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
+  .inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;padding:12px 16px;outline:none;transition:border-color .2s,background .2s;margin-bottom:18px}
+  .inp:focus{border-color:var(--navy);background:#fff}
+  .inp::placeholder{color:var(--muted)}
+  .btn-primary{width:100%;background:var(--navy);color:#fff;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:15px;padding:13px 24px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:background .2s}
+  .btn-primary:hover{background:var(--navy-hover)}
+  .err-msg{color:var(--danger);font-size:13px;margin-top:10px;text-align:center;display:none}
+  #appShell{display:none;min-height:100vh}
+  .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--navy);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+  .sidebar-logo{display:flex;align-items:center;gap:10px;padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .sidebar-logo-icon{width:32px;height:32px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .sidebar-logo-text{font-weight:700;font-size:13px;letter-spacing:.08em;color:#fff;text-transform:uppercase}
+  .sidebar-nav{padding:16px 10px;flex:1}
+  .nav-section{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:0 10px;margin:16px 0 6px}
+  .nav-section:first-child{margin-top:0}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r-sm);color:rgba(255,255,255,.6);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'Instrument Sans',sans-serif;margin-bottom:1px}
+  .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+  .nav-item.active{background:rgba(255,255,255,.11);color:#fff}
+  .nav-icon{font-size:15px;opacity:.75;flex-shrink:0}
+  .sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.07)}
+  .btn-logout{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);color:rgba(255,255,255,.4);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;font-family:'Instrument Sans',sans-serif}
+  .btn-logout:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--navy);align-items:center;justify-content:space-between;padding:0 16px;z-index:150}
+  .mobile-header-brand{display:flex;align-items:center;gap:8px}
+  .mobile-header-brand span{font-weight:700;font-size:14px;color:#fff;letter-spacing:.06em;text-transform:uppercase}
+  .hamburger{width:36px;height:36px;border:none;background:rgba(255,255,255,.1);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+  .hamburger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:190;backdrop-filter:blur(2px)}
+  .sidebar-overlay.open{display:block}
+  .main{margin-left:var(--sidebar-w);min-height:100vh;padding:32px 36px}
+  .page{display:none}
+  .page.active{display:block;animation:fadeUp .25s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .page-title{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;margin-bottom:4px}
+  .page-sub{color:var(--subtext);font-size:14px;margin-bottom:28px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow-sm)}
+  .card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm)}
+  .stat-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .stat-val{font-family:'Instrument Serif',serif;font-size:38px;color:var(--navy);line-height:1}
+  .stat-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .search-row{display:flex;gap:10px;margin-bottom:14px}
+  .search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;transition:border-color .2s}
+  .search-box:focus-within{border-color:var(--navy)}
+  .search-box span{color:var(--muted);font-size:15px}
+  .search-box input{flex:1;border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--text)}
+  .search-box input::placeholder{color:var(--muted)}
+  .btn{font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:13px;padding:10px 18px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-navy:hover{background:var(--navy-hover)}
+  .btn-ghost{background:var(--surface2);color:var(--navy);border:1px solid var(--border)}
+  .btn-ghost:hover{background:var(--border)}
+  .btn-yellow{background:var(--yellow);color:var(--navy);font-weight:700}
+  .btn-yellow:hover{opacity:.9}
+  .btn-sm{padding:7px 13px;font-size:12px}
+  .patient-list{display:flex;flex-direction:column;gap:8px}
+  .patient-row{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm)}
+  .patient-row:hover{border-color:var(--navy);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+  .patient-info{flex:1;min-width:0}
+  .patient-name{font-weight:600;font-size:14px}
+  .patient-meta{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .badge-active{background:var(--success-bg);color:var(--success)}
+  .badge-inactive{background:var(--surface2);color:var(--muted)}
+  .badge-agendada{background:var(--navy-pale);color:var(--navy)}
+  .badge-realizada{background:var(--success-bg);color:var(--success)}
+  .pts-display{text-align:right;flex-shrink:0}
+  .pts-num{font-family:'Instrument Serif',serif;font-size:22px;color:var(--navy);line-height:1}
+  .pts-lbl{font-size:10px;color:var(--muted)}
+  .back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--subtext);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;padding:0;margin-bottom:20px;font-family:'Instrument Sans',sans-serif;transition:color .15s}
+  .back-btn:hover{color:var(--navy)}
+  .profile-header{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+  .profile-avatar{width:58px;height:58px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+  .profile-info{flex:1;min-width:0}
+  .profile-name{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:6px}
+  .profile-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .code-tag{background:var(--navy);color:#fff;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.06em;font-family:monospace}
+  .profile-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .tab-bar{display:flex;gap:3px;background:var(--surface2);border-radius:var(--r-sm);padding:3px;margin-bottom:18px;flex-wrap:wrap;width:fit-content}
+  .tab-btn{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;border:none;background:none;color:var(--subtext);cursor:pointer;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+  .tab-btn.active{background:var(--surface);color:var(--navy);box-shadow:var(--shadow-sm)}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  .ci-list{display:flex;flex-direction:column;gap:8px}
+  .ci-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;cursor:pointer;transition:all .15s}
+  .ci-item:hover{border-color:var(--navy);background:var(--surface)}
+  .ci-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+  .ci-date{font-size:12px;color:var(--muted)}
+  .ci-period{font-size:14px;font-weight:600}
+  .ci-scores{display:flex;gap:6px;flex-wrap:wrap}
+  .score-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--navy-pale);color:var(--navy)}
+  .score-tag.y{background:var(--yellow-pale);color:#7a5c00}
+  .score-tag.r{background:var(--danger-bg);color:var(--danger)}
+  .score-tag.g{background:var(--success-bg);color:var(--success)}
+  .cq-list{display:flex;flex-direction:column;gap:8px}
+  .cq-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm)}
+  .cq-icon{font-size:20px;flex-shrink:0}
+  .cq-text{flex:1;font-size:14px;font-weight:500}
+  .cq-date{font-size:12px;color:var(--muted);white-space:nowrap}
+  .pts-hero{text-align:center;padding:24px 0 28px;border-bottom:1px solid var(--border);margin-bottom:20px}
+  .pts-big{font-family:'Instrument Serif',serif;font-size:64px;color:var(--navy);line-height:1;margin-bottom:6px}
+  .pts-label{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .pts-level{display:inline-flex;align-items:center;gap:6px;background:var(--yellow-pale);border:1px solid var(--yellow);color:#7a5c00;font-size:13px;font-weight:700;padding:5px 14px;border-radius:99px}
+  .pts-history{display:flex;flex-direction:column}
+  .pts-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
+  .pts-row:last-child{border-bottom:none}
+  .pts-row-info{flex:1}
+  .pts-row-label{font-size:14px}
+  .pts-row-date{font-size:11px;color:var(--muted);margin-top:2px}
+  .pts-row-val{font-weight:700;color:var(--success);font-size:15px}
+  .cons-list{display:flex;flex-direction:column;gap:10px}
+  .cons-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px}
+  .cons-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+  .cons-num{font-weight:700;font-size:14px;color:var(--navy)}
+  .cons-dates{font-size:12px;color:var(--muted)}
+  .cons-notes{font-size:14px;line-height:1.6;margin-top:8px}
+  .cons-actions{display:flex;gap:6px;margin-top:10px}
+  .form-row{margin-bottom:16px}
+  .form-row label{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
+  textarea.inp{resize:vertical;min-height:80px;margin-bottom:0}
+  select.inp{appearance:none;cursor:pointer}
+  .cq-form-row{display:flex;gap:8px;margin-bottom:8px}
+  .cq-form-row .inp{flex:1;margin-bottom:0}
+  .pts-form-row{display:flex;align-items:center;gap:10px}
+  .pts-form-row .inp{max-width:110px;margin-bottom:0}
+  .divider{height:1px;background:var(--border);margin:20px 0}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--surface);border-radius:20px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto;animation:slideUp .25s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .modal h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;margin-bottom:4px}
+  .modal>p{color:var(--subtext);font-size:14px;margin-bottom:24px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .detail-item{background:var(--bg);border-radius:var(--r-sm);padding:12px 14px}
+  .detail-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .detail-val{font-size:14px;font-weight:600}
+  .detail-full{background:var(--bg);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:8px}
+  .recent-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
+  .recent-item:last-child{border-bottom:none}
+  .recent-item:hover{opacity:.7}
+  .recent-avatar{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+  .recent-info{flex:1;min-width:0}
+  .recent-name{font-size:13px;font-weight:600}
+  .recent-period{font-size:12px;color:var(--muted)}
+  .recent-date{font-size:11px;color:var(--muted);white-space:nowrap}
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:500;z-index:999;box-shadow:var(--shadow);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
+  .toast.show{transform:translateY(0);opacity:1}
+  .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:14px}
+  .loading-overlay.hide{display:none}
+  .loading-shark{font-size:44px;animation:pulse 1.2s ease infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .loading-text{font-size:14px;color:var(--muted);font-weight:500}
+  .empty{text-align:center;padding:40px 20px}
+  .empty-icon{font-size:36px;margin-bottom:10px}
+  .empty p{font-size:14px;color:var(--muted);line-height:1.5}
+  @media(max-width:768px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.open{transform:translateX(0)}
+    .mobile-header{display:flex}
+    .main{margin-left:0;padding:76px 16px 32px}
+    .stats-row{grid-template-columns:1fr 1fr}
+    .dash-grid{grid-template-columns:1fr}
+    .profile-actions{width:100%}
+    .detail-grid{grid-template-columns:1fr}
   }
-
-  #loginScreen {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-
-  .login-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; padding: 44px 40px;
-    width: 100%; max-width: 400px; box-shadow: var(--shadow);
-  }
-
-  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
-  .brand-icon { width: 38px; height: 38px; background: var(--navy); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .brand-name { font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
-
-  .login-card h2 { font-family: 'Instrument Serif', serif; font-size: 26px; font-weight: 400; margin-bottom: 6px; }
-  .login-card > p { color: var(--subtext); font-size: 14px; margin-bottom: 28px; }
-
-  .lbl { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--subtext); margin-bottom: 8px; }
-
-  .inp {
-    width: 100%; background: var(--bg); border: 1.5px solid var(--border);
-    border-radius: var(--r-sm); color: var(--text);
-    font-family: 'Instrument Sans', sans-serif; font-size: 15px;
-    padding: 12px 16px; outline: none;
-    transition: border-color 0.2s, background 0.2s; margin-bottom: 18px;
-  }
-
-  .inp:focus { border-color: var(--navy); background: #fff; }
-  .inp::placeholder { color: var(--muted); }
-
-  .btn-primary {
-    width: 100%; background: var(--navy); color: #fff;
-    font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 15px;
-    padding: 13px 24px; border-radius: var(--r-sm); border: none; cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .btn-primary:hover { background: var(--navy-hover); }
-  .err-msg { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; display: none; }
-
-  #appShell { display: none; min-height: 100vh; }
-
-  .sidebar {
-    position: fixed; top: 0; left: 0;
-    width: var(--sidebar-w); height: 100vh;
-    background: var(--navy); display: flex; flex-direction: column;
-    z-index: 200; overflow-y: auto;
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-  .sidebar-logo-icon { width: 32px; height: 32px; background: var(--yellow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .sidebar-logo-text { font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: #fff; text-transform: uppercase; }
-
-  .sidebar-nav { padding: 16px 10px; flex: 1; }
-
-  .nav-section { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0 10px; margin: 16px 0 6px; }
-  .nav-section:first-child { margin-top: 0; }
-
-  .nav-item {
-    display: flex; align-items: center; gap: 9px;
-    padding: 9px 10px; border-radius: var(--r-sm);
-    color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-    border: none; background: none; width: 100%; text-align: left;
-    font-family: 'Instrument Sans', sans-serif; margin-bottom: 1px;
-  }
-
-  .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
-  .nav-item.active { background: rgba(255,255,255,0.11); color: #fff; }
-  .nav-icon { font-size: 15px; opacity: 0.75; flex-shrink: 0; }
-
-  .sidebar-footer { padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.07); }
-
-  .btn-logout {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 10px; border-radius: var(--r-sm);
-    color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-    border: none; background: none; width: 100%;
-    font-family: 'Instrument Sans', sans-serif;
-  }
-
-  .btn-logout:hover { color: #fff; background: rgba(255,255,255,0.06); }
-
-  .mobile-header {
-    display: none; position: fixed; top: 0; left: 0; right: 0;
-    height: 56px; background: var(--navy);
-    align-items: center; justify-content: space-between;
-    padding: 0 16px; z-index: 150;
-  }
-
-  .mobile-header-brand { display: flex; align-items: center; gap: 8px; }
-  .mobile-header-brand span { font-weight: 700; font-size: 14px; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; }
-
-  .hamburger {
-    width: 36px; height: 36px; border: none;
-    background: rgba(255,255,255,0.1); border-radius: 8px;
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 4px; cursor: pointer; flex-shrink: 0;
-  }
-
-  .hamburger span { display: block; width: 18px; height: 2px; background: #fff; border-radius: 2px; }
-
-  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 190; backdrop-filter: blur(2px); }
-  .sidebar-overlay.open { display: block; }
-
-  .main { margin-left: var(--sidebar-w); min-height: 100vh; padding: 32px 36px; }
-
-  .page { display: none; }
-  .page.active { display: block; animation: fadeUp 0.25s ease; }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-  .page-title { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; margin-bottom: 4px; }
-  .page-sub { color: var(--subtext); font-size: 14px; margin-bottom: 28px; }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 22px; box-shadow: var(--shadow-sm); }
-  .card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-
-  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
-
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
-  .stat-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-  .stat-val { font-family: 'Instrument Serif', serif; font-size: 38px; color: var(--navy); line-height: 1; }
-  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-  .search-row { display: flex; gap: 10px; margin-bottom: 14px; }
-
-  .search-box {
-    flex: 1; display: flex; align-items: center; gap: 8px;
-    background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: var(--r-sm); padding: 10px 14px; transition: border-color 0.2s;
-  }
-
-  .search-box:focus-within { border-color: var(--navy); }
-  .search-box span { color: var(--muted); font-size: 15px; }
-  .search-box input { flex: 1; border: none; background: none; outline: none; font-family: 'Instrument Sans', sans-serif; font-size: 14px; color: var(--text); }
-  .search-box input::placeholder { color: var(--muted); }
-
-  .btn { font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 13px; padding: 10px 18px; border-radius: var(--r-sm); border: none; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-  .btn-navy { background: var(--navy); color: #fff; }
-  .btn-navy:hover { background: var(--navy-hover); }
-  .btn-ghost { background: var(--surface2); color: var(--navy); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--border); }
-  .btn-yellow { background: var(--yellow); color: var(--navy); font-weight: 700; }
-  .btn-yellow:hover { opacity: 0.9; }
-  .btn-sm { padding: 7px 13px; font-size: 12px; }
-
-  .patient-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .patient-row {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 14px 18px;
-    cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow-sm);
-  }
-
-  .patient-row:hover { border-color: var(--navy); transform: translateY(-1px); box-shadow: var(--shadow); }
-
-  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
-
-  .patient-info { flex: 1; min-width: 0; }
-  .patient-name { font-weight: 600; font-size: 14px; }
-  .patient-meta { font-size: 12px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  .badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
-  .badge-active { background: var(--success-bg); color: var(--success); }
-  .badge-inactive { background: var(--surface2); color: var(--muted); }
-  .badge-agendada { background: var(--navy-pale); color: var(--navy); }
-  .badge-realizada { background: var(--success-bg); color: var(--success); }
-
-  .pts-display { text-align: right; flex-shrink: 0; }
-  .pts-num { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--navy); line-height: 1; }
-  .pts-lbl { font-size: 10px; color: var(--muted); }
-
-  .back-btn { display: inline-flex; align-items: center; gap: 5px; color: var(--subtext); font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; padding: 0; margin-bottom: 20px; font-family: 'Instrument Sans', sans-serif; transition: color 0.15s; }
-  .back-btn:hover { color: var(--navy); }
-
-  .profile-header { display: flex; align-items: center; gap: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow-sm); flex-wrap: wrap; }
-
-  .profile-avatar { width: 58px; height: 58px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 22px; flex-shrink: 0; }
-
-  .profile-info { flex: 1; min-width: 0; }
-  .profile-name { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 6px; }
-  .profile-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .code-tag { background: var(--navy); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.06em; font-family: monospace; }
-  .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  .tab-bar { display: flex; gap: 3px; background: var(--surface2); border-radius: var(--r-sm); padding: 3px; margin-bottom: 18px; flex-wrap: wrap; width: fit-content; }
-  .tab-btn { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; background: none; color: var(--subtext); cursor: pointer; transition: all 0.15s; font-family: 'Instrument Sans', sans-serif; }
-  .tab-btn.active { background: var(--surface); color: var(--navy); box-shadow: var(--shadow-sm); }
-
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .ci-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .ci-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; cursor: pointer; transition: all 0.15s; }
-  .ci-item:hover { border-color: var(--navy); background: var(--surface); }
-  .ci-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .ci-date { font-size: 12px; color: var(--muted); }
-  .ci-period { font-size: 14px; font-weight: 600; }
-  .ci-scores { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  .score-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--navy-pale); color: var(--navy); }
-  .score-tag.y { background: var(--yellow-pale); color: #7a5c00; }
-  .score-tag.r { background: var(--danger-bg); color: var(--danger); }
-  .score-tag.g { background: var(--success-bg); color: var(--success); }
-
-  .cq-list { display: flex; flex-direction: column; gap: 8px; }
-  .cq-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); }
-  .cq-icon { font-size: 20px; flex-shrink: 0; }
-  .cq-text { flex: 1; font-size: 14px; font-weight: 500; }
-  .cq-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
-
-  .pts-hero { text-align: center; padding: 24px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-  .pts-big { font-family: 'Instrument Serif', serif; font-size: 64px; color: var(--navy); line-height: 1; margin-bottom: 6px; }
-  .pts-label { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
-  .pts-level { display: inline-flex; align-items: center; gap: 6px; background: var(--yellow-pale); border: 1px solid var(--yellow); color: #7a5c00; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 99px; }
-
-  .pts-history { display: flex; flex-direction: column; }
-  .pts-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); }
-  .pts-row:last-child { border-bottom: none; }
-  .pts-row-info { flex: 1; }
-  .pts-row-label { font-size: 14px; }
-  .pts-row-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .pts-row-val { font-weight: 700; color: var(--success); font-size: 15px; }
-
-  .cons-list { display: flex; flex-direction: column; gap: 10px; }
-  .cons-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; }
-  .cons-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-  .cons-num { font-weight: 700; font-size: 14px; color: var(--navy); }
-  .cons-dates { font-size: 12px; color: var(--muted); }
-  .cons-notes { font-size: 14px; line-height: 1.6; margin-top: 8px; }
-
-  .form-row { margin-bottom: 16px; }
-  .form-row label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--subtext); margin-bottom: 8px; }
-  textarea.inp { resize: vertical; min-height: 80px; margin-bottom: 0; }
-  select.inp { appearance: none; cursor: pointer; }
-
-  .cq-form-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .cq-form-row .inp { flex: 1; margin-bottom: 0; }
-  .pts-form-row { display: flex; align-items: center; gap: 10px; }
-  .pts-form-row .inp { max-width: 110px; margin-bottom: 0; }
-
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
-
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  .modal { background: var(--surface); border-radius: 20px; padding: 32px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.18); max-height: 90vh; overflow-y: auto; animation: slideUp 0.25s ease; }
-
-  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-  .modal h3 { font-family: 'Instrument Serif', serif; font-size: 22px; font-weight: 400; margin-bottom: 4px; }
-  .modal > p { color: var(--subtext); font-size: 14px; margin-bottom: 24px; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-  .detail-item { background: var(--bg); border-radius: var(--r-sm); padding: 12px 14px; }
-  .detail-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
-  .detail-val { font-size: 14px; font-weight: 600; }
-  .detail-full { background: var(--bg); border-radius: var(--r-sm); padding: 13px 14px; margin-bottom: 8px; }
-
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: #fff; padding: 13px 18px; border-radius: var(--r-sm); font-size: 14px; font-weight: 500; z-index: 999; box-shadow: var(--shadow); transform: translateY(60px); opacity: 0; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; gap: 14px; }
-  .loading-overlay.hide { display: none; }
-  .loading-shark { font-size: 44px; animation: pulse 1.2s ease infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-  .loading-text { font-size: 14px; color: var(--muted); font-weight: 500; }
-
-  .empty { text-align: center; padding: 40px 20px; }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; }
-  .empty p { font-size: 14px; color: var(--muted); line-height: 1.5; }
-
-  .recent-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
-  .recent-item:last-child { border-bottom: none; }
-  .recent-item:hover { opacity: 0.7; }
-  .recent-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-  .recent-info { flex: 1; min-width: 0; }
-  .recent-name { font-size: 13px; font-weight: 600; }
-  .recent-period { font-size: 12px; color: var(--muted); }
-  .recent-date { font-size: 11px; color: var(--muted); white-space: nowrap; }
-
-  @media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .mobile-header { display: flex; }
-    .main { margin-left: 0; padding: 76px 16px 32px; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-    .profile-actions { width: 100%; }
-    .detail-grid { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 480px) {
-    .stats-row { grid-template-columns: 1fr; }
-    .tab-bar { width: 100%; }
-    .tab-btn { flex: 1; text-align: center; padding: 7px 6px; font-size: 11px; }
+  @media(max-width:480px){
+    .stats-row{grid-template-columns:1fr}
+    .tab-bar{width:100%}
+    .tab-btn{flex:1;text-align:center;padding:7px 6px;font-size:11px}
   }
 </style>
 </head>
 <body>
-
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-shark">🦈</div>
   <div class="loading-text">Carregando painel...</div>
 </div>
-
-<div id="loginScreen" style="display:none;">
+<div id="loginScreen" style="display:none">
   <div class="login-card">
-    <div class="brand">
-      <div class="brand-icon">🦈</div>
-      <div class="brand-name">Shark Squad</div>
-    </div>
-    <h2>Painel do nutricionista</h2>
-    <p>Acesso exclusivo</p>
+    <div class="brand"><div class="brand-icon">🦈</div><div class="brand-name">Shark Squad</div></div>
+    <h2>Painel do nutricionista</h2><p>Acesso exclusivo</p>
     <label class="lbl">Senha de acesso</label>
-    <input class="inp" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') fazerLogin()">
+    <input class="inp" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
     <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
     <div class="err-msg" id="loginErr">Senha incorreta.</div>
   </div>
 </div>
-
 <div id="appShell">
   <div class="mobile-header">
-    <div class="mobile-header-brand">
-      <span>🦈</span><span>Shark Squad</span>
-    </div>
-    <button class="hamburger" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="mobile-header-brand"><span>🦈</span><span>Shark Squad</span></div>
+    <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
   </div>
-
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
-
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-icon">🦈</div>
-      <div class="sidebar-logo-text">Shark Squad</div>
-    </div>
+    <div class="sidebar-logo"><div class="sidebar-logo-icon">🦈</div><div class="sidebar-logo-text">Shark Squad</div></div>
     <nav class="sidebar-nav">
       <div class="nav-section">Principal</div>
       <button class="nav-item active" onclick="irPara('dashboard')" id="nav-dashboard"><span class="nav-icon">📊</span> Visão geral</button>
@@ -394,40 +232,40 @@
       <div class="nav-section">Ações</div>
       <button class="nav-item" onclick="abrirModal('modalNovoPaciente')"><span class="nav-icon">➕</span> Novo paciente</button>
     </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="sair()">↩ Sair</button>
-    </div>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="sair()">↩ Sair</button></div>
   </aside>
-
   <main class="main">
-
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="page-title">Visão geral</div>
       <div class="page-sub" id="dashData">—</div>
       <div class="stats-row">
         <div class="stat-card"><div class="stat-lbl">Pacientes ativos</div><div class="stat-val" id="statAtivos">—</div><div class="stat-sub">cadastrados</div></div>
-        <div class="stat-card"><div class="stat-lbl">Check-ins</div><div class="stat-val" id="statCIs">—</div><div class="stat-sub">no total</div></div>
-        <div class="stat-card"><div class="stat-lbl">Conquistas</div><div class="stat-val" id="statConqs">—</div><div class="stat-sub">registradas</div></div>
+        <div class="stat-card"><div class="stat-lbl">Pendentes de revisão</div><div class="stat-val" id="statPendentes">—</div><div class="stat-sub">não revisados</div></div>
+        <div class="stat-card"><div class="stat-lbl">Check-ins total</div><div class="stat-val" id="statCIs">—</div><div class="stat-sub">recebidos</div></div>
       </div>
-      <div class="card">
-        <div class="card-title">Últimos check-ins recebidos</div>
-        <div id="recentCIs"><div class="empty"><div class="empty-icon">📭</div><p>Nenhum check-in ainda.</p></div></div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-title">Check-ins não revisados</div>
+          <div id="recentCIs"><div class="empty"><div class="empty-icon">📭</div><p>Nenhum pendente.</p></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Próximas consultas agendadas</div>
+          <div id="proximasConsultas"><div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div></div>
+        </div>
       </div>
     </div>
-
+    <!-- PATIENTS -->
     <div class="page" id="page-patients">
       <div class="page-title">Pacientes</div>
       <div class="page-sub">Clique em um paciente para ver o perfil completo.</div>
       <div class="search-row">
-        <div class="search-box">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="Buscar paciente…" oninput="renderPacientes()">
-        </div>
+        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Buscar paciente…" oninput="renderPacientes()"></div>
         <button class="btn btn-navy" onclick="abrirModal('modalNovoPaciente')">+ Novo</button>
       </div>
       <div class="patient-list" id="patientList"><div class="empty"><div class="empty-icon">👤</div><p>Nenhum paciente ainda.</p></div></div>
     </div>
-
+    <!-- PROFILE -->
     <div class="page" id="page-profile">
       <button class="back-btn" onclick="irPara('patients')">← Voltar</button>
       <div class="profile-header" id="profileHeader"></div>
@@ -438,124 +276,78 @@
         <button class="tab-btn" onclick="mostrarTab('tab-pts')" id="tabBtn-pts">Pontos</button>
         <button class="tab-btn" onclick="mostrarTab('tab-reg')" id="tabBtn-reg">Registrar</button>
       </div>
-
       <div class="tab-content active" id="tab-ci">
         <div class="card"><div class="card-title">Histórico de check-ins</div><div class="ci-list" id="profileCIs"></div></div>
       </div>
-
       <div class="tab-content" id="tab-cons">
         <div class="card"><div class="card-title">Consultas do pacote</div><div class="cons-list" id="profileCons"></div></div>
       </div>
-
       <div class="tab-content" id="tab-cq">
         <div class="card"><div class="card-title">Conquistas registradas</div><div class="cq-list" id="profileCQs"></div></div>
       </div>
-
       <div class="tab-content" id="tab-pts">
         <div class="card" id="profilePts"></div>
       </div>
-
       <div class="tab-content" id="tab-reg">
         <div class="card">
           <div class="card-title">Registrar consulta</div>
-          <div class="form-row">
-            <label>Número da consulta</label>
-            <select class="inp" id="regConsultaNum"></select>
-          </div>
-          <div class="form-row">
-            <label>Data real da consulta</label>
-            <input class="inp" type="date" id="regDataReal">
-          </div>
-          <div class="form-row">
-            <label>Anotações</label>
-            <textarea class="inp" id="regNotas" placeholder="Observações, mudanças, orientações…"></textarea>
-          </div>
+          <div class="form-row"><label>Número da consulta</label><select class="inp" id="regConsultaNum"></select></div>
+          <div class="form-row"><label>Data real da consulta</label><input class="inp" type="date" id="regDataReal"></div>
+          <div class="form-row"><label>Anotações</label><textarea class="inp" id="regNotas" placeholder="Observações, mudanças, orientações…"></textarea></div>
           <div class="form-row">
             <label>Conquistas desta consulta</label>
             <div id="cqInputs">
-              <div class="cq-form-row">
-                <input class="inp" type="text" placeholder="Ex: Perdeu 4kg desde o início 🎯">
-                <button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button>
-              </div>
+              <div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg desde o início"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>
             </div>
           </div>
-          <div class="form-row">
-            <label>Pontos manuais</label>
-            <div class="pts-form-row">
-              <input class="inp" type="number" id="regPontos" placeholder="0" min="0">
-              <span style="font-size:13px;color:var(--muted)">pontos a adicionar</span>
-            </div>
-          </div>
-          <div class="form-row">
-            <label>Motivo dos pontos</label>
-            <input class="inp" type="text" id="regPontosMotivo" placeholder="Ex: Atingiu meta de hidratação">
-          </div>
-          <div style="height:1px;background:var(--border);margin:20px 0;"></div>
+          <div class="form-row"><label>Pontos manuais</label><div class="pts-form-row"><input class="inp" type="number" id="regPontos" placeholder="0" min="0"><span style="font-size:13px;color:var(--muted)">pontos a adicionar</span></div></div>
+          <div class="form-row"><label>Motivo dos pontos</label><input class="inp" type="text" id="regPontosMotivo" placeholder="Ex: Atingiu meta de hidratação"></div>
+          <div class="divider"></div>
           <div class="card-title">Metas para a próxima quinzena</div>
-          <div class="form-row">
-            <label>Meta de treinos</label>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input class="inp" type="number" id="regMetaTreinos" placeholder="Ex: 8" min="0" max="30" style="max-width:110px;margin-bottom:0;">
-              <span style="font-size:13px;color:var(--muted)">treinos na quinzena</span>
-            </div>
-          </div>
-          <div class="form-row">
-            <label>Meta de adesão</label>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input class="inp" type="number" id="regMetaAdesao" placeholder="Ex: 7" min="0" max="10" style="max-width:110px;margin-bottom:0;">
-              <span style="font-size:13px;color:var(--muted)">/ 10 no check-in</span>
-            </div>
-          </div>
-          <button class="btn btn-navy" onclick="salvarRegistro()" style="margin-top:4px;">Salvar consulta</button>
+          <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaTreinos" placeholder="Ex: 8" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos na quinzena</span></div></div>
+          <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaAdesao" placeholder="Ex: 7" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10 no check-in</span></div></div>
+          <button class="btn btn-navy" onclick="salvarRegistro()" style="margin-top:4px">Salvar consulta</button>
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
+<!-- MODAL NOVO PACIENTE -->
 <div class="modal-overlay" id="modalNovoPaciente">
   <div class="modal">
-    <h3>Novo paciente</h3>
-    <p>Preencha os dados. O código pode ser gerado automaticamente.</p>
-    <div class="form-row">
-      <label>Nome completo</label>
-      <input class="inp" type="text" id="npNome" placeholder="Nome do paciente">
-    </div>
-    <div class="form-row">
-      <label>Pacote</label>
-      <select class="inp" id="npPacote">
-        <option value="Mensal">Mensal (1 consulta)</option>
-        <option value="Trimestral">Trimestral (3 consultas)</option>
-        <option value="Semestral" selected>Semestral (4 consultas)</option>
-        <option value="Anual">Anual (6 consultas)</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <label>Data de início</label>
-      <input class="inp" type="date" id="npDataInicio">
-    </div>
-    <div class="form-row">
-      <label>Código de acesso</label>
-      <div style="display:flex;gap:8px;">
-        <input class="inp" type="text" id="npCodigo" placeholder="Ex: SHARK2025" style="margin-bottom:0;text-transform:uppercase;font-family:monospace;letter-spacing:0.06em;">
-        <button class="btn btn-ghost btn-sm" onclick="gerarCodigo()" style="white-space:nowrap;flex-shrink:0;">Gerar</button>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharModal('modalNovoPaciente')">Cancelar</button>
-      <button class="btn btn-navy" onclick="cadastrarPaciente()">Cadastrar</button>
-    </div>
+    <h3>Novo paciente</h3><p>Preencha os dados. O código pode ser gerado automaticamente.</p>
+    <div class="form-row"><label>Nome completo</label><input class="inp" type="text" id="npNome" placeholder="Nome do paciente"></div>
+    <div class="form-row"><label>Pacote</label><select class="inp" id="npPacote"><option value="Mensal">Mensal (1 consulta)</option><option value="Trimestral">Trimestral (3 consultas)</option><option value="Semestral" selected>Semestral (4 consultas)</option><option value="Anual">Anual (6 consultas)</option></select></div>
+    <div class="form-row"><label>Data de início</label><input class="inp" type="date" id="npDataInicio"></div>
+    <div class="form-row"><label>Código de acesso</label><div style="display:flex;gap:8px"><input class="inp" type="text" id="npCodigo" placeholder="Ex: SHARK2025" style="margin-bottom:0;text-transform:uppercase;font-family:monospace;letter-spacing:.06em"><button class="btn btn-ghost btn-sm" onclick="gerarCodigo()" style="white-space:nowrap;flex-shrink:0">Gerar</button></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalNovoPaciente')">Cancelar</button><button class="btn btn-navy" onclick="cadastrarPaciente()">Cadastrar</button></div>
   </div>
 </div>
 
+<!-- MODAL EDITAR CONSULTA -->
+<div class="modal-overlay" id="modalEditarConsulta">
+  <div class="modal" style="max-width:520px">
+    <h3>Editar consulta</h3><p id="modalEditSubtitle">Atualize os dados desta consulta.</p>
+    <input type="hidden" id="editConsultaId">
+    <div class="form-row"><label>Data prevista</label><input class="inp" type="date" id="editDataPrevista"></div>
+    <div class="form-row"><label>Data real</label><input class="inp" type="date" id="editDataReal"></div>
+    <div class="form-row"><label>Status</label><select class="inp" id="editStatus"><option value="Agendada">Agendada</option><option value="Realizada">Realizada</option></select></div>
+    <div class="form-row"><label>Anotações</label><textarea class="inp" id="editNotas" placeholder="Observações desta consulta…"></textarea></div>
+    <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaTreinos" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos</span></div></div>
+    <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaAdesao" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10</span></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalEditarConsulta')">Cancelar</button><button class="btn btn-navy" onclick="salvarEdicaoConsulta()">Salvar alterações</button></div>
+  </div>
+</div>
+
+<!-- MODAL CI -->
 <div class="modal-overlay" id="modalCI">
-  <div class="modal" style="max-width:560px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+  <div class="modal" style="max-width:560px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
       <h3 id="modalCINome">—</h3>
       <button class="btn btn-ghost btn-sm" onclick="fecharModal('modalCI')">✕</button>
     </div>
-    <p id="modalCIData" style="margin-bottom:20px;">—</p>
+    <p id="modalCIData" style="margin-bottom:20px">—</p>
     <div id="modalCIContent"></div>
   </div>
 </div>
@@ -563,381 +355,205 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SENHA = 'apRova891@';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
+const SENHA='apRova891@';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
+const NIVEIS=[{min:0,nome:'🐟 Peixinho'},{min:100,nome:'🦈 Tubarão Filhote'},{min:250,nome:'🦈 Tubarão'},{min:500,nome:'🦈 Tubarão Touro'},{min:800,nome:'🦈 Tubarão Tigre'},{min:1200,nome:'🦈 Grande Branco'}];
+let state={pacientes:[],checkins:[]};
+let currentPaciente=null,currentCIs=[],currentCons=[],currentCQs=[];
 
-const NIVEIS = [
-  { min: 0, nome: '🐟 Peixinho' },
-  { min: 100, nome: '🦈 Tubarão Filhote' },
-  { min: 250, nome: '🦈 Tubarão' },
-  { min: 500, nome: '🦈 Tubarão Touro' },
-  { min: 800, nome: '🦈 Tubarão Tigre' },
-  { min: 1200, nome: '🦈 Grande Branco' },
-];
-
-let state = { pacientes: [], checkins: [] };
-let currentPaciente = null;
-let currentCIs = [], currentCons = [], currentCQs = [];
-
-window.addEventListener('load', () => {
-  if (sessionStorage.getItem('ss_painel_auth')) {
-    mostrarApp();
-  } else {
-    document.getElementById('loadingOverlay').classList.add('hide');
-    document.getElementById('loginScreen').style.display = 'flex';
-  }
+window.addEventListener('load',()=>{
+  if(sessionStorage.getItem('ss_painel_auth')){mostrarApp();}
+  else{document.getElementById('loadingOverlay').classList.add('hide');document.getElementById('loginScreen').style.display='flex';}
 });
 
-function fazerLogin() {
-  if (document.getElementById('senhaInput').value === SENHA) {
-    sessionStorage.setItem('ss_painel_auth', '1');
-    document.getElementById('loginScreen').style.display = 'none';
+function fazerLogin(){
+  if(document.getElementById('senhaInput').value===SENHA){
+    sessionStorage.setItem('ss_painel_auth','1');
+    document.getElementById('loginScreen').style.display='none';
     mostrarApp();
-  } else {
-    document.getElementById('loginErr').style.display = 'block';
-    document.getElementById('senhaInput').value = '';
-  }
+  }else{document.getElementById('loginErr').style.display='block';document.getElementById('senhaInput').value='';}
 }
+function sair(){sessionStorage.removeItem('ss_painel_auth');location.reload();}
 
-function sair() { sessionStorage.removeItem('ss_painel_auth'); location.reload(); }
-
-async function mostrarApp() {
-  document.getElementById('appShell').style.display = 'block';
+async function mostrarApp(){
+  document.getElementById('appShell').style.display='block';
   document.getElementById('loadingOverlay').classList.remove('hide');
   await carregarTudo();
   document.getElementById('loadingOverlay').classList.add('hide');
-  document.getElementById('dashData').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('dashData').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
 
-async function carregarTudo() {
-  try {
-    const [rP, rC] = await Promise.all([
-      fetch(`${SCRIPT_URL}?acao=pacientes`),
-      fetch(`${SCRIPT_URL}?acao=checkins`),
-    ]);
-    const [dP, dC] = await Promise.all([rP.json(), rC.json()]);
-    state.pacientes = dP.pacientes || [];
-    state.checkins  = dC.checkins  || [];
-    renderDashboard();
-    renderPacientes();
-  } catch(e) {
-    toast('Erro ao carregar dados.');
-  }
+async function carregarTudo(){
+  try{
+    const[rP,rC]=await Promise.all([fetch(SCRIPT_URL+'?acao=pacientes'),fetch(SCRIPT_URL+'?acao=checkins')]);
+    const[dP,dC]=await Promise.all([rP.json(),rC.json()]);
+    state.pacientes=dP.pacientes||[];state.checkins=dC.checkins||[];
+    renderDashboard();renderPacientes();
+  }catch(e){toast('Erro ao carregar dados.');}
 }
 
-function renderDashboard() {
-  document.getElementById('statAtivos').textContent = state.pacientes.filter(p => p.status === 'Ativo').length;
-  document.getElementById('statCIs').textContent = state.checkins.length;
-  document.getElementById('statConqs').textContent = '—';
+function renderDashboard(){
+  document.getElementById('statAtivos').textContent=state.pacientes.filter(p=>p.status==='Ativo').length;
+  document.getElementById('statCIs').textContent=state.checkins.length;
+  const pendentes=state.checkins.filter(c=>!(c.status||'').toString().toLowerCase().includes('revisado'));
+  document.getElementById('statPendentes').textContent=pendentes.length;
+  const el=document.getElementById('recentCIs');
+  if(!pendentes.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos revisados.</p></div>';}
+  else{el.innerHTML=pendentes.slice(0,10).map(c=>{
+    const nome=c['1_nome']||'—';const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+    return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'—')+' · Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'—')+'</div></div>';
+  }).join('');}
+  renderProximasConsultas();
+}
 
-  const el = document.getElementById('recentCIs');
-  if (!state.checkins.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>Nenhum check-in ainda.</p></div>'; return; }
+async function renderProximasConsultas(){
+  const el=document.getElementById('proximasConsultas');
+  try{
+    const res=await fetch(SCRIPT_URL+'?acao=consultas');const data=await res.json();const todas=data.consultas||[];
+    const toDate=d=>{if(!d)return new Date(9999,0,1);const p=d.toString().split('/');return p.length===3?new Date(p[2]+'-'+p[1]+'-'+p[0]):new Date(9999,0,1);};
+    const agendadas=todas.filter(c=>c.status==='Agendada'&&c.dataprevista).sort((a,b)=>toDate(a.dataprevista)-toDate(b.dataprevista)).slice(0,8);
+    if(!agendadas.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div>';return;}
+    el.innerHTML=agendadas.map(c=>{
+      const pac=state.pacientes.find(p=>p.codigo===c.codigo);const nome=pac?pac.nome:(c.codigo||'—');const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+      return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo+'\')">'+'<div class="recent-avatar" style="background:var(--yellow);color:var(--navy);">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">Consulta '+c.numero+' de '+(pac?pac.consultasincluidas:'?')+' · '+(pac?pac.pacote:'—')+'</div></div>'+'<div class="recent-date" style="font-weight:600;color:var(--navy);">'+c.dataprevista+'</div></div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Erro ao carregar.</p></div>';}
+}
 
-  el.innerHTML = state.checkins.slice(0,8).map(c => {
-    const nome = c['1_nome'] || '—';
-    const ini = nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    return `<div class="recent-item" onclick="irParaPorCodigo('${c.codigo_paciente}')">
-      <div class="recent-avatar">${ini}</div>
-      <div class="recent-info">
-        <div class="recent-name">${nome}</div>
-        <div class="recent-period">${c['2_como_foram_os_15_dias']||'—'} · Adesão ${c['3_adesao_ao_plano_0_10']}/10</div>
-      </div>
-      <div class="recent-date">${(c.data_hora||'').split(',')[0]||'—'}</div>
-    </div>`;
+function renderPacientes(){
+  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
+  const filtered=state.pacientes.filter(p=>p.nome.toLowerCase().includes(q));
+  const el=document.getElementById('patientList');
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-icon">👤</div><p>Nenhum paciente encontrado.</p></div>';return;}
+  el.innerHTML=filtered.map(p=>{
+    const ini=p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+    const cis=state.checkins.filter(c=>c.codigo_paciente===p.codigo).length;
+    return '<div class="patient-row" onclick="abrirPaciente(\''+p.id+'\')">'+'<div class="avatar">'+ini+'</div>'+'<div class="patient-info"><div class="patient-name">'+p.nome+'</div><div class="patient-meta">'+p.pacote+' · '+cis+' check-in(s) · desde '+(p.datainicio||'—')+'</div></div>'+'<span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span>'+'<div class="pts-display"><div class="pts-num">'+(Number(p.pontos)||0)+'</div><div class="pts-lbl">pontos</div></div></div>';
   }).join('');
 }
 
-function renderPacientes() {
-  const q = (document.getElementById('searchInput')?.value||'').toLowerCase();
-  const filtered = state.pacientes.filter(p => p.nome.toLowerCase().includes(q));
-  const el = document.getElementById('patientList');
-
-  if (!filtered.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">👤</div><p>Nenhum paciente encontrado.</p></div>'; return; }
-
-  el.innerHTML = filtered.map(p => {
-    const ini = p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    const cis = state.checkins.filter(c => c.codigo_paciente === p.codigo).length;
-    return `<div class="patient-row" onclick="abrirPaciente('${p.id}')">
-      <div class="avatar">${ini}</div>
-      <div class="patient-info">
-        <div class="patient-name">${p.nome}</div>
-        <div class="patient-meta">${p.pacote} · ${cis} check-in(s) · desde ${p.datainicio||'—'}</div>
-      </div>
-      <span class="badge ${p.status==='Ativo'?'badge-active':'badge-inactive'}">${p.status}</span>
-      <div class="pts-display">
-        <div class="pts-num">${Number(p.pontos)||0}</div>
-        <div class="pts-lbl">pontos</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function abrirPaciente(id) {
-  const p = state.pacientes.find(x => x.id === id);
-  if (!p) return;
-  currentPaciente = p;
-  document.getElementById('loadingOverlay').classList.remove('hide');
-
-  try {
-    const [rCI, rCons, rCQ] = await Promise.all([
-      fetch(`${SCRIPT_URL}?acao=checkins&codigo=${p.codigo}`),
-      fetch(`${SCRIPT_URL}?acao=consultas&codigo=${p.codigo}`),
-      fetch(`${SCRIPT_URL}?acao=conquistas&codigo=${p.codigo}`),
-    ]);
-    const [dCI, dCons, dCQ] = await Promise.all([rCI.json(), rCons.json(), rCQ.json()]);
-    currentCIs   = dCI.checkins   || [];
-    currentCons  = dCons.consultas || [];
-    currentCQs   = dCQ.conquistas  || [];
-  } catch(e) {
-    currentCIs = state.checkins.filter(c => c.codigo_paciente === p.codigo);
-    currentCons = []; currentCQs = [];
-  }
-
+async function abrirPaciente(id){
+  const p=state.pacientes.find(x=>x.id===id);if(!p)return;
+  currentPaciente=p;document.getElementById('loadingOverlay').classList.remove('hide');
+  try{
+    const[rCI,rCons,rCQ]=await Promise.all([fetch(SCRIPT_URL+'?acao=checkins&codigo='+p.codigo),fetch(SCRIPT_URL+'?acao=consultas&codigo='+p.codigo),fetch(SCRIPT_URL+'?acao=conquistas&codigo='+p.codigo)]);
+    const[dCI,dCons,dCQ]=await Promise.all([rCI.json(),rCons.json(),rCQ.json()]);
+    currentCIs=dCI.checkins||[];currentCons=dCons.consultas||[];currentCQs=dCQ.conquistas||[];
+  }catch(e){currentCIs=state.checkins.filter(c=>c.codigo_paciente===p.codigo);currentCons=[];currentCQs=[];}
   document.getElementById('loadingOverlay').classList.add('hide');
-  renderProfile();
-  irPara('profile');
-  mostrarTab('tab-ci');
+  renderProfile();irPara('profile');mostrarTab('tab-ci');
 }
 
-function irParaPorCodigo(codigo) {
-  const p = state.pacientes.find(x => x.codigo === codigo);
-  if (p) abrirPaciente(p.id);
+function irParaPorCodigo(codigo){const p=state.pacientes.find(x=>x.codigo===codigo);if(p)abrirPaciente(p.id);}
+
+function renderProfile(){
+  const p=currentPaciente;const ini=p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+  const pts=Number(p.pontos)||0;const nivel=NIVEIS.slice().reverse().find(n=>pts>=n.min)||NIVEIS[0];
+  document.getElementById('profileHeader').innerHTML='<div class="profile-avatar">'+ini+'</div><div class="profile-info"><div class="profile-name">'+p.nome+'</div><div class="profile-tags"><span class="code-tag">🔑 '+p.codigo+'</span><span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span><span style="font-size:12px;color:var(--muted)">'+p.pacote+'</span><span style="font-size:12px;color:var(--muted)">'+nivel.nome+'</span></div></div><div class="profile-actions"><button class="btn btn-ghost btn-sm" onclick="toggleStatus(\''+p.id+'\')">'+(p.status==='Ativo'?'Desativar':'Ativar')+'</button><button class="btn btn-yellow btn-sm" onclick="mostrarTab(\'tab-reg\')">+ Consulta</button></div>';
+
+  const ciEl=document.getElementById('profileCIs');
+  if(!currentCIs.length){ciEl.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.</p></div>';}
+  else{ciEl.innerHTML=currentCIs.map((c,i)=>{const ad=Number(c['3_adesao_ao_plano_0_10']);const es=Number(c['11_nivel_de_estresse_1_10']);return '<div class="ci-item" onclick="abrirCI('+i+')">'+'<div class="ci-top"><div><div class="ci-date">'+(c.data_hora||'—')+'</div><div class="ci-period">'+(c['2_como_foram_os_15_dias']||'—')+'</div></div><span style="color:var(--muted)">›</span></div>'+'<div class="ci-scores"><span class="score-tag '+(ad>=7?'g':ad>=5?'':'r')+'">Adesão '+ad+'/10</span><span class="score-tag y">Motivação '+c['15_motivacao_hoje_0_10']+'/10</span><span class="score-tag '+(es>=7?'r':'')+'">Estresse '+es+'/10</span><span class="score-tag">'+c['7_treinos_realizados']+' treinos</span></div></div>';}).join('');}
+
+  const consEl=document.getElementById('profileCons');
+  if(!currentCons.length){consEl.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>';}
+  else{consEl.innerHTML=currentCons.map(c=>'<div class="cons-item"><div class="cons-top"><div class="cons-num">Consulta '+c.numero+'</div><span class="badge '+(c.status==='Realizada'?'badge-realizada':'badge-agendada')+'">'+c.status+'</span></div><div class="cons-dates">Prevista: '+(c.dataprevista||'—')+(c.datareal?' · Realizada: '+c.datareal:'')+'</div>'+(c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' · ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+'<div class="cons-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button></div></div>').join('');}
+
+  const cqEl=document.getElementById('profileCQs');
+  if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
+  else{cqEl.innerHTML=currentCQs.map(c=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+'</div></div>').join('');}
+
+  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
+
+  const sel=document.getElementById('regConsultaNum');
+  sel.innerHTML=currentCons.length?currentCons.map(c=>'<option value="'+c.id+'">Consulta '+c.numero+' — '+c.status+(c.dataprevista?' (prev: '+c.dataprevista+')':'')+'</option>').join(''):'<option value="">Nenhuma consulta cadastrada</option>';
+  document.getElementById('regDataReal').value=new Date().toISOString().split('T')[0];
 }
 
-function renderProfile() {
-  const p = currentPaciente;
-  const ini = p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-  const pts = Number(p.pontos) || 0;
-  const nivel = NIVEIS.slice().reverse().find(n => pts >= n.min) || NIVEIS[0];
-
-  document.getElementById('profileHeader').innerHTML = `
-    <div class="profile-avatar">${ini}</div>
-    <div class="profile-info">
-      <div class="profile-name">${p.nome}</div>
-      <div class="profile-tags">
-        <span class="code-tag">🔑 ${p.codigo}</span>
-        <span class="badge ${p.status==='Ativo'?'badge-active':'badge-inactive'}">${p.status}</span>
-        <span style="font-size:12px;color:var(--muted)">${p.pacote}</span>
-        <span style="font-size:12px;color:var(--muted)">${nivel.nome}</span>
-      </div>
-    </div>
-    <div class="profile-actions">
-      <button class="btn btn-ghost btn-sm" onclick="toggleStatus('${p.id}')">${p.status==='Ativo'?'Desativar':'Ativar'}</button>
-      <button class="btn btn-yellow btn-sm" onclick="mostrarTab('tab-reg')">+ Consulta</button>
-    </div>`;
-
-  // Check-ins
-  const ciEl = document.getElementById('profileCIs');
-  ciEl.innerHTML = !currentCIs.length
-    ? '<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.</p></div>'
-    : currentCIs.map((c,i) => {
-        const ad = Number(c['3_adesao_ao_plano_0_10']);
-        const es = Number(c['11_nivel_de_estresse_1_10']);
-        return `<div class="ci-item" onclick="abrirCI(${i})">
-          <div class="ci-top">
-            <div><div class="ci-date">${c.data_hora||'—'}</div><div class="ci-period">${c['2_como_foram_os_15_dias']||'—'}</div></div>
-            <span style="color:var(--muted)">›</span>
-          </div>
-          <div class="ci-scores">
-            <span class="score-tag ${ad>=7?'g':ad>=5?'':'r'}">Adesão ${ad}/10</span>
-            <span class="score-tag y">Motivação ${c['15_motivacao_hoje_0_10']}/10</span>
-            <span class="score-tag ${es>=7?'r':''}">Estresse ${es}/10</span>
-            <span class="score-tag">${c['7_treinos_realizados']} treinos</span>
-          </div>
-        </div>`;
-      }).join('');
-
-  // Consultas
-  const consEl = document.getElementById('profileCons');
-  consEl.innerHTML = !currentCons.length
-    ? '<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>'
-    : currentCons.map(c => `<div class="cons-item">
-        <div class="cons-top">
-          <div class="cons-num">Consulta ${c.numero}</div>
-          <span class="badge ${c.status==='Realizada'?'badge-realizada':'badge-agendada'}">${c.status}</span>
-        </div>
-        <div class="cons-dates">Prevista: ${c.dataprevista||'—'}${c.datareal?` · Realizada: ${c.datareal}`:''}</div>
-        ${c.anotacoes?`<div class="cons-notes">${c.anotacoes}</div>`:''}
-      </div>`).join('');
-
-  // Conquistas
-  const cqEl = document.getElementById('profileCQs');
-  cqEl.innerHTML = !currentCQs.length
-    ? '<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>'
-    : currentCQs.map(c => `<div class="cq-item">
-        <div class="cq-icon">🏆</div>
-        <div class="cq-text">${c.texto}</div>
-        <div class="cq-date">${c.data}</div>
-      </div>`).join('');
-
-  // Pontos
-  document.getElementById('profilePts').innerHTML = `
-    <div class="pts-hero">
-      <div class="pts-big">${pts}</div>
-      <div class="pts-label">pontos acumulados</div>
-      <div class="pts-level">${nivel.nome}</div>
-    </div>
-    <div class="card-title">Conquistas com pontos</div>
-    <div class="pts-history">
-      ${currentCQs.filter(c=>c.pontos>0).length
-        ? currentCQs.filter(c=>c.pontos>0).map(c=>`<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">${c.texto}</div><div class="pts-row-date">${c.data}</div></div><div class="pts-row-val">+${c.pontos}</div></div>`).join('')
-        : '<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto registrado ainda.</p></div>'}
-    </div>`;
-
-  // Select consultas
-  const sel = document.getElementById('regConsultaNum');
-  sel.innerHTML = currentCons.length
-    ? currentCons.map(c=>`<option value="${c.id}">Consulta ${c.numero} — ${c.status}${c.dataprevista?' (prev: '+c.dataprevista+')':''}</option>`).join('')
-    : '<option value="">Nenhuma consulta cadastrada</option>';
-
-  document.getElementById('regDataReal').value = new Date().toISOString().split('T')[0];
+function abrirEdicaoConsulta(idConsulta){
+  const c=currentCons.find(x=>x.id===idConsulta);if(!c)return;
+  const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
+  document.getElementById('editConsultaId').value=c.id;
+  document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' — '+currentPaciente.nome;
+  document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista);
+  document.getElementById('editDataReal').value=toInputDate(c.datareal);
+  document.getElementById('editStatus').value=c.status||'Agendada';
+  document.getElementById('editNotas').value=c.anotacoes||'';
+  document.getElementById('editMetaTreinos').value=c.metatreinos||'';
+  document.getElementById('editMetaAdesao').value=c.metaadesao||'';
+  abrirModal('modalEditarConsulta');
 }
 
-function abrirCI(idx) {
-  const c = currentCIs[idx];
-  if (!c) return;
-  const campos = [
-    ['Como foram os 15 dias', c['2_como_foram_os_15_dias']],
-    ['Adesão ao plano', `${c['3_adesao_ao_plano_0_10']}/10`],
-    ['Saídas do plano', `${c['4_saidas_do_plano']} vez(es)`],
-    ['Momento de saída', c['5_momento_da_saida']],
-    ['Refeição difícil', c['6_refeicao_mais_dificil']],
-    ['Treinos', c['7_treinos_realizados']],
-    ['Motivo falta', c['8_motivo_de_faltar_treino']],
-    ['Sono', c['9_sono']],
-    ['Energia', `${c['10_disposicao_energia_1_10']}/10`],
-    ['Estresse', `${c['11_nivel_de_estresse_1_10']}/10`],
-    ['Gatilhos', c['12_o_que_tirou_do_trilho']],
-    ['Motivação', `${c['15_motivacao_hoje_0_10']}/10`],
-  ];
-  document.getElementById('modalCINome').textContent = c['1_nome'] || currentPaciente.nome;
-  document.getElementById('modalCIData').textContent = c.data_hora || '—';
-  document.getElementById('modalCIContent').innerHTML = `
-    <div class="detail-grid">${campos.map(([l,v])=>`<div class="detail-item"><div class="detail-lbl">${l}</div><div class="detail-val">${v||'—'}</div></div>`).join('')}</div>
-    ${c['13_o_que_funcionou_bem']?`<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['13_o_que_funcionou_bem']}</div></div>`:''}
-    ${c['14_recado_para_a_consulta']?`<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['14_recado_para_a_consulta']}</div></div>`:''}`;
+async function salvarEdicaoConsulta(){
+  const idConsulta=document.getElementById('editConsultaId').value;
+  const dataP=document.getElementById('editDataPrevista').value;
+  const dataR=document.getElementById('editDataReal').value;
+  const status=document.getElementById('editStatus').value;
+  const notas=document.getElementById('editNotas').value.trim();
+  const metaTreinos=parseInt(document.getElementById('editMetaTreinos').value||0);
+  const metaAdesao=parseInt(document.getElementById('editMetaAdesao').value||0);
+  const toFmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString('pt-BR'):'';
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),dataReal:toFmt(dataR),status,anotacoes:notas,metaTreinos,metaAdesao})});
+    fecharModal('modalEditarConsulta');toast('Consulta atualizada!');
+    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
+  }catch(e){toast('Erro ao salvar.');}
+}
+
+function abrirCI(idx){
+  const c=currentCIs[idx];if(!c)return;
+  const campos=[['Como foram os 15 dias',c['2_como_foram_os_15_dias']],['Adesão ao plano',c['3_adesao_ao_plano_0_10']+'/10'],['Saídas do plano',c['4_saidas_do_plano']+' vez(es)'],['Momento de saída',c['5_momento_da_saida']],['Refeição difícil',c['6_refeicao_mais_dificil']],['Treinos',c['7_treinos_realizados']],['Motivo falta',c['8_motivo_de_faltar_treino']],['Sono',c['9_sono']],['Energia',c['10_disposicao_energia_1_10']+'/10'],['Estresse',c['11_nivel_de_estresse_1_10']+'/10'],['Gatilhos',c['12_o_que_tirou_do_trilho']],['Motivação',c['15_motivacao_hoje_0_10']+'/10']];
+  document.getElementById('modalCINome').textContent=c['1_nome']||currentPaciente.nome;
+  document.getElementById('modalCIData').textContent=c.data_hora||'—';
+  document.getElementById('modalCIContent').innerHTML='<div class="detail-grid">'+campos.map(([l,v])=>'<div class="detail-item"><div class="detail-lbl">'+l+'</div><div class="detail-val">'+(v||'—')+'</div></div>').join('')+'</div>'+(c['13_o_que_funcionou_bem']?'<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['13_o_que_funcionou_bem']+'</div></div>':'')+(c['14_recado_para_a_consulta']?'<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['14_recado_para_a_consulta']+'</div></div>':'');
   abrirModal('modalCI');
 }
 
-async function salvarRegistro() {
-  const p = currentPaciente;
-  const idConsulta = document.getElementById('regConsultaNum').value;
-  const dataReal = document.getElementById('regDataReal').value;
-  const notas = document.getElementById('regNotas').value.trim();
-  const pontos = parseInt(document.getElementById('regPontos').value||0);
-  const motivo = document.getElementById('regPontosMotivo').value.trim();
-  const conquistas = [...document.querySelectorAll('#cqInputs input')].map(i=>i.value.trim()).filter(Boolean);
-  const dataFmt = dataReal ? new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
-  const metaTreinos = parseInt(document.getElementById('regMetaTreinos').value || 0);
-  const metaAdesao = parseInt(document.getElementById('regMetaAdesao').value || 0);
-
-  try {
-    const promises = [];
-    if (idConsulta) {
-      promises.push(fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ acao:'salvarConsulta', idConsulta, dataReal:dataFmt, status:'Realizada', anotacoes:notas, metaTreinos, metaAdesao }) }));
-    }
-    for (const texto of conquistas) {
-      promises.push(fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ acao:'adicionarConquista', idPaciente:p.id, codigo:p.codigo, texto, data:dataFmt, pontos:0, motivoPontos:'' }) }));
-    }
-    if (pontos > 0) {
-      promises.push(fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ acao:'adicionarConquista', idPaciente:p.id, codigo:p.codigo, texto:motivo||'Pontos da consulta', data:dataFmt, pontos, motivoPontos:motivo }) }));
-    }
-    await Promise.all(promises);
-    toast('Consulta salva!');
-    document.getElementById('regNotas').value = '';
-    document.getElementById('regPontos').value = '';
-    document.getElementById('regPontosMotivo').value = '';
-    document.getElementById('regMetaTreinos').value = '';
-    document.getElementById('regMetaAdesao').value = '';
-    document.getElementById('cqInputs').innerHTML = `<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg desde o início 🎯"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>`;
-    setTimeout(() => abrirPaciente(p.id), 1500);
-  } catch(e) { toast('Erro ao salvar. Tente novamente.'); }
+async function salvarRegistro(){
+  const p=currentPaciente;const idConsulta=document.getElementById('regConsultaNum').value;const dataReal=document.getElementById('regDataReal').value;
+  const notas=document.getElementById('regNotas').value.trim();const pontos=parseInt(document.getElementById('regPontos').value||0);const motivo=document.getElementById('regPontosMotivo').value.trim();
+  const conquistas=[...document.querySelectorAll('#cqInputs input')].map(i=>i.value.trim()).filter(Boolean);
+  const metaTreinos=parseInt(document.getElementById('regMetaTreinos').value||0);const metaAdesao=parseInt(document.getElementById('regMetaAdesao').value||0);
+  const dataFmt=dataReal?new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+  try{
+    const promises=[];
+    if(idConsulta)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:notas,metaTreinos,metaAdesao})}));
+    for(const texto of conquistas)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
+    if(pontos>0)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
+    await Promise.all(promises);toast('Consulta salva!');
+    document.getElementById('regNotas').value='';document.getElementById('regPontos').value='';document.getElementById('regPontosMotivo').value='';document.getElementById('regMetaTreinos').value='';document.getElementById('regMetaAdesao').value='';
+    document.getElementById('cqInputs').innerHTML='<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>';
+    setTimeout(()=>abrirPaciente(p.id),1500);
+  }catch(e){toast('Erro ao salvar.');}
 }
 
-function addCqField() {
-  const div = document.createElement('div');
-  div.className = 'cq-form-row';
-  div.innerHTML = `<input class="inp" type="text" placeholder="Conquista…" style="margin-bottom:0">`;
-  document.getElementById('cqInputs').appendChild(div);
+function addCqField(){const div=document.createElement('div');div.className='cq-form-row';div.innerHTML='<input class="inp" type="text" placeholder="Conquista..." style="margin-bottom:0">';document.getElementById('cqInputs').appendChild(div);}
+
+async function cadastrarPaciente(){
+  const nome=document.getElementById('npNome').value.trim();const pacote=document.getElementById('npPacote').value;const codigo=document.getElementById('npCodigo').value.trim().toUpperCase();const dataInicio=document.getElementById('npDataInicio').value;
+  if(!nome||!codigo){toast('Preencha nome e código.');return;}
+  const dataFmt=dataInicio?new Date(dataInicio+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'cadastrarPaciente',nome,pacote,codigo,dataInicio:dataFmt})});fecharModal('modalNovoPaciente');document.getElementById('npNome').value='';document.getElementById('npCodigo').value='';toast(nome+' cadastrado! Atualizando...');setTimeout(carregarTudo,2000);}
+  catch(e){toast('Erro ao cadastrar.');}
 }
 
-async function cadastrarPaciente() {
-  const nome = document.getElementById('npNome').value.trim();
-  const pacote = document.getElementById('npPacote').value;
-  const codigo = document.getElementById('npCodigo').value.trim().toUpperCase();
-  const dataInicio = document.getElementById('npDataInicio').value;
-  if (!nome || !codigo) { toast('Preencha nome e código.'); return; }
-  const dataFmt = dataInicio ? new Date(dataInicio+'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
-  try {
-    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ acao:'cadastrarPaciente', nome, pacote, codigo, dataInicio:dataFmt }) });
-    fecharModal('modalNovoPaciente');
-    document.getElementById('npNome').value = '';
-    document.getElementById('npCodigo').value = '';
-    toast(`${nome} cadastrado! Atualizando...`);
-    setTimeout(carregarTudo, 2000);
-  } catch(e) { toast('Erro ao cadastrar.'); }
+function gerarCodigo(){const adj=['SHARK','FORCE','APEX','ELITE','TITAN','IRON','BULL'];document.getElementById('npCodigo').value=adj[Math.floor(Math.random()*adj.length)]+Math.floor(100+Math.random()*900);}
+
+async function toggleStatus(id){
+  const p=state.pacientes.find(x=>x.id===id);if(!p)return;const novo=p.status==='Ativo'?'Inativo':'Ativo';
+  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'atualizarPaciente',id:p.id,status:novo})});p.status=novo;currentPaciente=p;renderProfile();renderPacientes();toast('Paciente '+(novo==='Ativo'?'ativado':'desativado')+'.');}
+  catch(e){toast('Erro ao atualizar.');}
 }
 
-function gerarCodigo() {
-  const adj = ['SHARK','FORCE','APEX','ELITE','TITAN','IRON','BULL'];
-  document.getElementById('npCodigo').value = adj[Math.floor(Math.random()*adj.length)] + Math.floor(100+Math.random()*900);
-}
-
-async function toggleStatus(id) {
-  const p = state.pacientes.find(x=>x.id===id);
-  if (!p) return;
-  const novo = p.status === 'Ativo' ? 'Inativo' : 'Ativo';
-  try {
-    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ acao:'atualizarPaciente', id:p.id, status:novo }) });
-    p.status = novo; currentPaciente = p;
-    renderProfile(); renderPacientes();
-    toast(`Paciente ${novo === 'Ativo' ? 'ativado' : 'desativado'}.`);
-  } catch(e) { toast('Erro ao atualizar.'); }
-}
-
-function irPara(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const nav = document.getElementById('nav-'+id);
-  if (nav) nav.classList.add('active');
-  fecharSidebar();
-  window.scrollTo(0,0);
-}
-
-function mostrarTab(id) {
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('tabBtn-'+id.replace('tab-','')).classList.add('active');
-}
-
-function abrirModal(id) { document.getElementById(id).classList.add('open'); }
-function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); }); });
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-
-function fecharSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 3500);
-}
-
-document.getElementById('npDataInicio').value = new Date().toISOString().split('T')[0];
+function irPara(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));const nav=document.getElementById('nav-'+id);if(nav)nav.classList.add('active');fecharSidebar();window.scrollTo(0,0);}
+function mostrarTab(id){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('tabBtn-'+id.replace('tab-','')).classList.add('active');}
+function abrirModal(id){document.getElementById(id).classList.add('open');}
+function fecharModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');}
+function fecharSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+document.getElementById('npDataInicio').value=new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
