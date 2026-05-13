@@ -156,6 +156,20 @@
   .pts-form-row{display:flex;align-items:center;gap:10px}
   .pts-form-row .inp{max-width:110px;margin-bottom:0}
   .divider{height:1px;background:var(--border);margin:20px 0}
+  .alert-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
+  .alert-item:last-child{border-bottom:none}
+  .alert-item:hover{opacity:.75}
+  .alert-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .alert-dot.red{background:var(--danger)}
+  .alert-dot.orange{background:#e67e22}
+  .alert-dot.yellow{background:var(--yellow)}
+  .alert-info{flex:1;min-width:0}
+  .alert-name{font-size:13px;font-weight:600}
+  .alert-msg{font-size:12px;color:var(--muted);margin-top:2px}
+  .alert-days{font-size:12px;font-weight:700;white-space:nowrap}
+  .alert-days.red{color:var(--danger)}
+  .alert-days.orange{color:#e67e22}
+  .alert-days.yellow{color:#b8860b}
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
   .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -244,7 +258,7 @@
       <div class="stats-row">
         <div class="stat-card"><div class="stat-lbl">Pacientes ativos</div><div class="stat-val" id="statAtivos">—</div><div class="stat-sub">cadastrados</div></div>
         <div class="stat-card"><div class="stat-lbl">Pendentes de revisão</div><div class="stat-val" id="statPendentes">—</div><div class="stat-sub">não revisados</div></div>
-        <div class="stat-card"><div class="stat-lbl">Check-ins total</div><div class="stat-val" id="statCIs">—</div><div class="stat-sub">recebidos</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="irPara('dashboard')"><div class="stat-lbl">Check-ins vencidos</div><div class="stat-val" id="statVencidos">—</div><div class="stat-sub">precisam de aviso</div></div>
       </div>
       <div class="dash-grid">
         <div class="card">
@@ -255,6 +269,10 @@
           <div class="card-title">Próximas consultas agendadas</div>
           <div id="proximasConsultas"><div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div></div>
         </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">⚠️ Alertas de check-in</div>
+        <div id="alertasCheckin"><div class="empty"><div class="empty-icon">✅</div><p>Todos os pacientes estão em dia.</p></div></div>
       </div>
     </div>
     <!-- PATIENTS -->
@@ -409,6 +427,51 @@ async function carregarTudo(){
   }catch(e){toast('Erro ao carregar dados.');}
 }
 
+function calcularAlertasCheckin(){
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  const alertas = [];
+
+  state.pacientes.filter(p=>p.status==='Ativo').forEach(p => {
+    // Pega o check-in mais recente deste paciente
+    const cis = state.checkins.filter(c=>c.codigo_paciente===p.codigo);
+    let diasDesde = null;
+    let ultimaData = null;
+
+    if(cis.length > 0){
+      // Tenta parsear a data do check-in mais recente
+      const raw = (cis[0].data_hora||'').split(',')[0].trim();
+      const partes = raw.split('/');
+      if(partes.length === 3){
+        ultimaData = new Date(partes[2]+'-'+partes[1]+'-'+partes[0]);
+        ultimaData.setHours(0,0,0,0);
+        diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
+      }
+    } else {
+      // Nunca enviou check-in — usa data de início
+      if(p.datainicio){
+        const pi = p.datainicio.split('/');
+        if(pi.length===3){
+          ultimaData = new Date(pi[2]+'-'+pi[1]+'-'+pi[0]);
+          ultimaData.setHours(0,0,0,0);
+          diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
+        }
+      }
+    }
+
+    if(diasDesde === null) return;
+
+    const diasRestantes = 15 - diasDesde; // positivo = ainda tem tempo, negativo = vencido
+    if(diasRestantes <= 3){
+      alertas.push({ paciente: p, diasRestantes, diasDesde });
+    }
+  });
+
+  // Ordena: mais vencidos primeiro
+  alertas.sort((a,b) => a.diasRestantes - b.diasRestantes);
+  return alertas;
+}
+
 function renderDashboard(){
   document.getElementById('statAtivos').textContent=state.pacientes.filter(p=>p.status==='Ativo').length;
   document.getElementById('statCIs').textContent=state.checkins.length;
@@ -421,6 +484,52 @@ function renderDashboard(){
     return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'—')+' · Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'—')+'</div></div>';
   }).join('');}
   renderProximasConsultas();
+  renderAlertasCheckin();
+}
+
+function renderAlertasCheckin(){
+  const alertas = calcularAlertasCheckin();
+  const el = document.getElementById('alertasCheckin');
+  document.getElementById('statVencidos').textContent = alertas.filter(a=>a.diasRestantes<0).length;
+
+  if(!alertas.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos os pacientes estão em dia.</p></div>';
+    return;
+  }
+
+  el.innerHTML = alertas.map(a => {
+    const p = a.paciente;
+    const dr = a.diasRestantes;
+    let cor, msg, diasTxt;
+
+    if(dr < 0){
+      cor = 'red';
+      msg = 'Check-in atrasado — '+Math.abs(dr)+' dia(s) sem preencher além do prazo';
+      diasTxt = Math.abs(dr)+'d atrasado';
+    } else if(dr === 0){
+      cor = 'orange';
+      msg = 'Check-in vence hoje!';
+      diasTxt = 'Vence hoje';
+    } else if(dr === 1){
+      cor = 'orange';
+      msg = 'Check-in vence amanhã';
+      diasTxt = 'Amanhã';
+    } else {
+      cor = 'yellow';
+      msg = 'Check-in vence em '+dr+' dias';
+      diasTxt = dr+'d restantes';
+    }
+
+    const ini = p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+    return '<div class="alert-item" onclick="irParaPorCodigo(''+p.codigo+'')">' +
+      '<div class="alert-dot '+cor+'"></div>' +
+      '<div class="alert-info">' +
+        '<div class="alert-name">'+p.nome+'</div>' +
+        '<div class="alert-msg">'+msg+'</div>' +
+      '</div>' +
+      '<div class="alert-days '+cor+'">'+diasTxt+'</div>' +
+    '</div>';
+  }).join('');
 }
 
 async function renderProximasConsultas(){
