@@ -843,6 +843,47 @@
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
   .empty p { font-size: 14px; line-height: 1.5; }
 
+  /* ── COUNTDOWN ─────────────────────────────────────────── */
+  .checkin-alert {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .checkin-alert.green {
+    background: var(--success-bg);
+    border: 1px solid #b8dfc9;
+  }
+
+  .checkin-alert.yellow {
+    background: var(--yellow-pale);
+    border: 1px solid var(--yellow);
+  }
+
+  .checkin-alert.orange {
+    background: #fff3e0;
+    border: 1px solid #e67e22;
+  }
+
+  .checkin-alert.red {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+  }
+
+  .alert-emoji { font-size: 26px; flex-shrink: 0; }
+
+  .alert-body { flex: 1; }
+  .alert-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .alert-sub { font-size: 12px; opacity: 0.75; }
+
+  .checkin-alert.green .alert-title { color: var(--success); }
+  .checkin-alert.yellow .alert-title { color: #7a5c00; }
+  .checkin-alert.orange .alert-title { color: #e67e22; }
+  .checkin-alert.red .alert-title { color: var(--danger); }
+
   /* ── METAS ─────────────────────────────────────────── */
   .meta-card {
     background: var(--surface);
@@ -1028,6 +1069,9 @@
             <div class="quick-sub">Seus marcos</div>
           </div>
         </div>
+
+        <!-- COUNTDOWN CHECK-IN -->
+        <div id="checkinCountdown"></div>
 
         <!-- BOTÃO MANUAL -->
         <a href="https://nutrijoaomiranda-maker.github.io/shark-squad-checkin/manual-pontos.html" target="_blank" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-decoration:none;transition:all 0.15s;" onmousedown="this.style.opacity='0.8'" onmouseup="this.style.opacity='1'">
@@ -1427,6 +1471,7 @@ async function carregarPaciente(codigo) {
     conquistas = dataConq.conquistas || [];
 
     renderHome();
+    renderCountdown();
     renderMetas();
     renderEvolucao();
     renderConquistas();
@@ -1502,6 +1547,79 @@ function renderHome() {
       </div>
     </div>
   `;
+}
+
+// ── COUNTDOWN CHECK-IN ───────────────────────────────────────
+function renderCountdown(){
+  const el = document.getElementById('checkinCountdown');
+  if(!el) return;
+
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  let diasDesde = null;
+
+  if(checkins.length > 0){
+    const raw = (checkins[0].data_hora||'').split(',')[0].trim();
+    const partes = raw.split('/');
+    if(partes.length === 3){
+      const ultima = new Date(partes[2]+'-'+partes[1]+'-'+partes[0]);
+      ultima.setHours(0,0,0,0);
+      diasDesde = Math.floor((hoje - ultima) / (1000*60*60*24));
+    }
+  } else if(paciente.datainicio){
+    const pi = paciente.datainicio.split('/');
+    if(pi.length===3){
+      const inicio = new Date(pi[2]+'-'+pi[1]+'-'+pi[0]);
+      inicio.setHours(0,0,0,0);
+      diasDesde = Math.floor((hoje - inicio) / (1000*60*60*24));
+    }
+  }
+
+  if(diasDesde === null){
+    el.innerHTML = '';
+    return;
+  }
+
+  const diasRestantes = 15 - diasDesde;
+
+  let cor, emoji, titulo, sub;
+
+  if(diasRestantes < 0){
+    cor = 'red';
+    emoji = '🚨';
+    titulo = 'Check-in atrasado ' + Math.abs(diasRestantes) + ' dia(s)!';
+    sub = 'Preencha agora para manter seu histórico em dia.';
+  } else if(diasRestantes === 0){
+    cor = 'orange';
+    emoji = '⚡';
+    titulo = 'Seu check-in vence hoje!';
+    sub = 'Não deixe para depois — leva menos de 3 minutos.';
+  } else if(diasRestantes === 1){
+    cor = 'orange';
+    emoji = '⏰';
+    titulo = 'Check-in vence amanhã';
+    sub = 'Aproveite para preencher hoje enquanto lembra.';
+  } else if(diasRestantes <= 3){
+    cor = 'yellow';
+    emoji = '📋';
+    titulo = 'Check-in em ' + diasRestantes + ' dias';
+    sub = 'Prepare-se — seu próximo check-in está chegando.';
+  } else {
+    cor = 'green';
+    emoji = '✅';
+    titulo = 'Check-in em dia';
+    sub = 'Próximo check-in em ' + diasRestantes + ' dias.';
+  }
+
+  el.innerHTML =
+    '<div class="checkin-alert ' + cor + '">' +
+      '<div class="alert-emoji">' + emoji + '</div>' +
+      '<div class="alert-body">' +
+        '<div class="alert-title">' + titulo + '</div>' +
+        '<div class="alert-sub">' + sub + '</div>' +
+      '</div>' +
+    '</div>';
 }
 
 // ── RENDER METAS ─────────────────────────────────────────────
