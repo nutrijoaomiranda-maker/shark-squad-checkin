@@ -156,6 +156,25 @@
   .pts-form-row{display:flex;align-items:center;gap:10px}
   .pts-form-row .inp{max-width:110px;margin-bottom:0}
   .divider{height:1px;background:var(--border);margin:20px 0}
+  /* ── CALENDAR ──────────────────────────────────────── */
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .cal-title{font-size:14px;font-weight:700;color:var(--navy)}
+  .cal-nav{display:flex;gap:4px}
+  .cal-nav button{width:28px;height:28px;border:1px solid var(--border);background:var(--bg);border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--subtext)}
+  .cal-nav button:hover{border-color:var(--navy);color:var(--navy)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .cal-day-name{text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:4px 0;text-transform:uppercase}
+  .cal-day{text-align:center;padding:4px 2px;font-size:12px;border-radius:6px;cursor:default;min-height:28px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px}
+  .cal-day.other-month{color:var(--muted);opacity:.4}
+  .cal-day.today{background:var(--navy-pale);font-weight:700;color:var(--navy)}
+  .cal-day.has-event{cursor:pointer}
+  .cal-dot{width:5px;height:5px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+  .cal-day:hover.has-event{background:var(--navy-pale)}
+  .cal-legend{margin-top:10px;display:flex;flex-direction:column;gap:4px;max-height:80px;overflow-y:auto}
+  .cal-legend-item{font-size:11px;color:var(--subtext);display:flex;align-items:center;gap:6px;cursor:pointer}
+  .cal-legend-item:hover{color:var(--navy)}
+  .cal-legend-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+
   .alert-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
   .alert-item:last-child{border-bottom:none}
   .alert-item:hover{opacity:.75}
@@ -201,6 +220,24 @@
   .empty{text-align:center;padding:40px 20px}
   .empty-icon{font-size:36px;margin-bottom:10px}
   .empty p{font-size:14px;color:var(--muted);line-height:1.5}
+  /* CALENDAR */
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .cal-month{font-weight:700;font-size:14px;color:var(--navy)}
+  .cal-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--navy);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .cal-btn:hover{background:var(--navy);color:#fff}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .cal-dow{text-align:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:4px 0}
+  .cal-day{min-height:32px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 2px;position:relative;cursor:default;font-size:12px;font-weight:500;color:var(--subtext)}
+  .cal-day.other-month{color:var(--border)}
+  .cal-day.today{background:var(--navy-pale);color:var(--navy);font-weight:700}
+  .cal-day.has-event{cursor:pointer}
+  .cal-day.has-event:hover{background:var(--surface2)}
+  .cal-day-num{line-height:1}
+  .cal-dots{display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;justify-content:center}
+  .cal-dot{width:6px;height:6px;border-radius:50%;background:var(--navy);flex-shrink:0}
+  .cal-tooltip{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:50;margin-top:2px}
+  .cal-day.has-event:hover .cal-tooltip{display:block}
+
   @media(max-width:768px){
     .sidebar{transform:translateX(-100%)}
     .sidebar.open{transform:translateX(0)}
@@ -266,8 +303,8 @@
           <div id="recentCIs"><div class="empty"><div class="empty-icon">📭</div><p>Nenhum pendente.</p></div></div>
         </div>
         <div class="card">
-          <div class="card-title">Próximas consultas agendadas</div>
-          <div id="proximasConsultas"><div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div></div>
+          <div class="card-title">Calendário de consultas</div>
+          <div id="calendarioConsultas"><div class="empty"><div class="empty-icon">📅</div><p>Carregando...</p></div></div>
         </div>
       </div>
       <div class="card" style="margin-top:16px">
@@ -300,7 +337,13 @@
         <div class="card"><div class="card-title">Histórico de check-ins</div><div class="ci-list" id="profileCIs"></div></div>
       </div>
       <div class="tab-content" id="tab-cons">
-        <div class="card"><div class="card-title">Consultas do pacote</div><div class="cons-list" id="profileCons"></div></div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div class="card-title" style="margin-bottom:0">Consultas</div>
+            <button class="btn btn-navy btn-sm" onclick="abrirModal('modalAgendarConsulta')">+ Agendar</button>
+          </div>
+          <div class="cons-list" id="profileCons"></div>
+        </div>
       </div>
       <div class="tab-content" id="tab-cq">
         <div class="card"><div class="card-title">Conquistas registradas</div><div class="cq-list" id="profileCQs"></div></div>
@@ -311,9 +354,9 @@
       <div class="tab-content" id="tab-reg">
         <div class="card">
           <div class="card-title">Registrar consulta</div>
-          <div class="form-row"><label>Número da consulta</label><select class="inp" id="regConsultaNum"></select></div>
-          <div class="form-row"><label>Data real da consulta</label><input class="inp" type="date" id="regDataReal"></div>
-          <div class="form-row"><label>Anotações</label><textarea class="inp" id="regNotas" placeholder="Observações, mudanças, orientações…"></textarea></div>
+          <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="regDataReal"></div>
+          <div class="form-row"><label>Anotações gerais</label><textarea class="inp" id="regNotas" placeholder="Observações, mudanças, orientações…"></textarea></div>
+          <div class="form-row"><label>Notas livres / pontos de atenção</label><textarea class="inp" id="regNotasLivres" placeholder="Anotações soltas, lembretes para a próxima consulta…"></textarea></div>
           <div class="form-row">
             <label>Conquistas desta consulta</label>
             <div id="cqInputs">
@@ -326,6 +369,7 @@
           <div class="card-title">Metas para a próxima quinzena</div>
           <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaTreinos" placeholder="Ex: 8" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos na quinzena</span></div></div>
           <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaAdesao" placeholder="Ex: 7" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10 no check-in</span></div></div>
+          <div class="form-row"><label>Observação livre das metas</label><input class="inp" type="text" id="regMetaTexto" placeholder="Ex: Focar na hidratação e dormir antes da meia-noite"></div>
           <button class="btn btn-navy" onclick="salvarRegistro()" style="margin-top:4px">Salvar consulta</button>
         </div>
       </div>
@@ -345,6 +389,19 @@
   </div>
 </div>
 
+<!-- MODAL AGENDAR CONSULTA -->
+<div class="modal-overlay" id="modalAgendarConsulta">
+  <div class="modal" style="max-width:420px">
+    <h3>Agendar consulta</h3>
+    <p id="modalAgendarSubtitle">Defina a data desta consulta.</p>
+    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EDITAR CONSULTA -->
 <div class="modal-overlay" id="modalEditarConsulta">
   <div class="modal" style="max-width:520px">
@@ -357,6 +414,46 @@
     <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaTreinos" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos</span></div></div>
     <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaAdesao" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10</span></div></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalEditarConsulta')">Cancelar</button><button class="btn btn-navy" onclick="salvarEdicaoConsulta()">Salvar alterações</button></div>
+  </div>
+</div>
+
+<!-- MODAL AGENDAR CONSULTA -->
+<div class="modal-overlay" id="modalAgendarConsulta">
+  <div class="modal" style="max-width:440px">
+    <h3>Agendar consulta</h3>
+    <p id="modalAgendarSubtitle">Defina a data da próxima consulta.</p>
+    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGENDAR CONSULTA -->
+<div class="modal-overlay" id="modalAgendarConsulta">
+  <div class="modal" style="max-width:420px">
+    <h3>Agendar consulta</h3>
+    <p id="modalAgendarSubtitle">Defina a data desta consulta.</p>
+    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CONSULTA -->
+<div class="modal-overlay" id="modalEditarConsulta">
+  <div class="modal" style="max-width:520px">
+    <h3>Editar consulta</h3><p id="modalEditSubtitle">Atualize os dados desta consulta.</p>
+    <input type="hidden" id="editConsultaId">
+    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="editDataPrevista"></div>
+    <div class="form-row"><label>Status</label><select class="inp" id="editStatus"><option value="Agendada">Agendada</option><option value="Realizada">Realizada</option></select></div>
+    <div class="form-row"><label>Anotações</label><textarea class="inp" id="editNotas" placeholder="Observações desta consulta…"></textarea></div>
+    <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaTreinos" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos</span></div></div>
+    <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaAdesao" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10</span></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalEditarConsulta')">Cancelar</button><button class="btn btn-navy" onclick="salvarEdicaoConsulta()">Salvar</button></div>
   </div>
 </div>
 
@@ -427,6 +524,154 @@ async function carregarTudo(){
   }catch(e){toast('Erro ao carregar dados.');}
 }
 
+// ── CALENDÁRIO ────────────────────────────────────────────
+let calMes = new Date().getMonth();
+let calAno = new Date().getFullYear();
+let todasConsultas = [];
+
+async function renderCalendario(){
+  const el = document.getElementById('calendarWrap');
+  if(!el) return;
+
+  try{
+    const res = await fetch(SCRIPT_URL+'?acao=consultas');
+    const data = await res.json();
+    todasConsultas = data.consultas || [];
+  }catch(e){ todasConsultas = []; }
+
+  desenharCalendario();
+}
+
+function desenharCalendario(){
+  const el = document.getElementById('calendarWrap');
+  if(!el) return;
+
+  const hoje = new Date();
+  const primeiroDia = new Date(calAno, calMes, 1);
+  const ultimoDia = new Date(calAno, calMes+1, 0);
+  const diasNoMes = ultimoDia.getDate();
+  const iniciaSemana = primeiroDia.getDay(); // 0=dom
+
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  // Monta mapa de eventos
+  const eventos = {};
+  todasConsultas.forEach(c => {
+    const d = c.dataprevista || c.datareal || '';
+    if(!d) return;
+    const partes = d.toString().split('/');
+    if(partes.length !== 3) return;
+    const mes = parseInt(partes[1])-1;
+    const ano = parseInt(partes[2]);
+    const dia = parseInt(partes[0]);
+    if(mes === calMes && ano === calAno){
+      if(!eventos[dia]) eventos[dia] = [];
+      const pac = state.pacientes.find(p => p.codigo === c.codigo);
+      eventos[dia].push({ nome: pac ? pac.nome.split(' ')[0] : c.codigo, id: c.codigo, consulta: c });
+    }
+  });
+
+  // Cabeçalho
+  let html = '<div class="cal-header">';
+  html += '<div class="cal-title">'+meses[calMes]+' '+calAno+'</div>';
+  html += '<div class="cal-nav"><button onclick="navCal(-1)">‹</button><button onclick="navCal(1)">›</button></div>';
+  html += '</div>';
+
+  // Grid
+  html += '<div class="cal-grid">';
+  ['D','S','T','Q','Q','S','S'].forEach(d => { html += '<div class="cal-day-name">'+d+'</div>'; });
+
+  // Dias antes do mês
+  for(let i=0; i<iniciaSemana; i++){
+    const diaAntes = new Date(calAno, calMes, -iniciaSemana+i+1).getDate();
+    html += '<div class="cal-day other-month">'+diaAntes+'</div>';
+  }
+
+  // Dias do mês
+  for(let d=1; d<=diasNoMes; d++){
+    const isHoje = d===hoje.getDate() && calMes===hoje.getMonth() && calAno===hoje.getFullYear();
+    const temEvento = eventos[d] && eventos[d].length > 0;
+    let cls = 'cal-day';
+    if(isHoje) cls += ' today';
+    if(temEvento) cls += ' has-event';
+    const onclick = temEvento ? 'onclick="mostrarEventosDia('+d+')"' : '';
+    html += '<div class="'+cls+'" '+onclick+'>'+d;
+    if(temEvento) html += '<div class="cal-dot"></div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  // Legenda de eventos do mês
+  const eventosDoMes = Object.entries(eventos).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
+  if(eventosDoMes.length){
+    html += '<div class="cal-legend">';
+    eventosDoMes.forEach(([dia, evs]) => {
+      evs.forEach(ev => {
+        html += '<div class="cal-legend-item" onclick="irParaPorCodigo(''+ev.id+'')">';
+        html += '<div class="cal-legend-dot"></div>';
+        html += dia+'/'+String(calMes+1).padStart(2,'0')+' — '+ev.nome;
+        html += '</div>';
+      });
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function navCal(dir){
+  calMes += dir;
+  if(calMes > 11){ calMes = 0; calAno++; }
+  if(calMes < 0){ calMes = 11; calAno--; }
+  desenharCalendario();
+}
+
+function mostrarEventosDia(dia){
+  const eventos = todasConsultas.filter(c => {
+    const d = c.dataprevista || c.datareal || '';
+    if(!d) return false;
+    const partes = d.toString().split('/');
+    return partes.length===3 && parseInt(partes[0])===dia && parseInt(partes[1])-1===calMes && parseInt(partes[2])===calAno;
+  });
+  if(!eventos.length) return;
+  const nomes = eventos.map(c => {
+    const pac = state.pacientes.find(p=>p.codigo===c.codigo);
+    return (pac?pac.nome:'?')+' (Consulta '+c.numero+')';
+  }).join('
+');
+  alert('Consultas em '+dia+'/'+(calMes+1)+'/'+calAno+':
+
+'+nomes);
+}
+
+// ── AGENDAR CONSULTA ───────────────────────────────────────
+async function confirmarAgendamento(){
+  const data = document.getElementById('agendarData').value;
+  if(!data){ toast('Selecione uma data.'); return; }
+  const p = currentPaciente;
+  const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'agendarConsulta',idPaciente:p.id,codigo:p.codigo,data:dataFmt})});
+    fecharModal('modalAgendarConsulta');
+    document.getElementById('agendarData').value='';
+    toast('Consulta agendada para '+dataFmt+'!');
+    setTimeout(()=>abrirPaciente(p.id),1200);
+  }catch(e){ toast('Erro ao agendar.'); }
+}
+
+// ── EXCLUIR CONSULTA ───────────────────────────────────────
+async function excluirConsulta(id){
+  if(!confirm('Excluir esta consulta? Esta ação não pode ser desfeita.')) return;
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'excluirConsulta',id})});
+    toast('Consulta excluída!');
+    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
+  }catch(e){ toast('Erro ao excluir.'); }
+}
+
 function calcularAlertasCheckin(){
   const hoje = new Date();
   hoje.setHours(0,0,0,0);
@@ -483,7 +728,7 @@ function renderDashboard(){
     const nome=c['1_nome']||'—';const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
     return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'—')+' · Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'—')+'</div></div>';
   }).join('');}
-  renderProximasConsultas();
+  renderCalendario();
   renderAlertasCheckin();
 }
 
@@ -583,7 +828,23 @@ function renderProfile(){
 
   const consEl=document.getElementById('profileCons');
   if(!currentCons.length){consEl.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>';}
-  else{consEl.innerHTML=currentCons.map(c=>'<div class="cons-item"><div class="cons-top"><div class="cons-num">Consulta '+c.numero+'</div><span class="badge '+(c.status==='Realizada'?'badge-realizada':'badge-agendada')+'">'+c.status+'</span></div><div class="cons-dates">Prevista: '+(c.dataprevista||'—')+(c.datareal?' · Realizada: '+c.datareal:'')+'</div>'+(c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' · ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+'<div class="cons-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button></div></div>').join('');}
+  else{consEl.innerHTML=currentCons.map(c=>{
+    const data = c.dataprevista || c.datareal || '—';
+    const realizada = c.status==='Realizada';
+    return '<div class="cons-item">'+
+      '<div class="cons-top">'+
+        '<div class="cons-num">Consulta '+c.numero+'</div>'+
+        '<span class="badge '+(realizada?'badge-realizada':'badge-agendada')+'">'+(realizada?'Realizada':'Agendada')+'</span>'+
+      '</div>'+
+      '<div class="cons-dates">📅 '+data+'</div>'+
+      (c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+
+      ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' · ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
+      '<div class="cons-actions">'+
+        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button>'+
+        '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑️ Excluir</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');}
 
   const cqEl=document.getElementById('profileCQs');
   if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
@@ -601,8 +862,7 @@ function abrirEdicaoConsulta(idConsulta){
   const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
   document.getElementById('editConsultaId').value=c.id;
   document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' — '+currentPaciente.nome;
-  document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista);
-  document.getElementById('editDataReal').value=toInputDate(c.datareal);
+  document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista||c.datareal);
   document.getElementById('editStatus').value=c.status||'Agendada';
   document.getElementById('editNotas').value=c.anotacoes||'';
   document.getElementById('editMetaTreinos').value=c.metatreinos||'';
@@ -613,14 +873,14 @@ function abrirEdicaoConsulta(idConsulta){
 async function salvarEdicaoConsulta(){
   const idConsulta=document.getElementById('editConsultaId').value;
   const dataP=document.getElementById('editDataPrevista').value;
-  const dataR=document.getElementById('editDataReal').value;
   const status=document.getElementById('editStatus').value;
   const notas=document.getElementById('editNotas').value.trim();
   const metaTreinos=parseInt(document.getElementById('editMetaTreinos').value||0);
   const metaAdesao=parseInt(document.getElementById('editMetaAdesao').value||0);
   const toFmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString('pt-BR'):'';
   try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),dataReal:toFmt(dataR),status,anotacoes:notas,metaTreinos,metaAdesao})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),status,anotacoes:notas,metaTreinos,metaAdesao})});
     fecharModal('modalEditarConsulta');toast('Consulta atualizada!');
     setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
   }catch(e){toast('Erro ao salvar.');}
@@ -636,18 +896,54 @@ function abrirCI(idx){
 }
 
 async function salvarRegistro(){
-  const p=currentPaciente;const idConsulta=document.getElementById('regConsultaNum').value;const dataReal=document.getElementById('regDataReal').value;
-  const notas=document.getElementById('regNotas').value.trim();const pontos=parseInt(document.getElementById('regPontos').value||0);const motivo=document.getElementById('regPontosMotivo').value.trim();
+  const p=currentPaciente;
+  const dataReal=document.getElementById('regDataReal').value;
+  const notas=document.getElementById('regNotas').value.trim();
+  const notasLivres=document.getElementById('regNotasLivres').value.trim();
+  const pontos=parseInt(document.getElementById('regPontos').value||0);
+  const motivo=document.getElementById('regPontosMotivo').value.trim();
   const conquistas=[...document.querySelectorAll('#cqInputs input')].map(i=>i.value.trim()).filter(Boolean);
-  const metaTreinos=parseInt(document.getElementById('regMetaTreinos').value||0);const metaAdesao=parseInt(document.getElementById('regMetaAdesao').value||0);
+  const metaTreinos=parseInt(document.getElementById('regMetaTreinos').value||0);
+  const metaAdesao=parseInt(document.getElementById('regMetaAdesao').value||0);
+  const metaTexto=document.getElementById('regMetaTexto').value.trim();
   const dataFmt=dataReal?new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+
+  // Verifica se há consulta agendada para marcar como realizada
+  const consultaAgendada = currentCons.find(c=>c.status==='Agendada');
+  const idConsulta = consultaAgendada ? consultaAgendada.id : null;
+  const anotacoesCompletas = [notas, notasLivres].filter(Boolean).join('
+
+--- Notas livres ---
+');
+
   try{
     const promises=[];
-    if(idConsulta)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:notas,metaTreinos,metaAdesao})}));
-    for(const texto of conquistas)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
-    if(pontos>0)promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
-    await Promise.all(promises);toast('Consulta salva!');
-    document.getElementById('regNotas').value='';document.getElementById('regPontos').value='';document.getElementById('regPontosMotivo').value='';document.getElementById('regMetaTreinos').value='';document.getElementById('regMetaAdesao').value='';
+    if(idConsulta){
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
+    } else {
+      // Cria nova consulta realizada diretamente
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({acao:'salvarConsulta',codigo:p.codigo,idPaciente:p.id,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
+    }
+    for(const texto of conquistas){
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
+    }
+    if(pontos>0){
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
+    }
+    await Promise.all(promises);
+    toast('Consulta salva!');
+    document.getElementById('regDataReal').value='';
+    document.getElementById('regNotas').value='';
+    document.getElementById('regNotasLivres').value='';
+    document.getElementById('regPontos').value='';
+    document.getElementById('regPontosMotivo').value='';
+    document.getElementById('regMetaTreinos').value='';
+    document.getElementById('regMetaAdesao').value='';
+    document.getElementById('regMetaTexto').value='';
     document.getElementById('cqInputs').innerHTML='<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>';
     setTimeout(()=>abrirPaciente(p.id),1500);
   }catch(e){toast('Erro ao salvar.');}
@@ -717,6 +1013,7 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 function fecharSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
 document.getElementById('npDataInicio').value=new Date().toISOString().split('T')[0];
+document.getElementById('agendarData').value=new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
