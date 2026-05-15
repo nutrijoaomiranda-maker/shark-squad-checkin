@@ -402,50 +402,10 @@
   </div>
 </div>
 
-<!-- MODAL EDITAR CONSULTA -->
-<div class="modal-overlay" id="modalEditarConsulta">
-  <div class="modal" style="max-width:520px">
-    <h3>Editar consulta</h3><p id="modalEditSubtitle">Atualize os dados desta consulta.</p>
-    <input type="hidden" id="editConsultaId">
-    <div class="form-row"><label>Data prevista</label><input class="inp" type="date" id="editDataPrevista"></div>
-    <div class="form-row"><label>Data real</label><input class="inp" type="date" id="editDataReal"></div>
-    <div class="form-row"><label>Status</label><select class="inp" id="editStatus"><option value="Agendada">Agendada</option><option value="Realizada">Realizada</option></select></div>
-    <div class="form-row"><label>Anotações</label><textarea class="inp" id="editNotas" placeholder="Observações desta consulta…"></textarea></div>
-    <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaTreinos" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos</span></div></div>
-    <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaAdesao" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10</span></div></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalEditarConsulta')">Cancelar</button><button class="btn btn-navy" onclick="salvarEdicaoConsulta()">Salvar alterações</button></div>
-  </div>
-</div>
-
-<!-- MODAL AGENDAR CONSULTA -->
-<div class="modal-overlay" id="modalAgendarConsulta">
-  <div class="modal" style="max-width:440px">
-    <h3>Agendar consulta</h3>
-    <p id="modalAgendarSubtitle">Defina a data da próxima consulta.</p>
-    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
-      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL AGENDAR CONSULTA -->
-<div class="modal-overlay" id="modalAgendarConsulta">
-  <div class="modal" style="max-width:420px">
-    <h3>Agendar consulta</h3>
-    <p id="modalAgendarSubtitle">Defina a data desta consulta.</p>
-    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
-      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
-    </div>
-  </div>
-</div>
 
 <!-- MODAL EDITAR CONSULTA -->
 <div class="modal-overlay" id="modalEditarConsulta">
-  <div class="modal" style="max-width:520px">
+  <div class="modal" style="max-width:480px">
     <h3>Editar consulta</h3><p id="modalEditSubtitle">Atualize os dados desta consulta.</p>
     <input type="hidden" id="editConsultaId">
     <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="editDataPrevista"></div>
