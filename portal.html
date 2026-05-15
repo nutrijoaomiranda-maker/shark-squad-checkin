@@ -1504,10 +1504,10 @@ function renderHome() {
   document.getElementById('heroLevel').textContent = nivel.nome;
 
   // Próxima consulta
-  const proxima = consultas.find(c => c.status === 'Agendada' && c.dataprevista);
+  const proxima = consultas.find(c => c.status === 'Agendada' && c.dataPrevista);
   const consultaCard = document.getElementById('proximaConsulta');
   if (proxima) {
-    const data = proxima.dataprevista || '—';
+    const data = proxima.dataPrevista || '—';
     // Calcula dias até a consulta
     let diasMsg = '';
     const partes = data.toString().split('/');
@@ -2065,7 +2065,7 @@ async function enviarCheckin() {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
+      
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload),
     });
