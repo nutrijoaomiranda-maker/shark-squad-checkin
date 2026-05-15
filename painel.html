@@ -595,8 +595,8 @@ async function confirmarAgendamento(){
   const p = currentPaciente;
   const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'agendarConsulta',idPaciente:p.id,codigo:p.codigo,data:dataFmt})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	      body:new URLSearchParams({acao:'agendarConsulta',idPaciente:p.id,codigo:p.codigo,data:dataFmt})});
     fecharModal('modalAgendarConsulta');
     document.getElementById('agendarData').value='';
     toast('Consulta agendada para '+dataFmt+'!');
@@ -609,8 +609,8 @@ async function confirmarAgendamento(){
 async function excluirConsulta(id){
   if(!confirm('Excluir esta consulta? Esta ação não pode ser desfeita.')) return;
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'excluirConsulta',id})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	      body:new URLSearchParams({acao:'excluirConsulta',id})});
     toast('Consulta excluída!');
     setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
   }catch(e){ toast('Erro ao excluir.'); }
@@ -804,8 +804,8 @@ async function salvarEdicaoConsulta(){
   const metaAdesao=parseInt(document.getElementById('editMetaAdesao').value||0);
   const toFmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString('pt-BR'):'';
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),status,anotacoes:notas,metaTreinos,metaAdesao})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	      body:new URLSearchParams({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),status,anotacoes:notas,metaTreinos,metaAdesao})});
     fecharModal('modalEditarConsulta');toast('Consulta atualizada!');
     setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
   }catch(e){toast('Erro ao salvar.');}
@@ -840,19 +840,19 @@ async function salvarRegistro(){
   try{
     const promises=[];
     if(idConsulta){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	        body:new URLSearchParams({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
     } else {
-      promises.push(fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'salvarConsulta',codigo:p.codigo,idPaciente:p.id,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	        body:new URLSearchParams({acao:'salvarConsulta',codigo:p.codigo,idPaciente:p.id,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
     }
     for(const texto of conquistas){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	        body:new URLSearchParams({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
     }
     if(pontos>0){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
+      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	        body:new URLSearchParams({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
     }
     await Promise.all(promises);
     toast('Consulta salva!');
@@ -888,8 +888,8 @@ async function salvarEdicaoConquista(){
   const dataFmt=dataInput?new Date(dataInput+'T12:00:00').toLocaleDateString('pt-BR'):'';
   if(!texto){toast('Digite o texto da conquista.');return;}
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'editarConquista',id,texto,data:dataFmt,pontos})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	      body:new URLSearchParams({acao:'editarConquista',id,texto,data:dataFmt,pontos})});
     fecharModal('modalEditarConquista');
     toast('Conquista atualizada!');
     setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
@@ -899,8 +899,8 @@ async function salvarEdicaoConquista(){
 async function excluirConquista(id){
   if(!confirm('Excluir esta conquista?'))return;
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'excluirConquista',id})});
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+	      body:new URLSearchParams({acao:'excluirConquista',id})});
     toast('Conquista excluída!');
     setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
   }catch(e){toast('Erro ao excluir.');}
@@ -912,7 +912,7 @@ async function cadastrarPaciente(){
   const nome=document.getElementById('npNome').value.trim();const pacote=document.getElementById('npPacote').value;const codigo=document.getElementById('npCodigo').value.trim().toUpperCase();const dataInicio=document.getElementById('npDataInicio').value;
   if(!nome||!codigo){toast('Preencha nome e código.');return;}
   const dataFmt=dataInicio?new Date(dataInicio+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
-  try{await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'cadastrarPaciente',nome,pacote,codigo,dataInicio:dataFmt})});fecharModal('modalNovoPaciente');document.getElementById('npNome').value='';document.getElementById('npCodigo').value='';toast(nome+' cadastrado! Atualizando...');setTimeout(carregarTudo,2000);}
+  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({acao:'cadastrarPaciente',nome,pacote,codigo,dataInicio:dataFmt})});fecharModal('modalNovoPaciente');document.getElementById('npNome').value='';document.getElementById('npCodigo').value='';toast(nome+' cadastrado! Atualizando...');setTimeout(carregarTudo,2000);}
   catch(e){toast('Erro ao cadastrar.');}
 }
 
@@ -920,7 +920,7 @@ function gerarCodigo(){const adj=['SHARK','FORCE','APEX','ELITE','TITAN','IRON',
 
 async function toggleStatus(id){
   const p=state.pacientes.find(x=>x.id===id);if(!p)return;const novo=p.status==='Ativo'?'Inativo':'Ativo';
-  try{await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'atualizarPaciente',id:p.id,status:novo})});p.status=novo;currentPaciente=p;renderProfile();renderPacientes();toast('Paciente '+(novo==='Ativo'?'ativado':'desativado')+'.');}
+  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({acao:'atualizarPaciente',id:p.id,status:novo})});p.status=novo;currentPaciente=p;renderProfile();renderPacientes();toast('Paciente '+(novo==='Ativo'?'ativado':'desativado')+'.');}
   catch(e){toast('Erro ao atualizar.');}
 }
 
