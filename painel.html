@@ -519,7 +519,7 @@ function desenharCalendario(){
 
   const eventos = {};
   todasConsultas.forEach(c => {
-    const d = c.dataprevista || c.datareal || '';
+    const d = c.dataPrevista || c.dataprevista || c.dataReal || c.datareal || '';
     if(!d) return;
     const partes = d.toString().split('/');
     if(partes.length !== 3) return;
@@ -586,7 +586,7 @@ function navCal(dir){
 
 function mostrarEventosDia(dia){
   const eventos = todasConsultas.filter(c => {
-    const d = c.dataprevista || c.datareal || '';
+    const d = c.dataPrevista || c.dataprevista || c.dataReal || c.datareal || '';
     if(!d) return false;
     const partes = d.toString().split('/');
     return partes.length===3 && parseInt(partes[0])===dia && parseInt(partes[1])-1===calMes && parseInt(partes[2])===calAno;
@@ -765,7 +765,7 @@ function renderProfile(){
   const consEl=document.getElementById('profileCons');
   if(!currentCons.length){consEl.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>';}
   else{consEl.innerHTML=currentCons.map(c=>{
-    const data = c.dataprevista || c.datareal || '-';
+    const data = c.dataPrevista || c.dataprevista || c.dataReal || c.datareal || '-';
     const realizada = c.status==='Realizada';
     return '<div class="cons-item">'+
       '<div class="cons-top">'+
@@ -774,7 +774,7 @@ function renderProfile(){
       '</div>'+
       '<div class="cons-dates">📅 '+data+'</div>'+
       (c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+
-      ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' . ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
+      ((c.metaTreinos||c.metatreinos||c.metaAdesao||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+((c.metaTreinos||c.metatreinos)?'Treinos '+(c.metaTreinos||c.metatreinos):'')+((( c.metaTreinos||c.metatreinos)&&(c.metaAdesao||c.metaadesao))?' . ':'')+((c.metaAdesao||c.metaadesao)?'Adesão '+(c.metaAdesao||c.metaadesao)+'/10':'')+'</div>':'')+
       '<div class="cons-actions">'+
         '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button>'+
         '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑 Excluir</button>'+
@@ -797,11 +797,11 @@ function abrirEdicaoConsulta(idConsulta){
   const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
   document.getElementById('editConsultaId').value=c.id;
   document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' - '+currentPaciente.nome;
-  document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista||c.datareal);
+  document.getElementById('editDataPrevista').value=toInputDate(c.dataPrevista||c.dataprevista||c.dataReal||c.datareal);
   document.getElementById('editStatus').value=c.status||'Agendada';
   document.getElementById('editNotas').value=c.anotacoes||'';
-  document.getElementById('editMetaTreinos').value=c.metatreinos||'';
-  document.getElementById('editMetaAdesao').value=c.metaadesao||'';
+  document.getElementById('editMetaTreinos').value=c.metaTreinos||c.metatreinos||'';
+  document.getElementById('editMetaAdesao').value=c.metaAdesao||c.metaadesao||'';
   abrirModal('modalEditarConsulta');
 }
 
