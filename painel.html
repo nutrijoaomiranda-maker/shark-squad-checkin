@@ -484,7 +484,7 @@ async function carregarTudo(){
   }catch(e){toast('Erro ao carregar dados.');}
 }
 
-// ── CALENDÁRIO ────────────────────────────────────────────
+// ---- CALENDÁRIO ----------------------------------------------------------------------------------------
 let calMes = new Date().getMonth();
 let calAno = new Date().getFullYear();
 let todasConsultas = [];
@@ -534,7 +534,7 @@ function desenharCalendario(){
   // Cabeçalho
   let html = '<div class="cal-header">';
   html += '<div class="cal-title">'+meses[calMes]+' '+calAno+'</div>';
-  html += '<div class="cal-nav"><button onclick="navCal(-1)">‹</button><button onclick="navCal(1)">›</button></div>';
+  html += '<div class="cal-nav"><button onclick="navCal(-1)">&lsaquo;</button><button onclick="navCal(1)">&rsaquo;</button></div>';
   html += '</div>';
 
   // Grid
@@ -570,7 +570,7 @@ function desenharCalendario(){
       evs.forEach(ev => {
         html += '<div class="cal-legend-item" onclick="irParaPorCodigo(''+ev.id+'')">';
         html += '<div class="cal-legend-dot"></div>';
-        html += dia+'/'+String(calMes+1).padStart(2,'0')+' — '+ev.nome;
+        html += dia+'/'+String(calMes+1).padStart(2,'0')+' - '+ev.nome;
         html += '</div>';
       });
     });
@@ -605,7 +605,7 @@ function mostrarEventosDia(dia){
 '+nomes);
 }
 
-// ── AGENDAR CONSULTA ───────────────────────────────────────
+// ---- AGENDAR CONSULTA ------------------------------------------------------------------------------
 async function confirmarAgendamento(){
   const data = document.getElementById('agendarData').value;
   if(!data){ toast('Selecione uma data.'); return; }
@@ -621,7 +621,7 @@ async function confirmarAgendamento(){
   }catch(e){ toast('Erro ao agendar.'); }
 }
 
-// ── EXCLUIR CONSULTA ───────────────────────────────────────
+// ---- EXCLUIR CONSULTA ------------------------------------------------------------------------------
 async function excluirConsulta(id){
   if(!confirm('Excluir esta consulta? Esta ação não pode ser desfeita.')) return;
   try{
@@ -653,7 +653,7 @@ function calcularAlertasCheckin(){
         diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
       }
     } else {
-      // Nunca enviou check-in — usa data de início
+      // Nunca enviou check-in - usa data de início
       if(p.datainicio){
         const pi = p.datainicio.split('/');
         if(pi.length===3){
@@ -683,10 +683,10 @@ function renderDashboard(){
   const pendentes=state.checkins.filter(c=>!(c.status||'').toString().toLowerCase().includes('revisado'));
   document.getElementById('statPendentes').textContent=pendentes.length;
   const el=document.getElementById('recentCIs');
-  if(!pendentes.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos revisados.</p></div>';}
+  if(!pendentes.length){el.innerHTML='<div class="empty"><div class="empty-icon">OK</div><p>Todos revisados.</p></div>';}
   else{el.innerHTML=pendentes.slice(0,10).map(c=>{
-    const nome=c['1_nome']||'—';const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'—')+' · Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'—')+'</div></div>';
+    const nome=c['1_nome']||'-';const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+    return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'-')+' . Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'-')+'</div></div>';
   }).join('');}
   renderCalendario();
   renderAlertasCheckin();
@@ -698,7 +698,7 @@ function renderAlertasCheckin(){
   document.getElementById('statVencidos').textContent = alertas.filter(a=>a.diasRestantes<0).length;
 
   if(!alertas.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos os pacientes estão em dia.</p></div>';
+    el.innerHTML='<div class="empty"><div class="empty-icon">OK</div><p>Todos os pacientes estão em dia.</p></div>';
     return;
   }
 
@@ -709,7 +709,7 @@ function renderAlertasCheckin(){
 
     if(dr < 0){
       cor = 'red';
-      msg = 'Check-in atrasado — '+Math.abs(dr)+' dia(s) sem preencher além do prazo';
+      msg = 'Check-in atrasado - '+Math.abs(dr)+' dia(s) sem preencher além do prazo';
       diasTxt = Math.abs(dr)+'d atrasado';
     } else if(dr === 0){
       cor = 'orange';
@@ -745,8 +745,8 @@ async function renderProximasConsultas(){
     const agendadas=todas.filter(c=>c.status==='Agendada'&&c.dataprevista).sort((a,b)=>toDate(a.dataprevista)-toDate(b.dataprevista)).slice(0,8);
     if(!agendadas.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div>';return;}
     el.innerHTML=agendadas.map(c=>{
-      const pac=state.pacientes.find(p=>p.codigo===c.codigo);const nome=pac?pac.nome:(c.codigo||'—');const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-      return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo+'\')">'+'<div class="recent-avatar" style="background:var(--yellow);color:var(--navy);">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">Consulta '+c.numero+' de '+(pac?pac.consultasincluidas:'?')+' · '+(pac?pac.pacote:'—')+'</div></div>'+'<div class="recent-date" style="font-weight:600;color:var(--navy);">'+c.dataprevista+'</div></div>';
+      const pac=state.pacientes.find(p=>p.codigo===c.codigo);const nome=pac?pac.nome:(c.codigo||'-');const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+      return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo+'\')">'+'<div class="recent-avatar" style="background:var(--yellow);color:var(--navy);">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">Consulta '+c.numero+' de '+(pac?pac.consultasincluidas:'?')+' . '+(pac?pac.pacote:'-')+'</div></div>'+'<div class="recent-date" style="font-weight:600;color:var(--navy);">'+c.dataprevista+'</div></div>';
     }).join('');
   }catch(e){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Erro ao carregar.</p></div>';}
 }
@@ -759,7 +759,7 @@ function renderPacientes(){
   el.innerHTML=filtered.map(p=>{
     const ini=p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
     const cis=state.checkins.filter(c=>c.codigo_paciente===p.codigo).length;
-    return '<div class="patient-row" onclick="abrirPaciente(\''+p.id+'\')">'+'<div class="avatar">'+ini+'</div>'+'<div class="patient-info"><div class="patient-name">'+p.nome+'</div><div class="patient-meta">'+p.pacote+' · '+cis+' check-in(s) · desde '+(p.datainicio||'—')+'</div></div>'+'<span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span>'+'<div class="pts-display"><div class="pts-num">'+(Number(p.pontos)||0)+'</div><div class="pts-lbl">pontos</div></div></div>';
+    return '<div class="patient-row" onclick="abrirPaciente(\''+p.id+'\')">'+'<div class="avatar">'+ini+'</div>'+'<div class="patient-info"><div class="patient-name">'+p.nome+'</div><div class="patient-meta">'+p.pacote+' . '+cis+' check-in(s) . desde '+(p.datainicio||'-')+'</div></div>'+'<span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span>'+'<div class="pts-display"><div class="pts-num">'+(Number(p.pontos)||0)+'</div><div class="pts-lbl">pontos</div></div></div>';
   }).join('');
 }
 
@@ -784,12 +784,12 @@ function renderProfile(){
 
   const ciEl=document.getElementById('profileCIs');
   if(!currentCIs.length){ciEl.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.</p></div>';}
-  else{ciEl.innerHTML=currentCIs.map((c,i)=>{const ad=Number(c['3_adesao_ao_plano_0_10']);const es=Number(c['11_nivel_de_estresse_1_10']);return '<div class="ci-item" onclick="abrirCI('+i+')">'+'<div class="ci-top"><div><div class="ci-date">'+(c.data_hora||'—')+'</div><div class="ci-period">'+(c['2_como_foram_os_15_dias']||'—')+'</div></div><span style="color:var(--muted)">›</span></div>'+'<div class="ci-scores"><span class="score-tag '+(ad>=7?'g':ad>=5?'':'r')+'">Adesão '+ad+'/10</span><span class="score-tag y">Motivação '+c['15_motivacao_hoje_0_10']+'/10</span><span class="score-tag '+(es>=7?'r':'')+'">Estresse '+es+'/10</span><span class="score-tag">'+c['7_treinos_realizados']+' treinos</span></div></div>';}).join('');}
+  else{ciEl.innerHTML=currentCIs.map((c,i)=>{const ad=Number(c['3_adesao_ao_plano_0_10']);const es=Number(c['11_nivel_de_estresse_1_10']);return '<div class="ci-item" onclick="abrirCI('+i+')">'+'<div class="ci-top"><div><div class="ci-date">'+(c.data_hora||'-')+'</div><div class="ci-period">'+(c['2_como_foram_os_15_dias']||'-')+'</div></div><span style="color:var(--muted)">></span></div>'+'<div class="ci-scores"><span class="score-tag '+(ad>=7?'g':ad>=5?'':'r')+'">Adesão '+ad+'/10</span><span class="score-tag y">Motivação '+c['15_motivacao_hoje_0_10']+'/10</span><span class="score-tag '+(es>=7?'r':'')+'">Estresse '+es+'/10</span><span class="score-tag">'+c['7_treinos_realizados']+' treinos</span></div></div>';}).join('');}
 
   const consEl=document.getElementById('profileCons');
   if(!currentCons.length){consEl.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>';}
   else{consEl.innerHTML=currentCons.map(c=>{
-    const data = c.dataprevista || c.datareal || '—';
+    const data = c.dataprevista || c.datareal || '-';
     const realizada = c.status==='Realizada';
     return '<div class="cons-item">'+
       '<div class="cons-top">'+
@@ -798,22 +798,22 @@ function renderProfile(){
       '</div>'+
       '<div class="cons-dates">📅 '+data+'</div>'+
       (c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+
-      ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' · ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
+      ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' . ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
       '<div class="cons-actions">'+
-        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button>'+
-        '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑️ Excluir</button>'+
+        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">Edit Editar</button>'+
+        '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑 Excluir</button>'+
       '</div>'+
     '</div>';
   }).join('');}
 
   const cqEl=document.getElementById('profileCQs');
   if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
-  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' · +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">✏️</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(''+c.id+'')">🗑️</button></div></div>').join('');}
+  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' . +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">Edit</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(''+c.id+'')">🗑</button></div></div>').join('');}
 
-  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
+  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">*</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
 
   const sel=document.getElementById('regConsultaNum');
-  sel.innerHTML=currentCons.length?currentCons.map(c=>'<option value="'+c.id+'">Consulta '+c.numero+' — '+c.status+(c.dataprevista?' (prev: '+c.dataprevista+')':'')+'</option>').join(''):'<option value="">Nenhuma consulta cadastrada</option>';
+  sel.innerHTML=currentCons.length?currentCons.map(c=>'<option value="'+c.id+'">Consulta '+c.numero+' - '+c.status+(c.dataprevista?' (prev: '+c.dataprevista+')':'')+'</option>').join(''):'<option value="">Nenhuma consulta cadastrada</option>';
   document.getElementById('regDataReal').value=new Date().toISOString().split('T')[0];
 }
 
@@ -821,7 +821,7 @@ function abrirEdicaoConsulta(idConsulta){
   const c=currentCons.find(x=>x.id===idConsulta);if(!c)return;
   const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
   document.getElementById('editConsultaId').value=c.id;
-  document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' — '+currentPaciente.nome;
+  document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' - '+currentPaciente.nome;
   document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista||c.datareal);
   document.getElementById('editStatus').value=c.status||'Agendada';
   document.getElementById('editNotas').value=c.anotacoes||'';
@@ -850,8 +850,8 @@ function abrirCI(idx){
   const c=currentCIs[idx];if(!c)return;
   const campos=[['Como foram os 15 dias',c['2_como_foram_os_15_dias']],['Adesão ao plano',c['3_adesao_ao_plano_0_10']+'/10'],['Saídas do plano',c['4_saidas_do_plano']+' vez(es)'],['Momento de saída',c['5_momento_da_saida']],['Refeição difícil',c['6_refeicao_mais_dificil']],['Treinos',c['7_treinos_realizados']],['Motivo falta',c['8_motivo_de_faltar_treino']],['Sono',c['9_sono']],['Energia',c['10_disposicao_energia_1_10']+'/10'],['Estresse',c['11_nivel_de_estresse_1_10']+'/10'],['Gatilhos',c['12_o_que_tirou_do_trilho']],['Motivação',c['15_motivacao_hoje_0_10']+'/10']];
   document.getElementById('modalCINome').textContent=c['1_nome']||currentPaciente.nome;
-  document.getElementById('modalCIData').textContent=c.data_hora||'—';
-  document.getElementById('modalCIContent').innerHTML='<div class="detail-grid">'+campos.map(([l,v])=>'<div class="detail-item"><div class="detail-lbl">'+l+'</div><div class="detail-val">'+(v||'—')+'</div></div>').join('')+'</div>'+(c['13_o_que_funcionou_bem']?'<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['13_o_que_funcionou_bem']+'</div></div>':'')+(c['14_recado_para_a_consulta']?'<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['14_recado_para_a_consulta']+'</div></div>':'');
+  document.getElementById('modalCIData').textContent=c.data_hora||'-';
+  document.getElementById('modalCIContent').innerHTML='<div class="detail-grid">'+campos.map(([l,v])=>'<div class="detail-item"><div class="detail-lbl">'+l+'</div><div class="detail-val">'+(v||'-')+'</div></div>').join('')+'</div>'+(c['13_o_que_funcionou_bem']?'<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['13_o_que_funcionou_bem']+'</div></div>':'')+(c['14_recado_para_a_consulta']?'<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['14_recado_para_a_consulta']+'</div></div>':'');
   abrirModal('modalCI');
 }
 
