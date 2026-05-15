@@ -174,7 +174,6 @@
   .cal-legend-item{font-size:11px;color:var(--subtext);display:flex;align-items:center;gap:6px;cursor:pointer}
   .cal-legend-item:hover{color:var(--navy)}
   .cal-legend-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0}
-
   .alert-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
   .alert-item:last-child{border-bottom:none}
   .alert-item:hover{opacity:.75}
@@ -402,7 +401,6 @@
   </div>
 </div>
 
-
 <!-- MODAL EDITAR CONSULTA -->
 <div class="modal-overlay" id="modalEditarConsulta">
   <div class="modal" style="max-width:480px">
@@ -490,8 +488,13 @@ let calAno = new Date().getFullYear();
 let todasConsultas = [];
 
 async function renderCalendario(){
-  const el = document.getElementById('calendarWrap');
+  const el = document.getElementById('calendarioConsultas');
   if(!el) return;
+
+  // Cria o wrapper se não existir ainda
+  if(!document.getElementById('calendarWrap')){
+    el.innerHTML = '<div id="calendarWrap"></div>';
+  }
 
   try{
     const res = await fetch(SCRIPT_URL+'?acao=consultas');
@@ -510,11 +513,10 @@ function desenharCalendario(){
   const primeiroDia = new Date(calAno, calMes, 1);
   const ultimoDia = new Date(calAno, calMes+1, 0);
   const diasNoMes = ultimoDia.getDate();
-  const iniciaSemana = primeiroDia.getDay(); // 0=dom
+  const iniciaSemana = primeiroDia.getDay();
 
   const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-  // Monta mapa de eventos
   const eventos = {};
   todasConsultas.forEach(c => {
     const d = c.dataprevista || c.datareal || '';
@@ -531,23 +533,19 @@ function desenharCalendario(){
     }
   });
 
-  // Cabeçalho
   let html = '<div class="cal-header">';
   html += '<div class="cal-title">'+meses[calMes]+' '+calAno+'</div>';
   html += '<div class="cal-nav"><button onclick="navCal(-1)">&lsaquo;</button><button onclick="navCal(1)">&rsaquo;</button></div>';
   html += '</div>';
 
-  // Grid
   html += '<div class="cal-grid">';
   ['D','S','T','Q','Q','S','S'].forEach(d => { html += '<div class="cal-day-name">'+d+'</div>'; });
 
-  // Dias antes do mês
   for(let i=0; i<iniciaSemana; i++){
     const diaAntes = new Date(calAno, calMes, -iniciaSemana+i+1).getDate();
     html += '<div class="cal-day other-month">'+diaAntes+'</div>';
   }
 
-  // Dias do mês
   for(let d=1; d<=diasNoMes; d++){
     const isHoje = d===hoje.getDate() && calMes===hoje.getMonth() && calAno===hoje.getFullYear();
     const temEvento = eventos[d] && eventos[d].length > 0;
@@ -562,13 +560,12 @@ function desenharCalendario(){
 
   html += '</div>';
 
-  // Legenda de eventos do mês
   const eventosDoMes = Object.entries(eventos).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
   if(eventosDoMes.length){
     html += '<div class="cal-legend">';
     eventosDoMes.forEach(([dia, evs]) => {
       evs.forEach(ev => {
-        html += '<div class="cal-legend-item" onclick="irParaPorCodigo(''+ev.id+'')">';
+        html += '<div class="cal-legend-item" onclick="irParaPorCodigo(\''+ev.id+'\')">';
         html += '<div class="cal-legend-dot"></div>';
         html += dia+'/'+String(calMes+1).padStart(2,'0')+' - '+ev.nome;
         html += '</div>';
@@ -598,11 +595,8 @@ function mostrarEventosDia(dia){
   const nomes = eventos.map(c => {
     const pac = state.pacientes.find(p=>p.codigo===c.codigo);
     return (pac?pac.nome:'?')+' (Consulta '+c.numero+')';
-  }).join('
-');
-  alert('Consultas em '+dia+'/'+(calMes+1)+'/'+calAno+':
-
-'+nomes);
+  }).join('\n');
+  alert('Consultas em '+dia+'/'+(calMes+1)+'/'+calAno+':\n\n'+nomes);
 }
 
 // ---- AGENDAR CONSULTA ------------------------------------------------------------------------------
@@ -638,13 +632,11 @@ function calcularAlertasCheckin(){
   const alertas = [];
 
   state.pacientes.filter(p=>p.status==='Ativo').forEach(p => {
-    // Pega o check-in mais recente deste paciente
     const cis = state.checkins.filter(c=>c.codigo_paciente===p.codigo);
     let diasDesde = null;
     let ultimaData = null;
 
     if(cis.length > 0){
-      // Tenta parsear a data do check-in mais recente
       const raw = (cis[0].data_hora||'').split(',')[0].trim();
       const partes = raw.split('/');
       if(partes.length === 3){
@@ -653,7 +645,6 @@ function calcularAlertasCheckin(){
         diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
       }
     } else {
-      // Nunca enviou check-in - usa data de início
       if(p.datainicio){
         const pi = p.datainicio.split('/');
         if(pi.length===3){
@@ -666,20 +657,19 @@ function calcularAlertasCheckin(){
 
     if(diasDesde === null) return;
 
-    const diasRestantes = 15 - diasDesde; // positivo = ainda tem tempo, negativo = vencido
+    const diasRestantes = 15 - diasDesde;
     if(diasRestantes <= 3){
       alertas.push({ paciente: p, diasRestantes, diasDesde });
     }
   });
 
-  // Ordena: mais vencidos primeiro
   alertas.sort((a,b) => a.diasRestantes - b.diasRestantes);
   return alertas;
 }
 
 function renderDashboard(){
   document.getElementById('statAtivos').textContent=state.pacientes.filter(p=>p.status==='Ativo').length;
-  document.getElementById('statCIs').textContent=state.checkins.length;
+  // FIX: statCIs foi removido do HTML — linha removida para não gerar erro
   const pendentes=state.checkins.filter(c=>!(c.status||'').toString().toLowerCase().includes('revisado'));
   document.getElementById('statPendentes').textContent=pendentes.length;
   const el=document.getElementById('recentCIs');
@@ -726,7 +716,7 @@ function renderAlertasCheckin(){
     }
 
     const ini = p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    return '<div class="alert-item" onclick="irParaPorCodigo(''+p.codigo+'')">' +
+    return '<div class="alert-item" onclick="irParaPorCodigo(\''+p.codigo+'\')">' +
       '<div class="alert-dot '+cor+'"></div>' +
       '<div class="alert-info">' +
         '<div class="alert-name">'+p.nome+'</div>' +
@@ -735,20 +725,6 @@ function renderAlertasCheckin(){
       '<div class="alert-days '+cor+'">'+diasTxt+'</div>' +
     '</div>';
   }).join('');
-}
-
-async function renderProximasConsultas(){
-  const el=document.getElementById('proximasConsultas');
-  try{
-    const res=await fetch(SCRIPT_URL+'?acao=consultas');const data=await res.json();const todas=data.consultas||[];
-    const toDate=d=>{if(!d)return new Date(9999,0,1);const p=d.toString().split('/');return p.length===3?new Date(p[2]+'-'+p[1]+'-'+p[0]):new Date(9999,0,1);};
-    const agendadas=todas.filter(c=>c.status==='Agendada'&&c.dataprevista).sort((a,b)=>toDate(a.dataprevista)-toDate(b.dataprevista)).slice(0,8);
-    if(!agendadas.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div>';return;}
-    el.innerHTML=agendadas.map(c=>{
-      const pac=state.pacientes.find(p=>p.codigo===c.codigo);const nome=pac?pac.nome:(c.codigo||'-');const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-      return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo+'\')">'+'<div class="recent-avatar" style="background:var(--yellow);color:var(--navy);">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">Consulta '+c.numero+' de '+(pac?pac.consultasincluidas:'?')+' . '+(pac?pac.pacote:'-')+'</div></div>'+'<div class="recent-date" style="font-weight:600;color:var(--navy);">'+c.dataprevista+'</div></div>';
-    }).join('');
-  }catch(e){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Erro ao carregar.</p></div>';}
 }
 
 function renderPacientes(){
@@ -800,7 +776,7 @@ function renderProfile(){
       (c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+
       ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' . ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
       '<div class="cons-actions">'+
-        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">Edit Editar</button>'+
+        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button>'+
         '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑 Excluir</button>'+
       '</div>'+
     '</div>';
@@ -808,12 +784,11 @@ function renderProfile(){
 
   const cqEl=document.getElementById('profileCQs');
   if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
-  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' . +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">Edit</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(''+c.id+'')">🗑</button></div></div>').join('');}
+  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' . +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">✏️</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(\''+c.id+'\')">🗑</button></div></div>').join('');}
 
-  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">*</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
+  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
 
-  const sel=document.getElementById('regConsultaNum');
-  sel.innerHTML=currentCons.length?currentCons.map(c=>'<option value="'+c.id+'">Consulta '+c.numero+' - '+c.status+(c.dataprevista?' (prev: '+c.dataprevista+')':'')+'</option>').join(''):'<option value="">Nenhuma consulta cadastrada</option>';
+  // FIX: regConsultaNum não existe no HTML — bloco removido para não gerar erro
   document.getElementById('regDataReal').value=new Date().toISOString().split('T')[0];
 }
 
@@ -868,13 +843,9 @@ async function salvarRegistro(){
   const metaTexto=document.getElementById('regMetaTexto').value.trim();
   const dataFmt=dataReal?new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
 
-  // Verifica se há consulta agendada para marcar como realizada
   const consultaAgendada = currentCons.find(c=>c.status==='Agendada');
   const idConsulta = consultaAgendada ? consultaAgendada.id : null;
-  const anotacoesCompletas = [notas, notasLivres].filter(Boolean).join('
-
---- Notas livres ---
-');
+  const anotacoesCompletas = [notas, notasLivres].filter(Boolean).join('\n\n--- Notas livres ---\n');
 
   try{
     const promises=[];
@@ -882,7 +853,6 @@ async function salvarRegistro(){
       promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
     } else {
-      // Cria nova consulta realizada diretamente
       promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({acao:'salvarConsulta',codigo:p.codigo,idPaciente:p.id,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
     }
