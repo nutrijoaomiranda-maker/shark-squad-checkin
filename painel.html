@@ -505,6 +505,8 @@ function desenharCalendario(){
   const eventos = {};
   todasConsultas.forEach(c => {
     const d = c.dataPrevista || c.dataprevista || c.dataReal || c.datareal || '';
+    // No calendário, mostramos apenas consultas que ainda não foram realizadas
+    if (c.status === 'Realizada') return;
     if(!d) return;
     const partes = d.toString().split('/');
     if(partes.length !== 3) return;
@@ -572,6 +574,8 @@ function navCal(dir){
 function mostrarEventosDia(dia){
   const eventos = todasConsultas.filter(c => {
     const d = c.dataPrevista || c.dataprevista || c.dataReal || c.datareal || '';
+    // No calendário, mostramos apenas consultas que ainda não foram realizadas
+    if (c.status === 'Realizada') return;
     if(!d) return false;
     const partes = d.toString().split('/');
     return partes.length===3 && parseInt(partes[0])===dia && parseInt(partes[1])-1===calMes && parseInt(partes[2])===calAno;
@@ -597,6 +601,7 @@ async function confirmarAgendamento(){
     document.getElementById('agendarData').value='';
     toast('Consulta agendada para '+dataFmt+'!');
     setTimeout(()=>abrirPaciente(p.id),1200);
+    setTimeout(()=>renderCalendario(),1500);
   }catch(e){ toast('Erro ao agendar.'); }
 }
 
