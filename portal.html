@@ -2,978 +2,2091 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel | Shark Squad</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Shark Squad</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:#1c3054;--navy-hover:#243d6a;--navy-pale:#e8eef7;
-    --yellow:#e8b400;--yellow-pale:#fdf6dc;
-    --bg:#f0ede8;--surface:#f7f5f2;--surface2:#ede9e3;--border:#ddd8d0;
-    --text:#1a1a1a;--subtext:#6b6560;--muted:#a09890;
-    --success:#2d7a4f;--success-bg:#eaf5ef;--danger:#c0392b;--danger-bg:#fdf0ee;
-    --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
-    --shadow-sm:0 1px 2px rgba(0,0,0,.05);
-    --r:14px;--r-sm:8px;--sidebar-w:220px;
+    --navy: #1c3054;
+    --navy-light: #243d6a;
+    --yellow: #e8b400;
+    --yellow-pale: #fdf6dc;
+    --bg: #f0ede8;
+    --surface: #f7f5f2;
+    --border: #ddd8d0;
+    --text: #1a1a1a;
+    --subtext: #6b6560;
+    --muted: #a09890;
+    --success: #2d7a4f;
+    --success-bg: #eaf5ef;
+    --danger: #c0392b;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --bottom-nav-h: 68px;
   }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;min-height:100vh;-webkit-font-smoothing:antialiased}
-  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:400px;box-shadow:var(--shadow)}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-  .brand-icon{width:38px;height:38px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
-  .brand-name{font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
-  .login-card h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;margin-bottom:6px}
-  .login-card>p{color:var(--subtext);font-size:14px;margin-bottom:28px}
-  .lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
-  .inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;padding:12px 16px;outline:none;transition:border-color .2s,background .2s;margin-bottom:18px}
-  .inp:focus{border-color:var(--navy);background:#fff}
-  .inp::placeholder{color:var(--muted)}
-  .btn-primary{width:100%;background:var(--navy);color:#fff;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:15px;padding:13px 24px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:background .2s}
-  .btn-primary:hover{background:var(--navy-hover)}
-  .err-msg{color:var(--danger);font-size:13px;margin-top:10px;text-align:center;display:none}
-  #appShell{display:none;min-height:100vh}
-  .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--navy);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1)}
-  .sidebar-logo{display:flex;align-items:center;gap:10px;padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
-  .sidebar-logo-icon{width:32px;height:32px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .sidebar-logo-text{font-weight:700;font-size:13px;letter-spacing:.08em;color:#fff;text-transform:uppercase}
-  .sidebar-nav{padding:16px 10px;flex:1}
-  .nav-section{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:0 10px;margin:16px 0 6px}
-  .nav-section:first-child{margin-top:0}
-  .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r-sm);color:rgba(255,255,255,.6);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'Instrument Sans',sans-serif;margin-bottom:1px}
-  .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
-  .nav-item.active{background:rgba(255,255,255,.11);color:#fff}
-  .nav-icon{font-size:15px;opacity:.75;flex-shrink:0}
-  .sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.07)}
-  .btn-logout{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r-sm);color:rgba(255,255,255,.4);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;font-family:'Instrument Sans',sans-serif}
-  .btn-logout:hover{color:#fff;background:rgba(255,255,255,.06)}
-  .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--navy);align-items:center;justify-content:space-between;padding:0 16px;z-index:150}
-  .mobile-header-brand{display:flex;align-items:center;gap:8px}
-  .mobile-header-brand span{font-weight:700;font-size:14px;color:#fff;letter-spacing:.06em;text-transform:uppercase}
-  .hamburger{width:36px;height:36px;border:none;background:rgba(255,255,255,.1);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
-  .hamburger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px}
-  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:190;backdrop-filter:blur(2px)}
-  .sidebar-overlay.open{display:block}
-  .main{margin-left:var(--sidebar-w);min-height:100vh;padding:32px 36px}
-  .page{display:none}
-  .page.active{display:block;animation:fadeUp .25s ease}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .page-title{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;margin-bottom:4px}
-  .page-sub{color:var(--subtext);font-size:14px;margin-bottom:28px}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow-sm)}
-  .card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
-  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm)}
-  .stat-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-  .stat-val{font-family:'Instrument Serif',serif;font-size:38px;color:var(--navy);line-height:1}
-  .stat-sub{font-size:12px;color:var(--muted);margin-top:3px}
-  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .search-row{display:flex;gap:10px;margin-bottom:14px}
-  .search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;transition:border-color .2s}
-  .search-box:focus-within{border-color:var(--navy)}
-  .search-box span{color:var(--muted);font-size:15px}
-  .search-box input{flex:1;border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--text)}
-  .search-box input::placeholder{color:var(--muted)}
-  .btn{font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:13px;padding:10px 18px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
-  .btn-navy{background:var(--navy);color:#fff}
-  .btn-navy:hover{background:var(--navy-hover)}
-  .btn-ghost{background:var(--surface2);color:var(--navy);border:1px solid var(--border)}
-  .btn-ghost:hover{background:var(--border)}
-  .btn-yellow{background:var(--yellow);color:var(--navy);font-weight:700}
-  .btn-yellow:hover{opacity:.9}
-  .btn-sm{padding:7px 13px;font-size:12px}
-  .patient-list{display:flex;flex-direction:column;gap:8px}
-  .patient-row{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm)}
-  .patient-row:hover{border-color:var(--navy);transform:translateY(-1px);box-shadow:var(--shadow)}
-  .avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
-  .patient-info{flex:1;min-width:0}
-  .patient-name{font-weight:600;font-size:14px}
-  .patient-meta{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
-  .badge-active{background:var(--success-bg);color:var(--success)}
-  .badge-inactive{background:var(--surface2);color:var(--muted)}
-  .badge-agendada{background:var(--navy-pale);color:var(--navy)}
-  .badge-realizada{background:var(--success-bg);color:var(--success)}
-  .pts-display{text-align:right;flex-shrink:0}
-  .pts-num{font-family:'Instrument Serif',serif;font-size:22px;color:var(--navy);line-height:1}
-  .pts-lbl{font-size:10px;color:var(--muted)}
-  .back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--subtext);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;padding:0;margin-bottom:20px;font-family:'Instrument Sans',sans-serif;transition:color .15s}
-  .back-btn:hover{color:var(--navy)}
-  .profile-header{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
-  .profile-avatar{width:58px;height:58px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
-  .profile-info{flex:1;min-width:0}
-  .profile-name{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:6px}
-  .profile-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .code-tag{background:var(--navy);color:#fff;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.06em;font-family:monospace}
-  .profile-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .tab-bar{display:flex;gap:3px;background:var(--surface2);border-radius:var(--r-sm);padding:3px;margin-bottom:18px;flex-wrap:wrap;width:fit-content}
-  .tab-btn{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;border:none;background:none;color:var(--subtext);cursor:pointer;transition:all .15s;font-family:'Instrument Sans',sans-serif}
-  .tab-btn.active{background:var(--surface);color:var(--navy);box-shadow:var(--shadow-sm)}
-  .tab-content{display:none}
-  .tab-content.active{display:block}
-  .ci-list{display:flex;flex-direction:column;gap:8px}
-  .ci-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;cursor:pointer;transition:all .15s}
-  .ci-item:hover{border-color:var(--navy);background:var(--surface)}
-  .ci-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-  .ci-date{font-size:12px;color:var(--muted)}
-  .ci-period{font-size:14px;font-weight:600}
-  .ci-scores{display:flex;gap:6px;flex-wrap:wrap}
-  .score-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--navy-pale);color:var(--navy)}
-  .score-tag.y{background:var(--yellow-pale);color:#7a5c00}
-  .score-tag.r{background:var(--danger-bg);color:var(--danger)}
-  .score-tag.g{background:var(--success-bg);color:var(--success)}
-  .cq-list{display:flex;flex-direction:column;gap:8px}
-  .cq-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm)}
-  .cq-item-body{flex:1;min-width:0}
-  .cq-item-actions{display:flex;gap:6px;flex-shrink:0}
-  .cq-icon{font-size:20px;flex-shrink:0}
-  .cq-text{flex:1;font-size:14px;font-weight:500}
-  .cq-date{font-size:12px;color:var(--muted);white-space:nowrap}
-  .pts-hero{text-align:center;padding:24px 0 28px;border-bottom:1px solid var(--border);margin-bottom:20px}
-  .pts-big{font-family:'Instrument Serif',serif;font-size:64px;color:var(--navy);line-height:1;margin-bottom:6px}
-  .pts-label{font-size:13px;color:var(--muted);margin-bottom:14px}
-  .pts-level{display:inline-flex;align-items:center;gap:6px;background:var(--yellow-pale);border:1px solid var(--yellow);color:#7a5c00;font-size:13px;font-weight:700;padding:5px 14px;border-radius:99px}
-  .pts-history{display:flex;flex-direction:column}
-  .pts-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
-  .pts-row:last-child{border-bottom:none}
-  .pts-row-info{flex:1}
-  .pts-row-label{font-size:14px}
-  .pts-row-date{font-size:11px;color:var(--muted);margin-top:2px}
-  .pts-row-val{font-weight:700;color:var(--success);font-size:15px}
-  .cons-list{display:flex;flex-direction:column;gap:10px}
-  .cons-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px}
-  .cons-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
-  .cons-num{font-weight:700;font-size:14px;color:var(--navy)}
-  .cons-dates{font-size:12px;color:var(--muted)}
-  .cons-notes{font-size:14px;line-height:1.6;margin-top:8px}
-  .cons-actions{display:flex;gap:6px;margin-top:10px}
-  .form-row{margin-bottom:16px}
-  .form-row label{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
-  textarea.inp{resize:vertical;min-height:80px;margin-bottom:0}
-  select.inp{appearance:none;cursor:pointer}
-  .cq-form-row{display:flex;gap:8px;margin-bottom:8px}
-  .cq-form-row .inp{flex:1;margin-bottom:0}
-  .pts-form-row{display:flex;align-items:center;gap:10px}
-  .pts-form-row .inp{max-width:110px;margin-bottom:0}
-  .divider{height:1px;background:var(--border);margin:20px 0}
-  /* ── CALENDAR ──────────────────────────────────────── */
-  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .cal-title{font-size:14px;font-weight:700;color:var(--navy)}
-  .cal-nav{display:flex;gap:4px}
-  .cal-nav button{width:28px;height:28px;border:1px solid var(--border);background:var(--bg);border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--subtext)}
-  .cal-nav button:hover{border-color:var(--navy);color:var(--navy)}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-  .cal-day-name{text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:4px 0;text-transform:uppercase}
-  .cal-day{text-align:center;padding:4px 2px;font-size:12px;border-radius:6px;cursor:default;min-height:28px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px}
-  .cal-day.other-month{color:var(--muted);opacity:.4}
-  .cal-day.today{background:var(--navy-pale);font-weight:700;color:var(--navy)}
-  .cal-day.has-event{cursor:pointer}
-  .cal-dot{width:5px;height:5px;border-radius:50%;background:var(--yellow);flex-shrink:0}
-  .cal-day:hover.has-event{background:var(--navy-pale)}
-  .cal-legend{margin-top:10px;display:flex;flex-direction:column;gap:4px;max-height:80px;overflow-y:auto}
-  .cal-legend-item{font-size:11px;color:var(--subtext);display:flex;align-items:center;gap:6px;cursor:pointer}
-  .cal-legend-item:hover{color:var(--navy)}
-  .cal-legend-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0}
 
-  .alert-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
-  .alert-item:last-child{border-bottom:none}
-  .alert-item:hover{opacity:.75}
-  .alert-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-  .alert-dot.red{background:var(--danger)}
-  .alert-dot.orange{background:#e67e22}
-  .alert-dot.yellow{background:var(--yellow)}
-  .alert-info{flex:1;min-width:0}
-  .alert-name{font-size:13px;font-weight:600}
-  .alert-msg{font-size:12px;color:var(--muted);margin-top:2px}
-  .alert-days{font-size:12px;font-weight:700;white-space:nowrap}
-  .alert-days.red{color:var(--danger)}
-  .alert-days.orange{color:#e67e22}
-  .alert-days.yellow{color:#b8860b}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-  .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .modal{background:var(--surface);border-radius:20px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto;animation:slideUp .25s ease}
-  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .modal h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;margin-bottom:4px}
-  .modal>p{color:var(--subtext);font-size:14px;margin-bottom:24px}
-  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
-  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-  .detail-item{background:var(--bg);border-radius:var(--r-sm);padding:12px 14px}
-  .detail-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
-  .detail-val{font-size:14px;font-weight:600}
-  .detail-full{background:var(--bg);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:8px}
-  .recent-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s}
-  .recent-item:last-child{border-bottom:none}
-  .recent-item:hover{opacity:.7}
-  .recent-avatar{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
-  .recent-info{flex:1;min-width:0}
-  .recent-name{font-size:13px;font-weight:600}
-  .recent-period{font-size:12px;color:var(--muted)}
-  .recent-date{font-size:11px;color:var(--muted);white-space:nowrap}
-  .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:500;z-index:999;box-shadow:var(--shadow);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
-  .toast.show{transform:translateY(0);opacity:1}
-  .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:14px}
-  .loading-overlay.hide{display:none}
-  .loading-shark{font-size:44px;animation:pulse 1.2s ease infinite}
-  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-  .loading-text{font-size:14px;color:var(--muted);font-weight:500}
-  .empty{text-align:center;padding:40px 20px}
-  .empty-icon{font-size:36px;margin-bottom:10px}
-  .empty p{font-size:14px;color:var(--muted);line-height:1.5}
-  /* CALENDAR */
-  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .cal-month{font-weight:700;font-size:14px;color:var(--navy)}
-  .cal-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--navy);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-  .cal-btn:hover{background:var(--navy);color:#fff}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-  .cal-dow{text-align:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:4px 0}
-  .cal-day{min-height:32px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 2px;position:relative;cursor:default;font-size:12px;font-weight:500;color:var(--subtext)}
-  .cal-day.other-month{color:var(--border)}
-  .cal-day.today{background:var(--navy-pale);color:var(--navy);font-weight:700}
-  .cal-day.has-event{cursor:pointer}
-  .cal-day.has-event:hover{background:var(--surface2)}
-  .cal-day-num{line-height:1}
-  .cal-dots{display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;justify-content:center}
-  .cal-dot{width:6px;height:6px;border-radius:50%;background:var(--navy);flex-shrink:0}
-  .cal-tooltip{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:50;margin-top:2px}
-  .cal-day.has-event:hover .cal-tooltip{display:block}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
 
-  @media(max-width:768px){
-    .sidebar{transform:translateX(-100%)}
-    .sidebar.open{transform:translateX(0)}
-    .mobile-header{display:flex}
-    .main{margin-left:0;padding:76px 16px 32px}
-    .stats-row{grid-template-columns:1fr 1fr}
-    .dash-grid{grid-template-columns:1fr}
-    .profile-actions{width:100%}
-    .detail-grid{grid-template-columns:1fr}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
-  @media(max-width:480px){
-    .stats-row{grid-template-columns:1fr}
-    .tab-bar{width:100%}
-    .tab-btn{flex:1;text-align:center;padding:7px 6px;font-size:11px}
+
+  /* ── SCREENS ──────────────────────────────────────── */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
   }
+
+  .screen.active { display: flex; }
+
+  /* ── LOGIN SCREEN ─────────────────────────────────── */
+  #screenLogin {
+    background: var(--navy);
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+  }
+
+  .login-top {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .login-shark {
+    font-size: 52px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .login-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .login-box {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .login-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .login-input {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 16px 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .login-input:focus { border-color: var(--yellow); }
+  .login-input::placeholder { color: rgba(255,255,255,0.25); font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+  .login-btn {
+    width: 100%;
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .login-btn:active { opacity: 0.85; }
+
+  .login-error {
+    color: #ff8080;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .login-loading {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ── APP SCREEN ───────────────────────────────────── */
+  #screenApp {
+    background: var(--bg);
+    flex-direction: column;
+  }
+
+  /* Scroll area */
+  .app-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--bottom-nav-h) + 16px);
+  }
+
+  /* ── BOTTOM NAV ───────────────────────────────────── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 8px 4px;
+    transition: all 0.15s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-tab-icon { font-size: 22px; transition: transform 0.15s; }
+  .nav-tab-label { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+  .nav-tab.active .nav-tab-label { color: var(--navy); }
+  .nav-tab.active .nav-tab-icon { transform: scale(1.12); }
+
+  .nav-tab-checkin {
+    flex: 0 0 72px;
+    position: relative;
+  }
+
+  .nav-checkin-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 16px rgba(28,48,84,0.35);
+    margin-bottom: 2px;
+    border: 3px solid var(--yellow);
+    transition: transform 0.15s;
+  }
+
+  .nav-tab-checkin:active .nav-checkin-btn { transform: scale(0.93); }
+
+  /* ── PAGES ────────────────────────────────────────── */
+  .page { display: none; }
+  .page.active { display: block; animation: slideUp 0.25s ease; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HOME PAGE ────────────────────────────────────── */
+  .hero {
+    background: var(--navy);
+    padding: 56px 24px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 180px;
+    height: 180px;
+    background: var(--yellow);
+    opacity: 0.07;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: -20px;
+    bottom: -40px;
+    width: 140px;
+    height: 140px;
+    background: var(--yellow);
+    opacity: 0.04;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-greeting {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .hero-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .hero-points {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .hero-points-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--yellow);
+    line-height: 1;
+  }
+
+  .hero-points-info { padding-bottom: 4px; }
+  .hero-points-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+  .hero-points-level {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .home-body { padding: 20px 16px; }
+
+  /* Quick actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .quick-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .quick-card:active { transform: scale(0.97); }
+
+  .quick-card.highlight {
+    background: var(--navy);
+    border-color: var(--navy);
+    grid-column: 1 / -1;
+  }
+
+  .quick-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .quick-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .quick-card.highlight .quick-title { color: #fff; }
+  .quick-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .quick-card.highlight .quick-sub { color: rgba(255,255,255,0.55); }
+
+  /* Section */
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* Próxima consulta */
+  .consulta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .consulta-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--yellow-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .consulta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
+  .consulta-date { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .consulta-num { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Last checkin */
+  .last-checkin {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .last-checkin-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .last-checkin-date { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .last-checkin-period { font-size: 12px; color: var(--muted); }
+
+  .scores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .score-item {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .score-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 3px; }
+  .score-val { font-size: 18px; font-weight: 800; color: var(--navy); }
+  .score-val span { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+  /* ── CHECK-IN PAGE ────────────────────────────────── */
+  .checkin-header {
+    background: var(--navy);
+    padding: 56px 24px 24px;
+  }
+
+  .checkin-header-tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+  }
+
+  .checkin-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .checkin-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+
+  /* Progress */
+  .checkin-progress {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+
+  .checkin-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .checkin-progress-meta span:last-child { color: var(--navy); }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), var(--yellow));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Checkin body */
+  .checkin-body { padding: 16px; }
+
+  /* Section divider */
+  .sec-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 14px;
+  }
+
+  .sec-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
+    background: var(--navy);
+    border-radius: 6px;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .sec-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Q card */
+  .q-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .q-card.active { border-color: var(--navy); }
+  .q-card.error { border-color: var(--danger); }
+
+  .q-num { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .q-text { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 14px; }
+  .q-hint { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  /* Field */
+  .field {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    padding: 13px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field:focus { border-color: var(--navy); background: #fff; }
+  .field::placeholder { color: var(--muted); }
+
+  textarea.field { resize: none; min-height: 90px; line-height: 1.5; }
+
+  /* Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .pill {
+    padding: 9px 15px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--subtext);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pill:active { transform: scale(0.96); }
+  .pill.sel { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+
+  /* Slider */
+  .slider-wrap { padding: 2px 0 4px; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 12px; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 3px solid var(--yellow);
+    cursor: pointer;
+  }
+
+  .slider-val {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+  }
+
+  .slider-val span { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 3px; }
+
+  /* Number */
+  .num-row { display: flex; align-items: center; gap: 16px; }
+
+  .num-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--navy);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+
+  .num-btn:active { background: var(--navy); color: #fff; }
+  .num-display { font-size: 38px; font-weight: 800; color: var(--navy); min-width: 56px; text-align: center; }
+  .num-label { font-size: 13px; color: var(--muted); }
+
+  /* Sleep grid */
+  .sleep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .sleep-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sleep-card:active { transform: scale(0.96); }
+  .sleep-card .si { font-size: 26px; margin-bottom: 5px; }
+  .sleep-card .sl { font-size: 13px; font-weight: 600; color: var(--subtext); }
+  .sleep-card.sel { background: var(--navy); border-color: var(--navy); }
+  .sleep-card.sel .sl { color: #fff; }
+
+  /* Submit */
+  .submit-wrap { padding: 8px 0 24px; }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 17px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 12px;
+    right: 12px;
+    height: 4px;
+    background: var(--yellow);
+    border-radius: 99px;
+  }
+
+  .btn-submit:active { opacity: 0.85; }
+  .btn-submit.loading { opacity: 0.6; pointer-events: none; }
+
+  /* ── EVOLUÇÃO PAGE ────────────────────────────────── */
+  .page-header-simple {
+    background: var(--navy);
+    padding: 56px 24px 24px;
+  }
+
+  .page-header-simple h2 { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .page-header-simple p { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+  .evo-body { padding: 16px; }
+
+  .checkin-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .checkin-item:active { transform: scale(0.98); }
+
+  .ci-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .ci-date { font-size: 12px; color: var(--muted); }
+  .ci-period { font-size: 14px; font-weight: 700; color: var(--text); }
+  .ci-arrow { color: var(--muted); }
+
+  .ci-scores { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .score-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #e8eef7;
+    color: var(--navy);
+  }
+
+  .score-tag.y { background: var(--yellow-pale); color: #7a5c00; }
+  .score-tag.g { background: var(--success-bg); color: var(--success); }
+  .score-tag.r { background: #fdf0ee; color: var(--danger); }
+
+  /* ── CONQUISTAS PAGE ──────────────────────────────── */
+  .conq-body { padding: 16px; }
+
+  .timeline { display: flex; flex-direction: column; }
+
+  .tl-item { display: flex; gap: 14px; padding-bottom: 20px; }
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+
+  .tl-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .tl-line { width: 2px; flex: 1; background: var(--border); margin-top: 6px; min-height: 16px; }
+  .tl-item:last-child .tl-line { display: none; }
+
+  .tl-body { padding-top: 8px; flex: 1; }
+  .tl-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.4; }
+  .tl-meta { font-size: 12px; color: var(--muted); }
+  .tl-pts { display: inline-block; background: var(--yellow-pale); color: #7a5c00; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-top: 4px; }
+
+  /* ── DETAIL MODAL ─────────────────────────────────── */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    backdrop-filter: blur(3px);
+  }
+
+  .drawer-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  .drawer {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 12px 20px 40px;
+    animation: slideDrawer 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes slideDrawer { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .drawer-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin: 8px auto 20px;
+  }
+
+  .drawer-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .drawer-date { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+
+  .detail-item {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .detail-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
+  .detail-val { font-size: 15px; font-weight: 700; color: var(--text); }
+
+  .detail-full { background: var(--bg); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 8px; }
+
+  /* ── SUCCESS ──────────────────────────────────────── */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--navy);
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+
+  .success-emoji { font-size: 64px; margin-bottom: 24px; }
+  .success-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+  .success-text { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 40px; }
+
+  .success-btn {
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 16px 40px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ── EMPTY ────────────────────────────────────────── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; line-height: 1.5; }
+
+  /* ── COUNTDOWN ─────────────────────────────────────────── */
+  .checkin-alert {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .checkin-alert.green {
+    background: var(--success-bg);
+    border: 1px solid #b8dfc9;
+  }
+
+  .checkin-alert.yellow {
+    background: var(--yellow-pale);
+    border: 1px solid var(--yellow);
+  }
+
+  .checkin-alert.orange {
+    background: #fff3e0;
+    border: 1px solid #e67e22;
+  }
+
+  .checkin-alert.red {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+  }
+
+  .alert-emoji { font-size: 26px; flex-shrink: 0; }
+
+  .alert-body { flex: 1; }
+  .alert-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .alert-sub { font-size: 12px; opacity: 0.75; }
+
+  .checkin-alert.green .alert-title { color: var(--success); }
+  .checkin-alert.yellow .alert-title { color: #7a5c00; }
+  .checkin-alert.orange .alert-title { color: #e67e22; }
+  .checkin-alert.red .alert-title { color: var(--danger); }
+
+  /* ── METAS ─────────────────────────────────────────── */
+  .meta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 10px;
+  }
+
+  .meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .meta-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .meta-bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .meta-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .meta-bar-fill.green { background: linear-gradient(90deg, #2d7a4f, #4caf82); }
+  .meta-bar-fill.yellow { background: linear-gradient(90deg, var(--navy), var(--yellow)); }
+  .meta-bar-fill.red { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+  .meta-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── CHART ─────────────────────────────────────────── */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px 16px;
+    margin: 16px 16px 0;
+  }
+
+  .chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .chart-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 14px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--subtext);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── LOADING ──────────────────────────────────────── */
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    gap: 16px;
+  }
+
+  .loading-screen.hide { display: none; }
+
+  .loading-shark { font-size: 48px; animation: pulse 1.2s ease infinite; }
+
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+  .loading-text { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 500; }
+
+  /* Req */
+  .req { color: var(--danger); }
 </style>
 </head>
 <body>
-<div class="loading-overlay" id="loadingOverlay">
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
   <div class="loading-shark">🦈</div>
-  <div class="loading-text">Carregando painel...</div>
+  <div class="loading-text">Carregando...</div>
 </div>
-<div id="loginScreen" style="display:none">
-  <div class="login-card">
-    <div class="brand"><div class="brand-icon">🦈</div><div class="brand-name">Shark Squad</div></div>
-    <h2>Painel do nutricionista</h2><p>Acesso exclusivo</p>
-    <label class="lbl">Senha de acesso</label>
-    <input class="inp" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
-    <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
-    <div class="err-msg" id="loginErr">Senha incorreta.</div>
+
+<!-- LOGIN -->
+<div class="screen" id="screenLogin">
+  <div class="login-top">
+    <span class="login-shark">🦈</span>
+    <div class="login-brand">Shark Squad</div>
+    <div class="login-title">Seu portal<br>de acompanhamento</div>
+  </div>
+  <div class="login-box">
+    <label class="login-label">Seu código de acesso</label>
+    <input class="login-input" type="text" id="loginCode" placeholder="Ex: SHARK123" maxlength="12" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') fazerLogin()">
+    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <div class="login-error" id="loginError">Código não encontrado. Verifique com seu nutricionista.</div>
+    <div class="login-loading" id="loginLoading">Verificando...</div>
   </div>
 </div>
-<div id="appShell">
-  <div class="mobile-header">
-    <div class="mobile-header-brand"><span>🦈</span><span>Shark Squad</span></div>
-    <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><div class="sidebar-logo-icon">🦈</div><div class="sidebar-logo-text">Shark Squad</div></div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">Principal</div>
-      <button class="nav-item active" onclick="irPara('dashboard')" id="nav-dashboard"><span class="nav-icon">📊</span> Visão geral</button>
-      <button class="nav-item" onclick="irPara('patients')" id="nav-patients"><span class="nav-icon">👤</span> Pacientes</button>
-      <div class="nav-section">Ações</div>
-      <button class="nav-item" onclick="abrirModal('modalNovoPaciente')"><span class="nav-icon">➕</span> Novo paciente</button>
-    </nav>
-    <div class="sidebar-footer"><button class="btn-logout" onclick="sair()">↩ Sair</button></div>
-  </aside>
-  <main class="main">
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-title">Visão geral</div>
-      <div class="page-sub" id="dashData">—</div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-lbl">Pacientes ativos</div><div class="stat-val" id="statAtivos">—</div><div class="stat-sub">cadastrados</div></div>
-        <div class="stat-card"><div class="stat-lbl">Pendentes de revisão</div><div class="stat-val" id="statPendentes">—</div><div class="stat-sub">não revisados</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="irPara('dashboard')"><div class="stat-lbl">Check-ins vencidos</div><div class="stat-val" id="statVencidos">—</div><div class="stat-sub">precisam de aviso</div></div>
-      </div>
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-title">Check-ins não revisados</div>
-          <div id="recentCIs"><div class="empty"><div class="empty-icon">📭</div><p>Nenhum pendente.</p></div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Calendário de consultas</div>
-          <div id="calendarioConsultas"><div class="empty"><div class="empty-icon">📅</div><p>Carregando...</p></div></div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <div class="card-title">⚠️ Alertas de check-in</div>
-        <div id="alertasCheckin"><div class="empty"><div class="empty-icon">✅</div><p>Todos os pacientes estão em dia.</p></div></div>
-      </div>
-    </div>
-    <!-- PATIENTS -->
-    <div class="page" id="page-patients">
-      <div class="page-title">Pacientes</div>
-      <div class="page-sub">Clique em um paciente para ver o perfil completo.</div>
-      <div class="search-row">
-        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Buscar paciente…" oninput="renderPacientes()"></div>
-        <button class="btn btn-navy" onclick="abrirModal('modalNovoPaciente')">+ Novo</button>
-      </div>
-      <div class="patient-list" id="patientList"><div class="empty"><div class="empty-icon">👤</div><p>Nenhum paciente ainda.</p></div></div>
-    </div>
-    <!-- PROFILE -->
-    <div class="page" id="page-profile">
-      <button class="back-btn" onclick="irPara('patients')">← Voltar</button>
-      <div class="profile-header" id="profileHeader"></div>
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="mostrarTab('tab-ci')" id="tabBtn-ci">Check-ins</button>
-        <button class="tab-btn" onclick="mostrarTab('tab-cons')" id="tabBtn-cons">Consultas</button>
-        <button class="tab-btn" onclick="mostrarTab('tab-cq')" id="tabBtn-cq">Conquistas</button>
-        <button class="tab-btn" onclick="mostrarTab('tab-pts')" id="tabBtn-pts">Pontos</button>
-        <button class="tab-btn" onclick="mostrarTab('tab-reg')" id="tabBtn-reg">Registrar</button>
-      </div>
-      <div class="tab-content active" id="tab-ci">
-        <div class="card"><div class="card-title">Histórico de check-ins</div><div class="ci-list" id="profileCIs"></div></div>
-      </div>
-      <div class="tab-content" id="tab-cons">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <div class="card-title" style="margin-bottom:0">Consultas</div>
-            <button class="btn btn-navy btn-sm" onclick="abrirModal('modalAgendarConsulta')">+ Agendar</button>
+
+<!-- APP -->
+<div class="screen" id="screenApp">
+  <div class="app-scroll" id="appScroll">
+
+    <!-- HOME -->
+    <div class="page active" id="pageHome">
+      <div class="hero">
+        <div class="hero-greeting">Olá 👋</div>
+        <div class="hero-name" id="heroName">—</div>
+        <div class="hero-points">
+          <div class="hero-points-num" id="heroPontos">0</div>
+          <div class="hero-points-info">
+            <div class="hero-points-label">pontos acumulados</div>
+            <div class="hero-points-level" id="heroLevel">—</div>
           </div>
-          <div class="cons-list" id="profileCons"></div>
         </div>
       </div>
-      <div class="tab-content" id="tab-cq">
-        <div class="card"><div class="card-title">Conquistas registradas</div><div class="cq-list" id="profileCQs"></div></div>
-      </div>
-      <div class="tab-content" id="tab-pts">
-        <div class="card" id="profilePts"></div>
-      </div>
-      <div class="tab-content" id="tab-reg">
-        <div class="card">
-          <div class="card-title">Registrar consulta</div>
-          <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="regDataReal"></div>
-          <div class="form-row"><label>Anotações gerais</label><textarea class="inp" id="regNotas" placeholder="Observações, mudanças, orientações…"></textarea></div>
-          <div class="form-row"><label>Notas livres / pontos de atenção</label><textarea class="inp" id="regNotasLivres" placeholder="Anotações soltas, lembretes para a próxima consulta…"></textarea></div>
-          <div class="form-row">
-            <label>Conquistas desta consulta</label>
-            <div id="cqInputs">
-              <div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg desde o início"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>
-            </div>
+      <div class="home-body">
+        <div class="quick-actions">
+          <div class="quick-card highlight" onclick="showPage('pageCheckin')">
+            <span class="quick-icon">📋</span>
+            <div class="quick-title">Fazer check-in</div>
+            <div class="quick-sub">Quinzenal · leva ~3 min</div>
           </div>
-          <div class="form-row"><label>Pontos manuais</label><div class="pts-form-row"><input class="inp" type="number" id="regPontos" placeholder="0" min="0"><span style="font-size:13px;color:var(--muted)">pontos a adicionar</span></div></div>
-          <div class="form-row"><label>Motivo dos pontos</label><input class="inp" type="text" id="regPontosMotivo" placeholder="Ex: Atingiu meta de hidratação"></div>
-          <div class="divider"></div>
-          <div class="card-title">Metas para a próxima quinzena</div>
-          <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaTreinos" placeholder="Ex: 8" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos na quinzena</span></div></div>
-          <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="regMetaAdesao" placeholder="Ex: 7" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10 no check-in</span></div></div>
-          <div class="form-row"><label>Observação livre das metas</label><input class="inp" type="text" id="regMetaTexto" placeholder="Ex: Focar na hidratação e dormir antes da meia-noite"></div>
-          <button class="btn btn-navy" onclick="salvarRegistro()" style="margin-top:4px">Salvar consulta</button>
+          <div class="quick-card" onclick="showPage('pageEvolucao')">
+            <span class="quick-icon">📈</span>
+            <div class="quick-title">Minha evolução</div>
+            <div class="quick-sub">Ver histórico</div>
+          </div>
+          <div class="quick-card" onclick="showPage('pageConquistas')">
+            <span class="quick-icon">🏆</span>
+            <div class="quick-title">Conquistas</div>
+            <div class="quick-sub">Seus marcos</div>
+          </div>
+        </div>
+
+        <!-- COUNTDOWN CHECK-IN -->
+        <div id="checkinCountdown"></div>
+
+        <!-- BOTÃO MANUAL -->
+        <a href="https://nutrijoaomiranda-maker.github.io/shark-squad-checkin/manual-pontos.html" target="_blank" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;text-decoration:none;transition:all 0.15s;" onmousedown="this.style.opacity='0.8'" onmouseup="this.style.opacity='1'">
+          <div style="width:44px;height:44px;border-radius:12px;background:var(--yellow-pale);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">⭐</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px;">Sistema de pontos</div>
+            <div style="font-size:12px;color:var(--muted);">Entenda como ganhar pontos e subir de nível</div>
+          </div>
+          <div style="color:var(--muted);font-size:18px;">›</div>
+        </a>
+
+        <div class="section-title">Metas da quinzena</div>
+        <div id="metasCard" style="margin-bottom:24px;"></div>
+
+        <div class="section-title">Próxima consulta</div>
+        <div class="consulta-card" id="proximaConsulta" style="transition:all 0.2s">
+          <div class="consulta-icon">📅</div>
+          <div style="flex:1">
+            <div class="consulta-label">Data agendada</div>
+            <div class="consulta-date" id="consultaDate">—</div>
+            <div class="consulta-num" id="consultaNum">—</div>
+          </div>
+        </div>
+
+        <div class="section-title">Último check-in</div>
+        <div id="lastCheckinHome">
+          <div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.<br>Que tal fazer o primeiro?</p></div>
         </div>
       </div>
     </div>
-  </main>
-</div>
 
-<!-- MODAL NOVO PACIENTE -->
-<div class="modal-overlay" id="modalNovoPaciente">
-  <div class="modal">
-    <h3>Novo paciente</h3><p>Preencha os dados. O código pode ser gerado automaticamente.</p>
-    <div class="form-row"><label>Nome completo</label><input class="inp" type="text" id="npNome" placeholder="Nome do paciente"></div>
-    <div class="form-row"><label>Pacote</label><select class="inp" id="npPacote"><option value="Mensal">Mensal (1 consulta)</option><option value="Trimestral">Trimestral (3 consultas)</option><option value="Semestral" selected>Semestral (4 consultas)</option><option value="Anual">Anual (6 consultas)</option></select></div>
-    <div class="form-row"><label>Data de início</label><input class="inp" type="date" id="npDataInicio"></div>
-    <div class="form-row"><label>Código de acesso</label><div style="display:flex;gap:8px"><input class="inp" type="text" id="npCodigo" placeholder="Ex: SHARK2025" style="margin-bottom:0;text-transform:uppercase;font-family:monospace;letter-spacing:.06em"><button class="btn btn-ghost btn-sm" onclick="gerarCodigo()" style="white-space:nowrap;flex-shrink:0">Gerar</button></div></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalNovoPaciente')">Cancelar</button><button class="btn btn-navy" onclick="cadastrarPaciente()">Cadastrar</button></div>
-  </div>
-</div>
+    <!-- CHECK-IN -->
+    <div class="page" id="pageCheckin">
+      <div class="checkin-header">
+        <div class="checkin-header-tag">Check-in quinzenal</div>
+        <h2>Como foram seus últimos 15 dias?</h2>
+        <p>Responda com honestidade — isso torna nossa consulta muito mais eficiente.</p>
+      </div>
 
-<!-- MODAL AGENDAR CONSULTA -->
-<div class="modal-overlay" id="modalAgendarConsulta">
-  <div class="modal" style="max-width:420px">
-    <h3>Agendar consulta</h3>
-    <p id="modalAgendarSubtitle">Defina a data desta consulta.</p>
-    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="agendarData"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharModal('modalAgendarConsulta')">Cancelar</button>
-      <button class="btn btn-navy" onclick="confirmarAgendamento()">Agendar</button>
+      <div class="checkin-progress">
+        <div class="checkin-progress-meta">
+          <span>Progresso</span>
+          <span id="ciProgressCount">0 / 15</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="ciProgressFill"></div></div>
+      </div>
+
+      <div class="checkin-body">
+        <!-- SEÇ 1 -->
+        <div class="sec-divider"><span class="sec-num">01</span><span class="sec-name">Identificação</span></div>
+
+        <div class="q-card" id="card-q1">
+          <div class="q-num">Pergunta 1</div>
+          <div class="q-text">Confirme seu nome <span class="req">*</span></div>
+          <input class="field" type="text" id="q1" placeholder="Seu nome" autocomplete="name">
+        </div>
+
+        <div class="q-card" id="card-q2">
+          <div class="q-num">Pergunta 2</div>
+          <div class="q-text">Esses 15 dias foram… <span class="req">*</span></div>
+          <div class="pills" data-q="q2" data-t="single">
+            <div class="pill" data-v="Rotina normal">📅 Rotina normal</div>
+            <div class="pill" data-v="Período agitado">⚡ Agitado</div>
+            <div class="pill" data-v="Período difícil">🌧️ Difícil</div>
+            <div class="pill" data-v="Período especial">🎉 Especial</div>
+          </div>
+          <input type="hidden" id="q2">
+        </div>
+
+        <!-- SEÇ 2 -->
+        <div class="sec-divider"><span class="sec-num">02</span><span class="sec-name">Alimentação</span></div>
+
+        <div class="q-card" id="card-q3">
+          <div class="q-num">Pergunta 3</div>
+          <div class="q-text">Adesão ao plano alimentar</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>0 — Nenhuma</span><span>10 — Perfeita</span></div>
+            <input type="range" id="q3" min="0" max="10" value="7">
+            <div class="slider-val" id="q3v">7<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q4">
+          <div class="q-num">Pergunta 4</div>
+          <div class="q-text">Quantas vezes saiu do plano?</div>
+          <div class="num-row">
+            <button type="button" class="num-btn" onclick="changeNum('q4',-1)">−</button>
+            <div class="num-display" id="q4d">0</div>
+            <input type="hidden" id="q4" value="0">
+            <button type="button" class="num-btn" onclick="changeNum('q4',1)">+</button>
+            <span class="num-label">vezes</span>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q5">
+          <div class="q-num">Pergunta 5</div>
+          <div class="q-text">Em qual momento saiu do plano? <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q5" data-t="multi">
+            <div class="pill" data-v="Final de semana">Final de semana</div>
+            <div class="pill" data-v="Eventos sociais">Eventos sociais</div>
+            <div class="pill" data-v="Estresse">Estresse</div>
+            <div class="pill" data-v="À noite">À noite</div>
+            <div class="pill" data-v="No trabalho">No trabalho</div>
+            <div class="pill" data-v="Em viagem">Em viagem</div>
+            <div class="pill" data-v="Tédio">Tédio</div>
+            <div class="pill" data-v="Não se aplica">Não se aplica</div>
+          </div>
+          <input type="hidden" id="q5">
+        </div>
+
+        <div class="q-card" id="card-q6">
+          <div class="q-num">Pergunta 6</div>
+          <div class="q-text">Refeição mais difícil de manter</div>
+          <div class="pills" data-q="q6" data-t="single">
+            <div class="pill" data-v="Café da manhã">Café da manhã</div>
+            <div class="pill" data-v="Lanche manhã">Lanche manhã</div>
+            <div class="pill" data-v="Almoço">Almoço</div>
+            <div class="pill" data-v="Lanche tarde">Lanche tarde</div>
+            <div class="pill" data-v="Jantar">Jantar</div>
+            <div class="pill" data-v="Ceia">Ceia</div>
+            <div class="pill" data-v="Nenhuma">Nenhuma</div>
+          </div>
+          <input type="hidden" id="q6">
+        </div>
+
+        <!-- SEÇ 3 -->
+        <div class="sec-divider"><span class="sec-num">03</span><span class="sec-name">Treino</span></div>
+
+        <div class="q-card" id="card-q7">
+          <div class="q-num">Pergunta 7</div>
+          <div class="q-text">Quantas vezes treinou?</div>
+          <div class="num-row">
+            <button type="button" class="num-btn" onclick="changeNum('q7',-1)">−</button>
+            <div class="num-display" id="q7d">0</div>
+            <input type="hidden" id="q7" value="0">
+            <button type="button" class="num-btn" onclick="changeNum('q7',1)">+</button>
+            <span class="num-label">treinos</span>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q8">
+          <div class="q-num">Pergunta 8</div>
+          <div class="q-text">Motivo de faltar treino <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q8" data-t="multi">
+            <div class="pill" data-v="Falta de tempo">Falta de tempo</div>
+            <div class="pill" data-v="Cansaço">Cansaço</div>
+            <div class="pill" data-v="Dor ou lesão">Dor ou lesão</div>
+            <div class="pill" data-v="Desmotivação">Desmotivação</div>
+            <div class="pill" data-v="Trabalho">Trabalho</div>
+            <div class="pill" data-v="Doença">Doença</div>
+            <div class="pill" data-v="Não faltei nenhum">Não faltei</div>
+          </div>
+          <input type="hidden" id="q8">
+        </div>
+
+        <!-- SEÇ 4 -->
+        <div class="sec-divider"><span class="sec-num">04</span><span class="sec-name">Sono & Energia</span></div>
+
+        <div class="q-card" id="card-q9">
+          <div class="q-num">Pergunta 9</div>
+          <div class="q-text">Como foi seu sono?</div>
+          <div class="sleep-grid" data-q="q9" data-t="single">
+            <div class="sleep-card" data-v="Ótimo"><div class="si">😴</div><div class="sl">Ótimo</div></div>
+            <div class="sleep-card" data-v="Bom"><div class="si">🙂</div><div class="sl">Bom</div></div>
+            <div class="sleep-card" data-v="Regular"><div class="si">😐</div><div class="sl">Regular</div></div>
+            <div class="sleep-card" data-v="Ruim"><div class="si">😓</div><div class="sl">Ruim</div></div>
+          </div>
+          <input type="hidden" id="q9">
+        </div>
+
+        <div class="q-card" id="card-q10">
+          <div class="q-num">Pergunta 10</div>
+          <div class="q-text">Disposição e energia geral</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>1 — Sem energia</span><span>10 — Ótima</span></div>
+            <input type="range" id="q10" min="1" max="10" value="6">
+            <div class="slider-val" id="q10v">6<span>/10</span></div>
+          </div>
+        </div>
+
+        <!-- SEÇ 5 -->
+        <div class="sec-divider"><span class="sec-num">05</span><span class="sec-name">Estresse & Gatilhos</span></div>
+
+        <div class="q-card" id="card-q11">
+          <div class="q-num">Pergunta 11</div>
+          <div class="q-text">Nível de estresse</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>1 — Baixo</span><span>10 — Muito alto</span></div>
+            <input type="range" id="q11" min="1" max="10" value="5">
+            <div class="slider-val" id="q11v">5<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="q-card" id="card-q12">
+          <div class="q-num">Pergunta 12</div>
+          <div class="q-text">O que te tirou do trilho? <span class="q-hint">(pode marcar mais de um)</span></div>
+          <div class="pills" data-q="q12" data-t="multi">
+            <div class="pill" data-v="Trabalho / pressão">Trabalho</div>
+            <div class="pill" data-v="Família">Família</div>
+            <div class="pill" data-v="Finanças">Finanças</div>
+            <div class="pill" data-v="Relacionamento">Relacionamento</div>
+            <div class="pill" data-v="Saúde">Saúde</div>
+            <div class="pill" data-v="Ansiedade">Ansiedade</div>
+            <div class="pill" data-v="Nada">Nada</div>
+          </div>
+          <input type="hidden" id="q12">
+        </div>
+
+        <!-- SEÇ 6 -->
+        <div class="sec-divider"><span class="sec-num">06</span><span class="sec-name">Percepção</span></div>
+
+        <div class="q-card" id="card-q13">
+          <div class="q-num">Pergunta 13</div>
+          <div class="q-text">O que funcionou bem?</div>
+          <textarea class="field" id="q13" placeholder="Conte o que deu certo, mesmo que pequeno…"></textarea>
+        </div>
+
+        <div class="q-card" id="card-q14">
+          <div class="q-num">Pergunta 14</div>
+          <div class="q-text">Quer me contar algo antes da consulta?</div>
+          <textarea class="field" id="q14" placeholder="Esse espaço é seu…"></textarea>
+        </div>
+
+        <div class="q-card" id="card-q15">
+          <div class="q-num">Pergunta 15</div>
+          <div class="q-text">Como está sua motivação hoje?</div>
+          <div class="slider-wrap">
+            <div class="slider-labels"><span>0 — Sem motivação</span><span>10 — Muito motivado</span></div>
+            <input type="range" id="q15" min="0" max="10" value="7">
+            <div class="slider-val" id="q15v">7<span>/10</span></div>
+          </div>
+        </div>
+
+        <div class="submit-wrap">
+          <button class="btn-submit" id="btnEnviar" onclick="enviarCheckin()">Enviar check-in</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-
-<!-- MODAL EDITAR CONSULTA -->
-<div class="modal-overlay" id="modalEditarConsulta">
-  <div class="modal" style="max-width:480px">
-    <h3>Editar consulta</h3><p id="modalEditSubtitle">Atualize os dados desta consulta.</p>
-    <input type="hidden" id="editConsultaId">
-    <div class="form-row"><label>Data da consulta</label><input class="inp" type="date" id="editDataPrevista"></div>
-    <div class="form-row"><label>Status</label><select class="inp" id="editStatus"><option value="Agendada">Agendada</option><option value="Realizada">Realizada</option></select></div>
-    <div class="form-row"><label>Anotações</label><textarea class="inp" id="editNotas" placeholder="Observações desta consulta…"></textarea></div>
-    <div class="form-row"><label>Meta de treinos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaTreinos" min="0" max="30" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">treinos</span></div></div>
-    <div class="form-row"><label>Meta de adesão</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editMetaAdesao" min="0" max="10" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">/ 10</span></div></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="fecharModal('modalEditarConsulta')">Cancelar</button><button class="btn btn-navy" onclick="salvarEdicaoConsulta()">Salvar</button></div>
-  </div>
-</div>
-
-<!-- MODAL EDITAR CONQUISTA -->
-<div class="modal-overlay" id="modalEditarConquista">
-  <div class="modal" style="max-width:480px">
-    <h3>Editar conquista</h3><p id="modalEditCQSubtitle">Atualize o texto desta conquista.</p>
-    <input type="hidden" id="editCQId">
-    <div class="form-row"><label>Texto da conquista</label><textarea class="inp" id="editCQTexto" placeholder="Descreva a conquista…"></textarea></div>
-    <div class="form-row"><label>Data</label><input class="inp" type="date" id="editCQData"></div>
-    <div class="form-row"><label>Pontos</label><div style="display:flex;align-items:center;gap:10px"><input class="inp" type="number" id="editCQPontos" min="0" style="max-width:110px;margin-bottom:0"><span style="font-size:13px;color:var(--muted)">pontos</span></div></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharModal('modalEditarConquista')">Cancelar</button>
-      <button class="btn btn-navy" onclick="salvarEdicaoConquista()">Salvar</button>
+    <!-- EVOLUÇÃO -->
+    <div class="page" id="pageEvolucao">
+      <div class="page-header-simple">
+        <h2>Minha evolução</h2>
+        <p>Acompanhe suas métricas ao longo dos check-ins</p>
+      </div>
+      <div class="evo-body" id="evoBody">
+        <div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.</p></div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- MODAL CI -->
-<div class="modal-overlay" id="modalCI">
-  <div class="modal" style="max-width:560px">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-      <h3 id="modalCINome">—</h3>
-      <button class="btn btn-ghost btn-sm" onclick="fecharModal('modalCI')">✕</button>
+    <!-- CONQUISTAS -->
+    <div class="page" id="pageConquistas">
+      <div class="page-header-simple">
+        <h2>Conquistas</h2>
+        <p>Seus marcos ao longo do acompanhamento</p>
+      </div>
+      <div class="conq-body" id="conqBody">
+        <div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.<br>Continue firme!</p></div>
+      </div>
     </div>
-    <p id="modalCIData" style="margin-bottom:20px">—</p>
-    <div id="modalCIContent"></div>
+
+  </div><!-- end app-scroll -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="navTo('pageHome', this)">
+      <span class="nav-tab-icon">🏠</span>
+      <span class="nav-tab-label">Início</span>
+    </button>
+    <button class="nav-tab" onclick="navTo('pageEvolucao', this)">
+      <span class="nav-tab-icon">📈</span>
+      <span class="nav-tab-label">Evolução</span>
+    </button>
+    <button class="nav-tab nav-tab-checkin" onclick="navTo('pageCheckin', this)">
+      <div class="nav-checkin-btn">📋</div>
+      <span class="nav-tab-label">Check-in</span>
+    </button>
+    <button class="nav-tab" onclick="navTo('pageConquistas', this)">
+      <span class="nav-tab-icon">🏆</span>
+      <span class="nav-tab-label">Conquistas</span>
+    </button>
+    <button class="nav-tab" onclick="sair()">
+      <span class="nav-tab-icon">↩</span>
+      <span class="nav-tab-label">Sair</span>
+    </button>
+  </nav>
+</div>
+
+<!-- DRAWER: DETALHE DO CHECK-IN -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="fecharDrawer(event)">
+  <div class="drawer" id="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawerTitle">—</div>
+    <div class="drawer-date" id="drawerDate">—</div>
+    <div id="drawerContent"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-emoji">🎉</div>
+  <div class="success-title">Check-in enviado!</div>
+  <div class="success-text" id="successText">Obrigado! Seu nutricionista já recebeu suas respostas.</div>
+  <button class="success-btn" onclick="fecharSuccess()">Voltar ao início</button>
+</div>
 
 <script>
-const SENHA='apRova891@';
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
-const NIVEIS=[{min:0,nome:'🐟 Peixinho'},{min:100,nome:'🦈 Tubarão Filhote'},{min:250,nome:'🦈 Tubarão'},{min:500,nome:'🦈 Tubarão Touro'},{min:800,nome:'🦈 Tubarão Tigre'},{min:1200,nome:'🦈 Grande Branco'}];
-let state={pacientes:[],checkins:[]};
-let currentPaciente=null,currentCIs=[],currentCons=[],currentCQs=[];
+// ── CONFIG ───────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
 
-window.addEventListener('load',()=>{
-  if(sessionStorage.getItem('ss_painel_auth')){mostrarApp();}
-  else{document.getElementById('loadingOverlay').classList.add('hide');document.getElementById('loginScreen').style.display='flex';}
+const NIVEIS = [
+  { min: 0,   nome: '🐟 Peixinho',      proximo: 100  },
+  { min: 100, nome: '🦈 Tubarão Filhote', proximo: 250  },
+  { min: 250, nome: '🦈 Tubarão',        proximo: 500  },
+  { min: 500, nome: '🦈 Tubarão Touro',  proximo: 800  },
+  { min: 800, nome: '🦈 Tubarão Tigre',  proximo: 1200 },
+  { min: 1200,nome: '🦈 Grande Branco',  proximo: null },
+];
+
+// ── STATE ────────────────────────────────────────────────────
+let paciente = null;
+let checkins = [];
+let consultas = [];
+let conquistas = [];
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const codigo = localStorage.getItem('ss_codigo');
+  if (codigo) {
+    carregarPaciente(codigo);
+  } else {
+    esconderLoading();
+    mostrarScreen('screenLogin');
+  }
 });
 
-function fazerLogin(){
-  if(document.getElementById('senhaInput').value===SENHA){
-    sessionStorage.setItem('ss_painel_auth','1');
-    document.getElementById('loginScreen').style.display='none';
-    mostrarApp();
-  }else{document.getElementById('loginErr').style.display='block';document.getElementById('senhaInput').value='';}
-}
-function sair(){sessionStorage.removeItem('ss_painel_auth');location.reload();}
-
-async function mostrarApp(){
-  document.getElementById('appShell').style.display='block';
-  document.getElementById('loadingOverlay').classList.remove('hide');
-  await carregarTudo();
-  document.getElementById('loadingOverlay').classList.add('hide');
-  document.getElementById('dashData').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+function esconderLoading() {
+  document.getElementById('loadingScreen').classList.add('hide');
 }
 
-async function carregarTudo(){
-  try{
-    const[rP,rC]=await Promise.all([fetch(SCRIPT_URL+'?acao=pacientes'),fetch(SCRIPT_URL+'?acao=checkins')]);
-    const[dP,dC]=await Promise.all([rP.json(),rC.json()]);
-    state.pacientes=dP.pacientes||[];state.checkins=dC.checkins||[];
-    renderDashboard();renderPacientes();
-  }catch(e){toast('Erro ao carregar dados.');}
+function mostrarScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-// ── CALENDÁRIO ────────────────────────────────────────────
-let calMes = new Date().getMonth();
-let calAno = new Date().getFullYear();
-let todasConsultas = [];
+// ── LOGIN ────────────────────────────────────────────────────
+async function fazerLogin() {
+  const codigo = document.getElementById('loginCode').value.trim().toUpperCase();
+  if (!codigo) return;
 
-async function renderCalendario(){
-  const el = document.getElementById('calendarWrap');
-  if(!el) return;
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginLoading').style.display = 'block';
 
-  try{
-    const res = await fetch(SCRIPT_URL+'?acao=consultas');
+  try {
+    const res = await fetch(`${SCRIPT_URL}?acao=paciente&codigo=${codigo}`);
     const data = await res.json();
-    todasConsultas = data.consultas || [];
-  }catch(e){ todasConsultas = []; }
 
-  desenharCalendario();
-}
-
-function desenharCalendario(){
-  const el = document.getElementById('calendarWrap');
-  if(!el) return;
-
-  const hoje = new Date();
-  const primeiroDia = new Date(calAno, calMes, 1);
-  const ultimoDia = new Date(calAno, calMes+1, 0);
-  const diasNoMes = ultimoDia.getDate();
-  const iniciaSemana = primeiroDia.getDay(); // 0=dom
-
-  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-
-  // Monta mapa de eventos
-  const eventos = {};
-  todasConsultas.forEach(c => {
-    const d = c.dataprevista || c.datareal || '';
-    if(!d) return;
-    const partes = d.toString().split('/');
-    if(partes.length !== 3) return;
-    const mes = parseInt(partes[1])-1;
-    const ano = parseInt(partes[2]);
-    const dia = parseInt(partes[0]);
-    if(mes === calMes && ano === calAno){
-      if(!eventos[dia]) eventos[dia] = [];
-      const pac = state.pacientes.find(p => p.codigo === c.codigo);
-      eventos[dia].push({ nome: pac ? pac.nome.split(' ')[0] : c.codigo, id: c.codigo, consulta: c });
+    if (data.erro || !data.paciente) {
+      document.getElementById('loginLoading').style.display = 'none';
+      document.getElementById('loginError').style.display = 'block';
+      return;
     }
-  });
 
-  // Cabeçalho
-  let html = '<div class="cal-header">';
-  html += '<div class="cal-title">'+meses[calMes]+' '+calAno+'</div>';
-  html += '<div class="cal-nav"><button onclick="navCal(-1)">‹</button><button onclick="navCal(1)">›</button></div>';
-  html += '</div>';
+    localStorage.setItem('ss_codigo', codigo);
+    await carregarPaciente(codigo);
 
-  // Grid
-  html += '<div class="cal-grid">';
-  ['D','S','T','Q','Q','S','S'].forEach(d => { html += '<div class="cal-day-name">'+d+'</div>'; });
-
-  // Dias antes do mês
-  for(let i=0; i<iniciaSemana; i++){
-    const diaAntes = new Date(calAno, calMes, -iniciaSemana+i+1).getDate();
-    html += '<div class="cal-day other-month">'+diaAntes+'</div>';
+  } catch (err) {
+    document.getElementById('loginLoading').style.display = 'none';
+    document.getElementById('loginError').textContent = 'Erro de conexão. Tente novamente.';
+    document.getElementById('loginError').style.display = 'block';
   }
+}
 
-  // Dias do mês
-  for(let d=1; d<=diasNoMes; d++){
-    const isHoje = d===hoje.getDate() && calMes===hoje.getMonth() && calAno===hoje.getFullYear();
-    const temEvento = eventos[d] && eventos[d].length > 0;
-    let cls = 'cal-day';
-    if(isHoje) cls += ' today';
-    if(temEvento) cls += ' has-event';
-    const onclick = temEvento ? 'onclick="mostrarEventosDia('+d+')"' : '';
-    html += '<div class="'+cls+'" '+onclick+'>'+d;
-    if(temEvento) html += '<div class="cal-dot"></div>';
-    html += '</div>';
+async function carregarPaciente(codigo) {
+  try {
+    const [resPac, resCI, resCon, resConq] = await Promise.all([
+      fetch(`${SCRIPT_URL}?acao=paciente&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=checkins&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=consultas&codigo=${codigo}`),
+      fetch(`${SCRIPT_URL}?acao=conquistas&codigo=${codigo}`),
+    ]);
+
+    const [dataPac, dataCI, dataCon, dataConq] = await Promise.all([
+      resPac.json(), resCI.json(), resCon.json(), resConq.json()
+    ]);
+
+    if (dataPac.erro || !dataPac.paciente) {
+      localStorage.removeItem('ss_codigo');
+      esconderLoading();
+      mostrarScreen('screenLogin');
+      return;
+    }
+
+    paciente   = dataPac.paciente;
+    checkins   = dataCI.checkins || [];
+    consultas  = dataCon.consultas || [];
+    conquistas = dataConq.conquistas || [];
+
+    renderHome();
+    renderCountdown();
+    renderMetas();
+    renderEvolucao();
+    renderConquistas();
+    preencherNomeCheckin();
+
+    esconderLoading();
+    mostrarScreen('screenApp');
+
+  } catch (err) {
+    esconderLoading();
+    mostrarScreen('screenLogin');
   }
-
-  html += '</div>';
-
-  // Legenda de eventos do mês
-  const eventosDoMes = Object.entries(eventos).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
-  if(eventosDoMes.length){
-    html += '<div class="cal-legend">';
-    eventosDoMes.forEach(([dia, evs]) => {
-      evs.forEach(ev => {
-        html += '<div class="cal-legend-item" onclick="irParaPorCodigo(''+ev.id+'')">';
-        html += '<div class="cal-legend-dot"></div>';
-        html += dia+'/'+String(calMes+1).padStart(2,'0')+' — '+ev.nome;
-        html += '</div>';
-      });
-    });
-    html += '</div>';
-  }
-
-  el.innerHTML = html;
 }
 
-function navCal(dir){
-  calMes += dir;
-  if(calMes > 11){ calMes = 0; calAno++; }
-  if(calMes < 0){ calMes = 11; calAno--; }
-  desenharCalendario();
+function sair() {
+  localStorage.removeItem('ss_codigo');
+  paciente = null;
+  mostrarScreen('screenLogin');
 }
 
-function mostrarEventosDia(dia){
-  const eventos = todasConsultas.filter(c => {
-    const d = c.dataprevista || c.datareal || '';
-    if(!d) return false;
-    const partes = d.toString().split('/');
-    return partes.length===3 && parseInt(partes[0])===dia && parseInt(partes[1])-1===calMes && parseInt(partes[2])===calAno;
-  });
-  if(!eventos.length) return;
-  const nomes = eventos.map(c => {
-    const pac = state.pacientes.find(p=>p.codigo===c.codigo);
-    return (pac?pac.nome:'?')+' (Consulta '+c.numero+')';
-  }).join('
-');
-  alert('Consultas em '+dia+'/'+(calMes+1)+'/'+calAno+':
+// ── RENDER HOME ──────────────────────────────────────────────
+function renderHome() {
+  const nome = paciente.nome.split(' ')[0];
+  document.getElementById('heroName').textContent = nome;
 
-'+nomes);
-}
+  const pontos = Number(paciente.pontos) || 0;
+  document.getElementById('heroPontos').textContent = pontos;
 
-// ── AGENDAR CONSULTA ───────────────────────────────────────
-async function confirmarAgendamento(){
-  const data = document.getElementById('agendarData').value;
-  if(!data){ toast('Selecione uma data.'); return; }
-  const p = currentPaciente;
-  const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'agendarConsulta',idPaciente:p.id,codigo:p.codigo,data:dataFmt})});
-    fecharModal('modalAgendarConsulta');
-    document.getElementById('agendarData').value='';
-    toast('Consulta agendada para '+dataFmt+'!');
-    setTimeout(()=>abrirPaciente(p.id),1200);
-  }catch(e){ toast('Erro ao agendar.'); }
-}
+  const nivel = NIVEIS.slice().reverse().find(n => pontos >= n.min) || NIVEIS[0];
+  document.getElementById('heroLevel').textContent = nivel.nome;
 
-// ── EXCLUIR CONSULTA ───────────────────────────────────────
-async function excluirConsulta(id){
-  if(!confirm('Excluir esta consulta? Esta ação não pode ser desfeita.')) return;
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'excluirConsulta',id})});
-    toast('Consulta excluída!');
-    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
-  }catch(e){ toast('Erro ao excluir.'); }
-}
-
-function calcularAlertasCheckin(){
-  const hoje = new Date();
-  hoje.setHours(0,0,0,0);
-  const alertas = [];
-
-  state.pacientes.filter(p=>p.status==='Ativo').forEach(p => {
-    // Pega o check-in mais recente deste paciente
-    const cis = state.checkins.filter(c=>c.codigo_paciente===p.codigo);
-    let diasDesde = null;
-    let ultimaData = null;
-
-    if(cis.length > 0){
-      // Tenta parsear a data do check-in mais recente
-      const raw = (cis[0].data_hora||'').split(',')[0].trim();
-      const partes = raw.split('/');
-      if(partes.length === 3){
-        ultimaData = new Date(partes[2]+'-'+partes[1]+'-'+partes[0]);
-        ultimaData.setHours(0,0,0,0);
-        diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
-      }
-    } else {
-      // Nunca enviou check-in — usa data de início
-      if(p.datainicio){
-        const pi = p.datainicio.split('/');
-        if(pi.length===3){
-          ultimaData = new Date(pi[2]+'-'+pi[1]+'-'+pi[0]);
-          ultimaData.setHours(0,0,0,0);
-          diasDesde = Math.floor((hoje - ultimaData) / (1000*60*60*24));
-        }
+  // Próxima consulta
+  const proxima = consultas.find(c => c.status === 'Agendada' && c.dataprevista);
+  const consultaCard = document.getElementById('proximaConsulta');
+  if (proxima) {
+    const data = proxima.dataprevista || '—';
+    // Calcula dias até a consulta
+    let diasMsg = '';
+    const partes = data.toString().split('/');
+    if(partes.length === 3){
+      const dataConsulta = new Date(partes[2]+'-'+partes[1]+'-'+partes[0]);
+      dataConsulta.setHours(0,0,0,0);
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const diff = Math.floor((dataConsulta - hoje) / (1000*60*60*24));
+      if(diff < 0) diasMsg = 'Consulta realizada';
+      else if(diff === 0) diasMsg = 'É hoje!';
+      else if(diff === 1) diasMsg = 'Amanhã!';
+      else diasMsg = 'Em ' + diff + ' dias';
+    }
+    document.getElementById('consultaDate').textContent = data;
+    document.getElementById('consultaNum').textContent = 'Consulta ' + proxima.numero + ' · ' + diasMsg;
+    // Destaca se for próxima (≤3 dias)
+    const partes2 = data.toString().split('/');
+    if(partes2.length === 3){
+      const dc = new Date(partes2[2]+'-'+partes2[1]+'-'+partes2[0]);
+      dc.setHours(0,0,0,0);
+      const h = new Date(); h.setHours(0,0,0,0);
+      const d2 = Math.floor((dc-h)/(1000*60*60*24));
+      if(d2 >= 0 && d2 <= 3){
+        consultaCard.style.borderColor = 'var(--yellow)';
+        consultaCard.style.background = 'var(--yellow-pale)';
       }
     }
+  } else {
+    document.getElementById('consultaDate').textContent = 'Sem consulta agendada';
+    document.getElementById('consultaNum').textContent = 'Aguarde contato do seu nutricionista';
+    consultaCard.style.opacity = '0.6';
+  }
 
-    if(diasDesde === null) return;
-
-    const diasRestantes = 15 - diasDesde; // positivo = ainda tem tempo, negativo = vencido
-    if(diasRestantes <= 3){
-      alertas.push({ paciente: p, diasRestantes, diasDesde });
-    }
-  });
-
-  // Ordena: mais vencidos primeiro
-  alertas.sort((a,b) => a.diasRestantes - b.diasRestantes);
-  return alertas;
-}
-
-function renderDashboard(){
-  document.getElementById('statAtivos').textContent=state.pacientes.filter(p=>p.status==='Ativo').length;
-  document.getElementById('statCIs').textContent=state.checkins.length;
-  const pendentes=state.checkins.filter(c=>!(c.status||'').toString().toLowerCase().includes('revisado'));
-  document.getElementById('statPendentes').textContent=pendentes.length;
-  const el=document.getElementById('recentCIs');
-  if(!pendentes.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos revisados.</p></div>';}
-  else{el.innerHTML=pendentes.slice(0,10).map(c=>{
-    const nome=c['1_nome']||'—';const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo_paciente+'\')">'+'<div class="recent-avatar">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">'+(c['2_como_foram_os_15_dias']||'—')+' · Adesão '+c['3_adesao_ao_plano_0_10']+'/10</div></div>'+'<div class="recent-date">'+((c.data_hora||'').split(',')[0]||'—')+'</div></div>';
-  }).join('');}
-  renderCalendario();
-  renderAlertasCheckin();
-}
-
-function renderAlertasCheckin(){
-  const alertas = calcularAlertasCheckin();
-  const el = document.getElementById('alertasCheckin');
-  document.getElementById('statVencidos').textContent = alertas.filter(a=>a.diasRestantes<0).length;
-
-  if(!alertas.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>Todos os pacientes estão em dia.</p></div>';
+  // Último check-in
+  const el = document.getElementById('lastCheckinHome');
+  if (!checkins.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.<br>Que tal fazer o primeiro?</p></div>';
     return;
   }
 
-  el.innerHTML = alertas.map(a => {
-    const p = a.paciente;
-    const dr = a.diasRestantes;
-    let cor, msg, diasTxt;
+  const c = checkins[0];
+  el.innerHTML = `
+    <div class="last-checkin">
+      <div class="last-checkin-top">
+        <div class="last-checkin-date">${c.data_hora || '—'}</div>
+        <div class="last-checkin-period">${c['2_como_foram_os_15_dias'] || '—'}</div>
+      </div>
+      <div class="scores-grid">
+        <div class="score-item">
+          <div class="score-label">Adesão</div>
+          <div class="score-val">${c['3_adesao_ao_plano_0_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Motivação</div>
+          <div class="score-val">${c['15_motivacao_hoje_0_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Energia</div>
+          <div class="score-val">${c['10_disposicao_energia_1_10'] || '—'}<span>/10</span></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Estresse</div>
+          <div class="score-val">${c['11_nivel_de_estresse_1_10'] || '—'}<span>/10</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-    if(dr < 0){
-      cor = 'red';
-      msg = 'Check-in atrasado — '+Math.abs(dr)+' dia(s) sem preencher além do prazo';
-      diasTxt = Math.abs(dr)+'d atrasado';
-    } else if(dr === 0){
-      cor = 'orange';
-      msg = 'Check-in vence hoje!';
-      diasTxt = 'Vence hoje';
-    } else if(dr === 1){
-      cor = 'orange';
-      msg = 'Check-in vence amanhã';
-      diasTxt = 'Amanhã';
-    } else {
-      cor = 'yellow';
-      msg = 'Check-in vence em '+dr+' dias';
-      diasTxt = dr+'d restantes';
+// ── COUNTDOWN CHECK-IN ───────────────────────────────────────
+function renderCountdown(){
+  const el = document.getElementById('checkinCountdown');
+  if(!el) return;
+
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  let diasDesde = null;
+
+  if(checkins.length > 0){
+    const raw = (checkins[0].data_hora||'').split(',')[0].trim();
+    const partes = raw.split('/');
+    if(partes.length === 3){
+      const ultima = new Date(partes[2]+'-'+partes[1]+'-'+partes[0]);
+      ultima.setHours(0,0,0,0);
+      diasDesde = Math.floor((hoje - ultima) / (1000*60*60*24));
     }
+  } else if(paciente.datainicio){
+    const pi = paciente.datainicio.split('/');
+    if(pi.length===3){
+      const inicio = new Date(pi[2]+'-'+pi[1]+'-'+pi[0]);
+      inicio.setHours(0,0,0,0);
+      diasDesde = Math.floor((hoje - inicio) / (1000*60*60*24));
+    }
+  }
 
-    const ini = p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    return '<div class="alert-item" onclick="irParaPorCodigo(''+p.codigo+'')">' +
-      '<div class="alert-dot '+cor+'"></div>' +
-      '<div class="alert-info">' +
-        '<div class="alert-name">'+p.nome+'</div>' +
-        '<div class="alert-msg">'+msg+'</div>' +
+  if(diasDesde === null){
+    el.innerHTML = '';
+    return;
+  }
+
+  const diasRestantes = 15 - diasDesde;
+
+  let cor, emoji, titulo, sub;
+
+  if(diasRestantes < 0){
+    cor = 'red';
+    emoji = '🚨';
+    titulo = 'Check-in atrasado ' + Math.abs(diasRestantes) + ' dia(s)!';
+    sub = 'Preencha agora para manter seu histórico em dia.';
+  } else if(diasRestantes === 0){
+    cor = 'orange';
+    emoji = '⚡';
+    titulo = 'Seu check-in vence hoje!';
+    sub = 'Não deixe para depois — leva menos de 3 minutos.';
+  } else if(diasRestantes === 1){
+    cor = 'orange';
+    emoji = '⏰';
+    titulo = 'Check-in vence amanhã';
+    sub = 'Aproveite para preencher hoje enquanto lembra.';
+  } else if(diasRestantes <= 3){
+    cor = 'yellow';
+    emoji = '📋';
+    titulo = 'Check-in em ' + diasRestantes + ' dias';
+    sub = 'Prepare-se — seu próximo check-in está chegando.';
+  } else {
+    cor = 'green';
+    emoji = '✅';
+    titulo = 'Check-in em dia';
+    sub = 'Próximo check-in em ' + diasRestantes + ' dias.';
+  }
+
+  el.innerHTML =
+    '<div class="checkin-alert ' + cor + '">' +
+      '<div class="alert-emoji">' + emoji + '</div>' +
+      '<div class="alert-body">' +
+        '<div class="alert-title">' + titulo + '</div>' +
+        '<div class="alert-sub">' + sub + '</div>' +
       '</div>' +
-      '<div class="alert-days '+cor+'">'+diasTxt+'</div>' +
     '</div>';
-  }).join('');
 }
 
-async function renderProximasConsultas(){
-  const el=document.getElementById('proximasConsultas');
-  try{
-    const res=await fetch(SCRIPT_URL+'?acao=consultas');const data=await res.json();const todas=data.consultas||[];
-    const toDate=d=>{if(!d)return new Date(9999,0,1);const p=d.toString().split('/');return p.length===3?new Date(p[2]+'-'+p[1]+'-'+p[0]):new Date(9999,0,1);};
-    const agendadas=todas.filter(c=>c.status==='Agendada'&&c.dataprevista).sort((a,b)=>toDate(a.dataprevista)-toDate(b.dataprevista)).slice(0,8);
-    if(!agendadas.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma agendada.</p></div>';return;}
-    el.innerHTML=agendadas.map(c=>{
-      const pac=state.pacientes.find(p=>p.codigo===c.codigo);const nome=pac?pac.nome:(c.codigo||'—');const ini=nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-      return '<div class="recent-item" onclick="irParaPorCodigo(\''+c.codigo+'\')">'+'<div class="recent-avatar" style="background:var(--yellow);color:var(--navy);">'+ini+'</div>'+'<div class="recent-info"><div class="recent-name">'+nome+'</div><div class="recent-period">Consulta '+c.numero+' de '+(pac?pac.consultasincluidas:'?')+' · '+(pac?pac.pacote:'—')+'</div></div>'+'<div class="recent-date" style="font-weight:600;color:var(--navy);">'+c.dataprevista+'</div></div>';
-    }).join('');
-  }catch(e){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Erro ao carregar.</p></div>';}
+// ── RENDER METAS ─────────────────────────────────────────────
+function renderMetas() {
+  const el = document.getElementById('metasCard');
+  if (!el) return;
+
+  // Pega a última consulta realizada que tenha metas definidas
+  const comMeta = consultas.filter(c => c.metaTreinos > 0 || c.metaAdesao > 0);
+  if (!comMeta.length) {
+    el.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;font-size:13px;color:var(--muted);">Metas ainda não definidas. Aguarde a próxima consulta.</div>';
+    return;
+  }
+
+  const ultima = comMeta[comMeta.length - 1];
+  const metaTreinos = Number(ultima.metaTreinos) || 0;
+  const metaAdesao = Number(ultima.metaAdesao) || 0;
+
+  // Pega dados do último check-in
+  const ultimoCI = checkins.length ? checkins[0] : null;
+  const treinosFeitos = ultimoCI ? Number(ultimoCI['7_treinos_realizados']) || 0 : 0;
+  const adesaoAtual = ultimoCI ? Number(ultimoCI['3_adesao_ao_plano_0_10']) || 0 : 0;
+
+  let html = '';
+
+  if (metaTreinos > 0) {
+    const pct = Math.min(100, Math.round((treinosFeitos / metaTreinos) * 100));
+    const cor = pct >= 100 ? 'green' : pct >= 60 ? 'yellow' : 'red';
+    html += `
+      <div class="meta-card">
+        <div class="meta-header">
+          <div class="meta-label">🏋️ Meta de treinos</div>
+          <div class="meta-value">${treinosFeitos} / ${metaTreinos}</div>
+        </div>
+        <div class="meta-bar-bg">
+          <div class="meta-bar-fill ${cor}" style="width:${pct}%"></div>
+        </div>
+        <div class="meta-sub">${pct >= 100 ? '✅ Meta batida! +20 pts bônus' : `${pct}% da meta — continue assim!`}</div>
+      </div>`;
+  }
+
+  if (metaAdesao > 0) {
+    const pct = Math.min(100, Math.round((adesaoAtual / metaAdesao) * 100));
+    const cor = adesaoAtual >= metaAdesao ? 'green' : adesaoAtual >= metaAdesao * 0.7 ? 'yellow' : 'red';
+    html += `
+      <div class="meta-card">
+        <div class="meta-header">
+          <div class="meta-label">🥗 Meta de adesão</div>
+          <div class="meta-value">${adesaoAtual} / ${metaAdesao} na escala</div>
+        </div>
+        <div class="meta-bar-bg">
+          <div class="meta-bar-fill ${cor}" style="width:${pct}%"></div>
+        </div>
+        <div class="meta-sub">${adesaoAtual >= metaAdesao ? '✅ Meta batida! +20 pts' : `Adesão atual: ${adesaoAtual}/10`}</div>
+      </div>`;
+  }
+
+  el.innerHTML = html || '<div style="font-size:13px;color:var(--muted);">Sem metas definidas ainda.</div>';
 }
 
-function renderPacientes(){
-  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
-  const filtered=state.pacientes.filter(p=>p.nome.toLowerCase().includes(q));
-  const el=document.getElementById('patientList');
-  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-icon">👤</div><p>Nenhum paciente encontrado.</p></div>';return;}
-  el.innerHTML=filtered.map(p=>{
-    const ini=p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-    const cis=state.checkins.filter(c=>c.codigo_paciente===p.codigo).length;
-    return '<div class="patient-row" onclick="abrirPaciente(\''+p.id+'\')">'+'<div class="avatar">'+ini+'</div>'+'<div class="patient-info"><div class="patient-name">'+p.nome+'</div><div class="patient-meta">'+p.pacote+' · '+cis+' check-in(s) · desde '+(p.datainicio||'—')+'</div></div>'+'<span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span>'+'<div class="pts-display"><div class="pts-num">'+(Number(p.pontos)||0)+'</div><div class="pts-lbl">pontos</div></div></div>';
-  }).join('');
-}
+// ── RENDER EVOLUÇÃO ──────────────────────────────────────────
+function renderEvolucao() {
+  const el = document.getElementById('evoBody');
 
-async function abrirPaciente(id){
-  const p=state.pacientes.find(x=>x.id===id);if(!p)return;
-  currentPaciente=p;document.getElementById('loadingOverlay').classList.remove('hide');
-  try{
-    const[rCI,rCons,rCQ]=await Promise.all([fetch(SCRIPT_URL+'?acao=checkins&codigo='+p.codigo),fetch(SCRIPT_URL+'?acao=consultas&codigo='+p.codigo),fetch(SCRIPT_URL+'?acao=conquistas&codigo='+p.codigo)]);
-    const[dCI,dCons,dCQ]=await Promise.all([rCI.json(),rCons.json(),rCQ.json()]);
-    currentCIs=dCI.checkins||[];currentCons=dCons.consultas||[];currentCQs=dCQ.conquistas||[];
-  }catch(e){currentCIs=state.checkins.filter(c=>c.codigo_paciente===p.codigo);currentCons=[];currentCQs=[];}
-  document.getElementById('loadingOverlay').classList.add('hide');
-  renderProfile();irPara('profile');mostrarTab('tab-ci');
-}
+  if (!checkins.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><p>Nenhum check-in ainda.<br>Faça seu primeiro check-in!</p></div>';
+    return;
+  }
 
-function irParaPorCodigo(codigo){const p=state.pacientes.find(x=>x.codigo===codigo);if(p)abrirPaciente(p.id);}
+  // Ordenar do mais antigo para o mais recente para o gráfico
+  const ordenados = checkins.slice().reverse();
 
-function renderProfile(){
-  const p=currentPaciente;const ini=p.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-  const pts=Number(p.pontos)||0;const nivel=NIVEIS.slice().reverse().find(n=>pts>=n.min)||NIVEIS[0];
-  document.getElementById('profileHeader').innerHTML='<div class="profile-avatar">'+ini+'</div><div class="profile-info"><div class="profile-name">'+p.nome+'</div><div class="profile-tags"><span class="code-tag">🔑 '+p.codigo+'</span><span class="badge '+(p.status==='Ativo'?'badge-active':'badge-inactive')+'">'+p.status+'</span><span style="font-size:12px;color:var(--muted)">'+p.pacote+'</span><span style="font-size:12px;color:var(--muted)">'+nivel.nome+'</span></div></div><div class="profile-actions"><button class="btn btn-ghost btn-sm" onclick="toggleStatus(\''+p.id+'\')">'+(p.status==='Ativo'?'Desativar':'Ativar')+'</button><button class="btn btn-yellow btn-sm" onclick="mostrarTab(\'tab-reg\')">+ Consulta</button></div>';
+  // Labels = datas resumidas
+  const labels = ordenados.map(c => {
+    const raw = c.data_hora || '';
+    const partes = raw.split(',')[0].trim().split('/');
+    if (partes.length >= 2) return partes[0] + '/' + partes[1];
+    return raw.split(',')[0] || '—';
+  });
 
-  const ciEl=document.getElementById('profileCIs');
-  if(!currentCIs.length){ciEl.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Nenhum check-in ainda.</p></div>';}
-  else{ciEl.innerHTML=currentCIs.map((c,i)=>{const ad=Number(c['3_adesao_ao_plano_0_10']);const es=Number(c['11_nivel_de_estresse_1_10']);return '<div class="ci-item" onclick="abrirCI('+i+')">'+'<div class="ci-top"><div><div class="ci-date">'+(c.data_hora||'—')+'</div><div class="ci-period">'+(c['2_como_foram_os_15_dias']||'—')+'</div></div><span style="color:var(--muted)">›</span></div>'+'<div class="ci-scores"><span class="score-tag '+(ad>=7?'g':ad>=5?'':'r')+'">Adesão '+ad+'/10</span><span class="score-tag y">Motivação '+c['15_motivacao_hoje_0_10']+'/10</span><span class="score-tag '+(es>=7?'r':'')+'">Estresse '+es+'/10</span><span class="score-tag">'+c['7_treinos_realizados']+' treinos</span></div></div>';}).join('');}
+  const adesao    = ordenados.map(c => Number(c['3_adesao_ao_plano_0_10'])       || 0);
+  const motivacao = ordenados.map(c => Number(c['15_motivacao_hoje_0_10'])        || 0);
+  const energia   = ordenados.map(c => Number(c['10_disposicao_energia_1_10'])    || 0);
+  const estresse  = ordenados.map(c => Number(c['11_nivel_de_estresse_1_10'])     || 0);
+  const treinos   = ordenados.map(c => Number(c['7_treinos_realizados'])          || 0);
+  const saidas    = ordenados.map(c => Number(c['4_saidas_do_plano'])             || 0);
 
-  const consEl=document.getElementById('profileCons');
-  if(!currentCons.length){consEl.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta cadastrada.</p></div>';}
-  else{consEl.innerHTML=currentCons.map(c=>{
-    const data = c.dataprevista || c.datareal || '—';
-    const realizada = c.status==='Realizada';
-    return '<div class="cons-item">'+
-      '<div class="cons-top">'+
-        '<div class="cons-num">Consulta '+c.numero+'</div>'+
-        '<span class="badge '+(realizada?'badge-realizada':'badge-agendada')+'">'+(realizada?'Realizada':'Agendada')+'</span>'+
-      '</div>'+
-      '<div class="cons-dates">📅 '+data+'</div>'+
-      (c.anotacoes?'<div class="cons-notes">'+c.anotacoes+'</div>':'')+
-      ((c.metatreinos||c.metaadesao)?'<div style="font-size:12px;color:var(--muted);margin-top:6px;">Metas: '+(c.metatreinos?'Treinos '+c.metatreinos:'')+((c.metatreinos&&c.metaadesao)?' · ':'')+( c.metaadesao?'Adesão '+c.metaadesao+'/10':'')+'</div>':'')+
-      '<div class="cons-actions">'+
-        '<button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConsulta(\''+c.id+'\')">✏️ Editar</button>'+
-        '<button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConsulta(\''+c.id+'\')">🗑️ Excluir</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');}
+  const series = [
+    { label: 'Adesão',    data: adesao,    color: '#1c3054', axis: 'left'  },
+    { label: 'Motivação', data: motivacao, color: '#e8b400', axis: 'left'  },
+    { label: 'Energia',   data: energia,   color: '#2d7a4f', axis: 'left'  },
+    { label: 'Estresse',  data: estresse,  color: '#c0392b', axis: 'left'  },
+    { label: 'Treinos',   data: treinos,   color: '#7c5cbf', axis: 'right' },
+    { label: 'Saídas',    data: saidas,    color: '#d07020', axis: 'right' },
+  ];
 
-  const cqEl=document.getElementById('profileCQs');
-  if(!currentCQs.length){cqEl.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.</p></div>';}
-  else{cqEl.innerHTML=currentCQs.map((c,i)=>'<div class="cq-item"><div class="cq-icon">🏆</div><div class="cq-item-body"><div class="cq-text">'+c.texto+'</div><div class="cq-date">'+c.data+(c.pontos>0?' · +'+c.pontos+' pts':'')+'</div></div><div class="cq-item-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEdicaoConquista('+i+')">✏️</button><button class="btn btn-sm" style="background:var(--danger-bg);color:var(--danger);border:none" onclick="excluirConquista(''+c.id+'')">🗑️</button></div></div>').join('');}
+  const legendHTML = series.map(s =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div>${s.label}${s.axis === 'right' ? ' (→)' : ''}</div>`
+  ).join('');
 
-  document.getElementById('profilePts').innerHTML='<div class="pts-hero"><div class="pts-big">'+pts+'</div><div class="pts-label">pontos acumulados</div><div class="pts-level">'+nivel.nome+'</div></div><div class="card-title">Conquistas com pontos</div><div class="pts-history">'+(currentCQs.filter(c=>c.pontos>0).length?currentCQs.filter(c=>c.pontos>0).map(c=>'<div class="pts-row"><div class="pts-row-info"><div class="pts-row-label">'+c.texto+'</div><div class="pts-row-date">'+c.data+'</div></div><div class="pts-row-val">+'+c.pontos+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">⭐</div><p>Nenhum ponto ainda.</p></div>')+'</div>';
+  el.innerHTML = `
+    <div class="chart-card">
+      <div class="chart-title">Evolução por check-in</div>
+      <div class="chart-wrap">
+        <canvas id="evoChart" height="220"></canvas>
+      </div>
+      <div class="chart-legend">${legendHTML}</div>
+    </div>
+  `;
 
-  const sel=document.getElementById('regConsultaNum');
-  sel.innerHTML=currentCons.length?currentCons.map(c=>'<option value="'+c.id+'">Consulta '+c.numero+' — '+c.status+(c.dataprevista?' (prev: '+c.dataprevista+')':'')+'</option>').join(''):'<option value="">Nenhuma consulta cadastrada</option>';
-  document.getElementById('regDataReal').value=new Date().toISOString().split('T')[0];
-}
+  // Aguarda o DOM renderizar antes de desenhar
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('evoChart');
+    if (!canvas) return;
+    canvas.width = canvas.parentElement.clientWidth || 320;
 
-function abrirEdicaoConsulta(idConsulta){
-  const c=currentCons.find(x=>x.id===idConsulta);if(!c)return;
-  const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
-  document.getElementById('editConsultaId').value=c.id;
-  document.getElementById('modalEditSubtitle').textContent='Consulta '+c.numero+' — '+currentPaciente.nome;
-  document.getElementById('editDataPrevista').value=toInputDate(c.dataprevista||c.datareal);
-  document.getElementById('editStatus').value=c.status||'Agendada';
-  document.getElementById('editNotas').value=c.anotacoes||'';
-  document.getElementById('editMetaTreinos').value=c.metatreinos||'';
-  document.getElementById('editMetaAdesao').value=c.metaadesao||'';
-  abrirModal('modalEditarConsulta');
-}
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    const PAD = { top: 16, right: 44, bottom: 40, left: 44 };
+    const chartW = W - PAD.left - PAD.right;
+    const chartH = H - PAD.top - PAD.bottom;
+    const n = labels.length;
 
-async function salvarEdicaoConsulta(){
-  const idConsulta=document.getElementById('editConsultaId').value;
-  const dataP=document.getElementById('editDataPrevista').value;
-  const status=document.getElementById('editStatus').value;
-  const notas=document.getElementById('editNotas').value.trim();
-  const metaTreinos=parseInt(document.getElementById('editMetaTreinos').value||0);
-  const metaAdesao=parseInt(document.getElementById('editMetaAdesao').value||0);
-  const toFmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString('pt-BR'):'';
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataPrevista:toFmt(dataP),status,anotacoes:notas,metaTreinos,metaAdesao})});
-    fecharModal('modalEditarConsulta');toast('Consulta atualizada!');
-    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
-  }catch(e){toast('Erro ao salvar.');}
-}
+    ctx.clearRect(0, 0, W, H);
 
-function abrirCI(idx){
-  const c=currentCIs[idx];if(!c)return;
-  const campos=[['Como foram os 15 dias',c['2_como_foram_os_15_dias']],['Adesão ao plano',c['3_adesao_ao_plano_0_10']+'/10'],['Saídas do plano',c['4_saidas_do_plano']+' vez(es)'],['Momento de saída',c['5_momento_da_saida']],['Refeição difícil',c['6_refeicao_mais_dificil']],['Treinos',c['7_treinos_realizados']],['Motivo falta',c['8_motivo_de_faltar_treino']],['Sono',c['9_sono']],['Energia',c['10_disposicao_energia_1_10']+'/10'],['Estresse',c['11_nivel_de_estresse_1_10']+'/10'],['Gatilhos',c['12_o_que_tirou_do_trilho']],['Motivação',c['15_motivacao_hoje_0_10']+'/10']];
-  document.getElementById('modalCINome').textContent=c['1_nome']||currentPaciente.nome;
-  document.getElementById('modalCIData').textContent=c.data_hora||'—';
-  document.getElementById('modalCIContent').innerHTML='<div class="detail-grid">'+campos.map(([l,v])=>'<div class="detail-item"><div class="detail-lbl">'+l+'</div><div class="detail-val">'+(v||'—')+'</div></div>').join('')+'</div>'+(c['13_o_que_funcionou_bem']?'<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['13_o_que_funcionou_bem']+'</div></div>':'')+(c['14_recado_para_a_consulta']?'<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">'+c['14_recado_para_a_consulta']+'</div></div>':'');
-  abrirModal('modalCI');
-}
-
-async function salvarRegistro(){
-  const p=currentPaciente;
-  const dataReal=document.getElementById('regDataReal').value;
-  const notas=document.getElementById('regNotas').value.trim();
-  const notasLivres=document.getElementById('regNotasLivres').value.trim();
-  const pontos=parseInt(document.getElementById('regPontos').value||0);
-  const motivo=document.getElementById('regPontosMotivo').value.trim();
-  const conquistas=[...document.querySelectorAll('#cqInputs input')].map(i=>i.value.trim()).filter(Boolean);
-  const metaTreinos=parseInt(document.getElementById('regMetaTreinos').value||0);
-  const metaAdesao=parseInt(document.getElementById('regMetaAdesao').value||0);
-  const metaTexto=document.getElementById('regMetaTexto').value.trim();
-  const dataFmt=dataReal?new Date(dataReal+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
-
-  // Verifica se há consulta agendada para marcar como realizada
-  const consultaAgendada = currentCons.find(c=>c.status==='Agendada');
-  const idConsulta = consultaAgendada ? consultaAgendada.id : null;
-  const anotacoesCompletas = [notas, notasLivres].filter(Boolean).join('
-
---- Notas livres ---
-');
-
-  try{
-    const promises=[];
-    if(idConsulta){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'salvarConsulta',idConsulta,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
-    } else {
-      // Cria nova consulta realizada diretamente
-      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'salvarConsulta',codigo:p.codigo,idPaciente:p.id,dataReal:dataFmt,status:'Realizada',anotacoes:anotacoesCompletas,metaTreinos,metaAdesao})}));
+    // Grid lines
+    const gridLines = 5;
+    ctx.strokeStyle = '#ddd8d0';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= gridLines; i++) {
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, y);
+      ctx.lineTo(W - PAD.right, y);
+      ctx.stroke();
     }
-    for(const texto of conquistas){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto,data:dataFmt,pontos:0,motivoPontos:''})}));
+
+    // Eixo Y esquerdo (0-10)
+    ctx.fillStyle = '#a09890';
+    ctx.font = '10px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= gridLines; i++) {
+      const val = 10 - (10 / gridLines) * i;
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.fillText(val.toFixed(0), PAD.left - 6, y + 4);
     }
-    if(pontos>0){
-      promises.push(fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({acao:'adicionarConquista',idPaciente:p.id,codigo:p.codigo,texto:motivo||'Pontos da consulta',data:dataFmt,pontos,motivoPontos:motivo})}));
+
+    // Eixo Y direito (0-maxRight)
+    const maxRight = Math.max(...treinos, ...saidas, 1);
+    const rightTop = Math.ceil(maxRight / 5) * 5 || 10;
+    ctx.textAlign = 'left';
+    for (let i = 0; i <= gridLines; i++) {
+      const val = rightTop - (rightTop / gridLines) * i;
+      const y = PAD.top + (chartH / gridLines) * i;
+      ctx.fillText(val.toFixed(0), W - PAD.right + 6, y + 4);
     }
-    await Promise.all(promises);
-    toast('Consulta salva!');
-    document.getElementById('regDataReal').value='';
-    document.getElementById('regNotas').value='';
-    document.getElementById('regNotasLivres').value='';
-    document.getElementById('regPontos').value='';
-    document.getElementById('regPontosMotivo').value='';
-    document.getElementById('regMetaTreinos').value='';
-    document.getElementById('regMetaAdesao').value='';
-    document.getElementById('regMetaTexto').value='';
-    document.getElementById('cqInputs').innerHTML='<div class="cq-form-row"><input class="inp" type="text" placeholder="Ex: Perdeu 4kg"><button class="btn btn-ghost btn-sm" onclick="addCqField()">+</button></div>';
-    setTimeout(()=>abrirPaciente(p.id),1500);
-  }catch(e){toast('Erro ao salvar.');}
+
+    // Labels X
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#a09890';
+    const step = n > 1 ? chartW / (n - 1) : chartW;
+    labels.forEach((lbl, i) => {
+      const x = PAD.left + (n > 1 ? step * i : chartW / 2);
+      ctx.fillText(lbl, x, H - 6);
+    });
+
+    // Função para converter valor em Y
+    function toY(val, axis) {
+      if (axis === 'left') {
+        return PAD.top + chartH - (val / 10) * chartH;
+      } else {
+        return PAD.top + chartH - (val / rightTop) * chartH;
+      }
+    }
+
+    function toX(i) {
+      return PAD.left + (n > 1 ? step * i : chartW / 2);
+    }
+
+    // Desenha cada série
+    series.forEach(s => {
+      if (!s.data.length) return;
+
+      // Linha
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      s.data.forEach((val, i) => {
+        const x = toX(i);
+        const y = toY(val, s.axis);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Pontos
+      s.data.forEach((val, i) => {
+        const x = toX(i);
+        const y = toY(val, s.axis);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    });
+  });
 }
 
-function abrirEdicaoConquista(idx){
-  const c=currentCQs[idx];if(!c)return;
-  const toInputDate=d=>{if(!d)return'';const p=d.toString().split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';};
-  document.getElementById('editCQId').value=c.id;
-  document.getElementById('modalEditCQSubtitle').textContent='Conquista de '+currentPaciente.nome;
-  document.getElementById('editCQTexto').value=c.texto||'';
-  document.getElementById('editCQData').value=toInputDate(c.data);
-  document.getElementById('editCQPontos').value=c.pontos||0;
-  abrirModal('modalEditarConquista');
+// ── RENDER CONQUISTAS ────────────────────────────────────────
+function renderConquistas() {
+  const el = document.getElementById('conqBody');
+  if (!conquistas.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Nenhuma conquista ainda.<br>Continue firme!</p></div>';
+    return;
+  }
+
+  el.innerHTML = `<div class="timeline">` + conquistas.map(c => `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-dot">🏆</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-text">${c.texto}</div>
+        <div class="tl-meta">${c.data}</div>
+        ${c.pontos > 0 ? `<span class="tl-pts">+${c.pontos} pontos</span>` : ''}
+      </div>
+    </div>
+  `).join('') + `</div>`;
 }
 
-async function salvarEdicaoConquista(){
-  const id=document.getElementById('editCQId').value;
-  const texto=document.getElementById('editCQTexto').value.trim();
-  const dataInput=document.getElementById('editCQData').value;
-  const pontos=parseInt(document.getElementById('editCQPontos').value||0);
-  const dataFmt=dataInput?new Date(dataInput+'T12:00:00').toLocaleDateString('pt-BR'):'';
-  if(!texto){toast('Digite o texto da conquista.');return;}
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'editarConquista',id,texto,data:dataFmt,pontos})});
-    fecharModal('modalEditarConquista');
-    toast('Conquista atualizada!');
-    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
-  }catch(e){toast('Erro ao salvar.');}
+// ── DRAWER CHECK-IN ──────────────────────────────────────────
+function abrirCheckin(idx) {
+  const c = checkins[idx];
+  if (!c) return;
+
+  document.getElementById('drawerTitle').textContent = c['1_nome'] || paciente.nome;
+  document.getElementById('drawerDate').textContent = c.data_hora || '—';
+
+  const campos = [
+    ['Como foram os 15 dias', c['2_como_foram_os_15_dias']],
+    ['Adesão ao plano', `${c['3_adesao_ao_plano_0_10']}/10`],
+    ['Saídas do plano', `${c['4_saidas_do_plano']} vez(es)`],
+    ['Momento de saída', c['5_momento_da_saida']],
+    ['Refeição mais difícil', c['6_refeicao_mais_dificil']],
+    ['Treinos realizados', c['7_treinos_realizados']],
+    ['Motivo de faltar', c['8_motivo_de_faltar_treino']],
+    ['Sono', c['9_sono']],
+    ['Energia', `${c['10_disposicao_energia_1_10']}/10`],
+    ['Estresse', `${c['11_nivel_de_estresse_1_10']}/10`],
+    ['O que tirou do trilho', c['12_o_que_tirou_do_trilho']],
+    ['Motivação', `${c['15_motivacao_hoje_0_10']}/10`],
+  ];
+
+  const grid = campos.map(([l, v]) => `
+    <div class="detail-item">
+      <div class="detail-lbl">${l}</div>
+      <div class="detail-val">${v || '—'}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('drawerContent').innerHTML = `
+    <div class="detail-grid">${grid}</div>
+    ${c['13_o_que_funcionou_bem'] ? `<div class="detail-full"><div class="detail-lbl">O que funcionou bem</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['13_o_que_funcionou_bem']}</div></div>` : ''}
+    ${c['14_recado_para_a_consulta'] ? `<div class="detail-full"><div class="detail-lbl">Recado para a consulta</div><div style="margin-top:6px;font-size:14px;line-height:1.6;">${c['14_recado_para_a_consulta']}</div></div>` : ''}
+  `;
+
+  document.getElementById('drawerOverlay').classList.add('open');
 }
 
-async function excluirConquista(id){
-  if(!confirm('Excluir esta conquista?'))return;
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:'excluirConquista',id})});
-    toast('Conquista excluída!');
-    setTimeout(()=>abrirPaciente(currentPaciente.id),1200);
-  }catch(e){toast('Erro ao excluir.');}
+function fecharDrawer(e) {
+  if (e.target === document.getElementById('drawerOverlay')) {
+    document.getElementById('drawerOverlay').classList.remove('open');
+  }
 }
 
-function addCqField(){const div=document.createElement('div');div.className='cq-form-row';div.innerHTML='<input class="inp" type="text" placeholder="Conquista..." style="margin-bottom:0">';document.getElementById('cqInputs').appendChild(div);}
-
-async function cadastrarPaciente(){
-  const nome=document.getElementById('npNome').value.trim();const pacote=document.getElementById('npPacote').value;const codigo=document.getElementById('npCodigo').value.trim().toUpperCase();const dataInicio=document.getElementById('npDataInicio').value;
-  if(!nome||!codigo){toast('Preencha nome e código.');return;}
-  const dataFmt=dataInicio?new Date(dataInicio+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
-  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'cadastrarPaciente',nome,pacote,codigo,dataInicio:dataFmt})});fecharModal('modalNovoPaciente');document.getElementById('npNome').value='';document.getElementById('npCodigo').value='';toast(nome+' cadastrado! Atualizando...');setTimeout(carregarTudo,2000);}
-  catch(e){toast('Erro ao cadastrar.');}
+// ── NAVIGATION ───────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('appScroll').scrollTo(0, 0);
 }
 
-function gerarCodigo(){const adj=['SHARK','FORCE','APEX','ELITE','TITAN','IRON','BULL'];document.getElementById('npCodigo').value=adj[Math.floor(Math.random()*adj.length)]+Math.floor(100+Math.random()*900);}
-
-async function toggleStatus(id){
-  const p=state.pacientes.find(x=>x.id===id);if(!p)return;const novo=p.status==='Ativo'?'Inativo':'Ativo';
-  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'atualizarPaciente',id:p.id,status:novo})});p.status=novo;currentPaciente=p;renderProfile();renderPacientes();toast('Paciente '+(novo==='Ativo'?'ativado':'desativado')+'.');}
-  catch(e){toast('Erro ao atualizar.');}
+function navTo(pageId, btn) {
+  showPage(pageId);
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
 }
 
-function irPara(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));const nav=document.getElementById('nav-'+id);if(nav)nav.classList.add('active');fecharSidebar();window.scrollTo(0,0);}
-function mostrarTab(id){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('tabBtn-'+id.replace('tab-','')).classList.add('active');}
-function abrirModal(id){document.getElementById(id).classList.add('open');}
-function fecharModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');}
-function fecharSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
-document.getElementById('npDataInicio').value=new Date().toISOString().split('T')[0];
-document.getElementById('agendarData').value=new Date().toISOString().split('T')[0];
+// ── CHECK-IN FORM ────────────────────────────────────────────
+const answered = new Set();
+
+function preencherNomeCheckin() {
+  if (paciente) {
+    document.getElementById('q1').value = paciente.nome;
+    markAnswered('q1', true);
+  }
+}
+
+function updateProgress() {
+  const total = 15;
+  const count = answered.size;
+  document.getElementById('ciProgressCount').textContent = `${count} / ${total}`;
+  document.getElementById('ciProgressFill').style.width = `${(count / total) * 100}%`;
+}
+
+function markAnswered(id, has) {
+  if (has) answered.add(id); else answered.delete(id);
+  updateProgress();
+}
+
+// Sliders
+document.querySelectorAll('input[type=range]').forEach(s => {
+  const id = s.id;
+  const el = document.getElementById(id + 'v');
+  s.addEventListener('input', () => {
+    el.innerHTML = `${s.value}<span>/${s.max}</span>`;
+    markAnswered(id, true);
+  });
+  markAnswered(id, true);
+});
+
+// Text
+document.getElementById('q1').addEventListener('input', function() {
+  markAnswered('q1', this.value.trim().length > 0);
+});
+
+['q13','q14'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    markAnswered(id, this.value.trim().length > 0);
+  });
+});
+
+// Pills
+document.querySelectorAll('.pills, .sleep-grid').forEach(group => {
+  const qId = group.dataset.q;
+  const type = group.dataset.t;
+  const input = document.getElementById(qId);
+  const items = group.querySelectorAll('.pill, .sleep-card');
+
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      if (type === 'single') {
+        items.forEach(i => i.classList.remove('sel'));
+        item.classList.add('sel');
+        input.value = item.dataset.v;
+        markAnswered(qId, true);
+      } else {
+        item.classList.toggle('sel');
+        const sel = [...items].filter(i => i.classList.contains('sel')).map(i => i.dataset.v);
+        input.value = sel.join(', ');
+        markAnswered(qId, sel.length > 0);
+      }
+    });
+  });
+});
+
+// Number
+function changeNum(id, delta) {
+  const input = document.getElementById(id);
+  const display = document.getElementById(id + 'd');
+  let val = parseInt(input.value || 0) + delta;
+  if (val < 0) val = 0;
+  input.value = val;
+  display.textContent = val;
+  markAnswered(id, true);
+}
+
+markAnswered('q4', true);
+markAnswered('q7', true);
+
+// ── ENVIAR CHECK-IN ──────────────────────────────────────────
+async function enviarCheckin() {
+  const nome = document.getElementById('q1').value.trim();
+  const periodo = document.getElementById('q2').value;
+
+  if (!nome) { document.getElementById('card-q1').classList.add('error'); document.getElementById('card-q1').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  if (!periodo) { document.getElementById('card-q2').classList.add('error'); document.getElementById('card-q2').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  document.getElementById('card-q1').classList.remove('error');
+  document.getElementById('card-q2').classList.remove('error');
+
+  const btn = document.getElementById('btnEnviar');
+  btn.classList.add('loading');
+  btn.textContent = 'Enviando…';
+
+  const payload = {
+    acao: 'checkin',
+    timestamp: new Date().toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'}),
+    codigo: paciente.codigo,
+    q1_nome: nome,
+    q2_periodo: periodo,
+    q3_adesao: document.getElementById('q3').value,
+    q4_saidas: document.getElementById('q4').value,
+    q5_momento_saida: document.getElementById('q5').value,
+    q6_refeicao_dificil: document.getElementById('q6').value,
+    q7_treinos: document.getElementById('q7').value,
+    q8_motivo_falta: document.getElementById('q8').value,
+    q9_sono: document.getElementById('q9').value,
+    q10_disposicao: document.getElementById('q10').value,
+    q11_estresse: document.getElementById('q11').value,
+    q12_gatilhos: document.getElementById('q12').value,
+    q13_funcionou: document.getElementById('q13').value,
+    q14_recado: document.getElementById('q14').value,
+    q15_motivacao: document.getElementById('q15').value,
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+    });
+
+    document.getElementById('successText').textContent = `Obrigado, ${nome.split(' ')[0]}! Seu nutricionista já recebeu suas respostas.`;
+    document.getElementById('successOverlay').classList.add('show');
+
+  } catch(err) {
+    alert('Erro ao enviar. Tente novamente.');
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Enviar check-in';
+}
+
+function fecharSuccess() {
+  document.getElementById('successOverlay').classList.remove('show');
+  navTo('pageHome', document.querySelector('.nav-tab'));
+  // Recarrega dados
+  carregarPaciente(paciente.codigo);
+}
 </script>
 </body>
 </html>
