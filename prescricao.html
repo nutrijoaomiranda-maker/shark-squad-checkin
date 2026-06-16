@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescrição | Shark Squad</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#1c3054;--navy-hover:#243d6a;--navy-pale:#e8eef7;--navy-deep:#131f38;
+    --yellow:#e8b400;--yellow-pale:#fdf6dc;
+    --bg:#f0ede8;--surface:#f7f5f2;--surface2:#ede9e3;--border:#ddd8d0;
+    --text:#1a1a1a;--subtext:#6b6560;--muted:#a09890;
+    --success:#2d7a4f;--success-bg:#eaf5ef;
+    --danger:#c0392b;--danger-bg:#fdf0ee;
+    --sub-bg:#f0f0f0;--sub-text:#888888;
+    --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+    --r:14px;--r-sm:8px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+  /* ── LOGIN ── */
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+  .brand-icon{width:38px;height:38px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .brand-name{font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
+  .login-card h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;margin-bottom:6px}
+  .login-card>p{color:var(--subtext);font-size:14px;margin-bottom:28px}
+  .lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
+  .inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:15px;padding:12px 16px;outline:none;transition:border-color .2s,background .2s;margin-bottom:18px}
+  .inp:focus{border-color:var(--navy);background:#fff}
+  .inp::placeholder{color:var(--muted)}
+  .btn-primary{width:100%;background:var(--navy);color:#fff;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:15px;padding:13px 24px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:background .2s}
+  .btn-primary:hover{background:var(--navy-hover)}
+  .err-msg{color:var(--danger);font-size:13px;margin-top:10px;text-align:center;display:none}
+
+  /* ── APP ── */
+  #appShell{display:none;min-height:100vh;display:none}
+  .top-bar{position:sticky;top:0;z-index:100;background:var(--navy);padding:14px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .top-bar-brand{display:flex;align-items:center;gap:8px}
+  .top-bar-icon{width:28px;height:28px;background:var(--yellow);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .top-bar-name{font-weight:700;font-size:13px;letter-spacing:.08em;color:#fff;text-transform:uppercase}
+  .top-bar-title{font-size:14px;color:rgba(255,255,255,.5);margin-left:4px}
+  .top-bar-title::before{content:'›';margin-right:8px;opacity:.4}
+  .top-bar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn{font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:13px;padding:8px 16px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-navy:hover{background:var(--navy-hover)}
+  .btn-yellow{background:var(--yellow);color:var(--navy);font-weight:700}
+  .btn-yellow:hover{opacity:.9}
+  .btn-ghost{background:var(--surface2);color:var(--navy);border:1px solid var(--border)}
+  .btn-ghost:hover{background:var(--border)}
+  .btn-ghost-white{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
+  .btn-ghost-white:hover{background:rgba(255,255,255,.18)}
+  .btn-sm{padding:6px 12px;font-size:12px}
+  .btn-danger{background:var(--danger-bg);color:var(--danger);border:none}
+  .btn-danger:hover{background:#f5c6c0}
+
+  /* ── LAYOUT ── */
+  .app-body{display:grid;grid-template-columns:280px 1fr 260px;gap:0;min-height:calc(100vh - 57px)}
+
+  /* ── SIDEBAR PACIENTES ── */
+  .sidebar-pac{background:var(--surface);border-right:1px solid var(--border);padding:20px 16px;overflow-y:auto;max-height:calc(100vh - 57px);position:sticky;top:57px}
+  .sidebar-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;margin-bottom:14px;transition:border-color .2s}
+  .search-box:focus-within{border-color:var(--navy)}
+  .search-box input{flex:1;border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--text)}
+  .search-box input::placeholder{color:var(--muted)}
+  .pac-list{display:flex;flex-direction:column;gap:4px}
+  .pac-item{padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+  .pac-item:hover{background:var(--bg)}
+  .pac-item.active{background:var(--navy-pale);border-color:var(--navy)}
+  .pac-name{font-size:13px;font-weight:600;color:var(--text)}
+  .pac-item.active .pac-name{color:var(--navy)}
+  .pac-meta{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* ── ÁREA CENTRAL ── */
+  .main-area{padding:24px 28px;overflow-y:auto;max-height:calc(100vh - 57px)}
+
+  /* Estado vazio */
+  .empty-state{text-align:center;padding:80px 20px;color:var(--muted)}
+  .empty-state-icon{font-size:48px;margin-bottom:16px}
+  .empty-state h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;color:var(--subtext);margin-bottom:8px}
+  .empty-state p{font-size:14px;line-height:1.6}
+
+  /* Cabeçalho do paciente */
+  .pac-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .pac-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+  .pac-header-info{flex:1}
+  .pac-header-name{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400}
+  .pac-header-meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .pac-header-actions{display:flex;gap:8px}
+
+  /* Planos */
+  .planos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .planos-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .planos-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+  .plano-tab{padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--surface);color:var(--subtext);cursor:pointer;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+  .plano-tab:hover{border-color:var(--navy);color:var(--navy)}
+  .plano-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+  .plano-tab-add{border-style:dashed;color:var(--muted)}
+  .plano-tab-add:hover{border-color:var(--navy);color:var(--navy);border-style:solid}
+
+  /* Refeições */
+  .refeicao-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+  .refeicao-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s}
+  .refeicao-header:hover{background:var(--surface2)}
+  .refeicao-toggle{font-size:12px;color:var(--muted);width:18px;flex-shrink:0;transition:transform .2s}
+  .refeicao-toggle.open{transform:rotate(90deg)}
+  .refeicao-nome{font-weight:700;font-size:14px;flex:1}
+  .refeicao-macros{display:flex;gap:10px;align-items:center}
+  .macro-pill{font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px}
+  .macro-ptn{background:#e8f0fb;color:#1a4a8a}
+  .macro-cho{background:#fdf6dc;color:#7a5c00}
+  .macro-lip{background:#fdf0ee;color:#8a2a1a}
+  .macro-kcal{font-size:12px;font-weight:700;color:var(--navy)}
+  .refeicao-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+  .refeicao-header:hover .refeicao-actions{opacity:1}
+  .refeicao-body{padding:0 18px 14px;display:none}
+  .refeicao-body.open{display:block}
+
+  /* Itens */
+  .item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .item-row:last-child{border-bottom:none}
+  .item-row.substituto{background:var(--sub-bg);border-radius:var(--r-sm);padding:6px 10px;margin-left:20px;border-bottom:none;margin-bottom:4px}
+  .item-row.substituto .item-nome{color:var(--sub-text);font-size:13px}
+  .item-indicator{width:4px;height:4px;border-radius:50%;background:var(--muted);flex-shrink:0}
+  .item-row.substituto .item-indicator{background:var(--sub-text)}
+  .item-nome{flex:1;font-size:14px;font-weight:500}
+  .item-qtd{font-size:13px;color:var(--subtext);min-width:60px;text-align:right}
+  .item-macros{display:flex;gap:6px;font-size:11px;color:var(--muted)}
+  .item-macros span{min-width:40px;text-align:right}
+  .item-actions{display:flex;gap:3px;opacity:0;transition:opacity .15s}
+  .item-row:hover .item-actions{opacity:1}
+  .item-row.substituto:hover .item-actions{opacity:1}
+  .icon-btn{width:24px;height:24px;border-radius:5px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);transition:all .15s}
+  .icon-btn:hover{background:var(--border);color:var(--navy)}
+  .icon-btn.danger:hover{background:var(--danger-bg);color:var(--danger)}
+
+  /* Sub toggle */
+  .sub-toggle{font-size:11px;font-weight:600;color:var(--navy);background:var(--navy-pale);border:none;border-radius:99px;padding:2px 8px;cursor:pointer;margin-left:4px;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+  .sub-toggle:hover{background:var(--navy);color:#fff}
+
+  /* Adicionar item */
+  .add-item-row{padding:10px 0 4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .add-item-search{flex:1;min-width:180px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;color:var(--text)}
+  .add-item-search:focus{border-color:var(--navy);background:#fff}
+  .add-item-qty{width:80px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;color:var(--text);text-align:center}
+  .add-item-qty:focus{border-color:var(--navy);background:#fff}
+  .add-item-tipo{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;color:var(--text);cursor:pointer}
+  .add-item-obs{flex:1;min-width:120px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;color:var(--text)}
+  .add-item-obs:focus{border-color:var(--navy);background:#fff}
+
+  /* Autocomplete */
+  .autocomplete-wrap{position:relative;flex:1;min-width:180px}
+  .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--navy);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);max-height:200px;overflow-y:auto;z-index:200;box-shadow:var(--shadow)}
+  .autocomplete-item{padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+  .autocomplete-item:last-child{border-bottom:none}
+  .autocomplete-item:hover,.autocomplete-item.selected{background:var(--navy-pale)}
+  .autocomplete-item-name{font-weight:600;color:var(--text)}
+  .autocomplete-item-meta{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* Adicionar refeição */
+  .add-refeicao-row{display:flex;gap:8px;margin-bottom:24px;align-items:center}
+  .add-refeicao-input{flex:1;background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--r-sm);padding:10px 14px;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;color:var(--text);transition:border-color .2s}
+  .add-refeicao-input:focus{border-color:var(--navy);border-style:solid;background:#fff}
+
+  /* ── SIDEBAR RESUMO ── */
+  .sidebar-resumo{background:var(--navy-deep);padding:20px 16px;overflow-y:auto;max-height:calc(100vh - 57px);position:sticky;top:57px}
+  .resumo-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px}
+  .resumo-total{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:16px;margin-bottom:16px;text-align:center}
+  .resumo-kcal{font-family:'Instrument Serif',serif;font-size:42px;color:var(--yellow);line-height:1}
+  .resumo-kcal-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px}
+  .resumo-macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+  .resumo-macro{background:rgba(255,255,255,.05);border-radius:var(--r-sm);padding:10px 8px;text-align:center}
+  .resumo-macro-val{font-size:18px;font-weight:700;color:#fff;line-height:1}
+  .resumo-macro-label{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+  .resumo-ptn .resumo-macro-val{color:#7eb8f7}
+  .resumo-cho .resumo-macro-val{color:var(--yellow)}
+  .resumo-lip .resumo-macro-val{color:#f7a07e}
+  .resumo-divider{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+  .resumo-refeicao-list{display:flex;flex-direction:column;gap:4px}
+  .resumo-ref-item{padding:8px 10px;border-radius:var(--r-sm);background:rgba(255,255,255,.04)}
+  .resumo-ref-nome{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .resumo-ref-macros{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.35)}
+
+  /* ── MODAL ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--surface);border-radius:20px;padding:32px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:slideUp .25s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .modal h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;margin-bottom:4px}
+  .modal>p{color:var(--subtext);font-size:14px;margin-bottom:24px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .form-row{margin-bottom:16px}
+  .form-row label{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
+
+  /* ── TOAST ── */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:500;z-index:999;box-shadow:var(--shadow);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  /* ── LOADING ── */
+  .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:14px}
+  .loading-overlay.hide{display:none}
+  .loading-shark{font-size:44px;animation:pulse 1.2s ease infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .loading-text{font-size:14px;color:var(--muted);font-weight:500}
+
+  .empty{text-align:center;padding:32px 20px}
+  .empty p{font-size:13px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-shark">🦈</div>
+  <div class="loading-text">Carregando...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="display:none">
+  <div class="login-card">
+    <div class="brand"><div class="brand-icon">🦈</div><div class="brand-name">Shark Squad</div></div>
+    <h2>Prescrição alimentar</h2>
+    <p>Acesso exclusivo do nutricionista</p>
+    <label class="lbl">Senha de acesso</label>
+    <input class="inp" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+    <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
+    <div class="err-msg" id="loginErr">Senha incorreta.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-brand">
+      <div class="top-bar-icon">🦈</div>
+      <div class="top-bar-name">Shark Squad</div>
+    </div>
+    <span class="top-bar-title">Prescrição alimentar</span>
+    <div class="top-bar-right">
+      <a href="painel.html" class="btn btn-ghost-white btn-sm">← Painel</a>
+      <button class="btn btn-ghost-white btn-sm" onclick="sair()">Sair</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="app-body">
+
+    <!-- SIDEBAR PACIENTES -->
+    <div class="sidebar-pac">
+      <div class="sidebar-section-title">Pacientes</div>
+      <div class="search-box">
+        <span style="color:var(--muted);font-size:14px">🔍</span>
+        <input type="text" id="searchPac" placeholder="Buscar…" oninput="renderPacientes()">
+      </div>
+      <div class="pac-list" id="pacList">
+        <div class="empty"><p>Carregando pacientes…</p></div>
+      </div>
+    </div>
+
+    <!-- ÁREA CENTRAL -->
+    <div class="main-area" id="mainArea">
+      <div class="empty-state">
+        <div class="empty-state-icon">🥗</div>
+        <h3>Selecione um paciente</h3>
+        <p>Escolha um paciente na lista ao lado<br>para ver e montar os planos alimentares.</p>
+      </div>
+    </div>
+
+    <!-- SIDEBAR RESUMO -->
+    <div class="sidebar-resumo" id="resumoSidebar">
+      <div class="resumo-title">Resumo do plano</div>
+      <div class="resumo-total">
+        <div class="resumo-kcal" id="resumoKcal">—</div>
+        <div class="resumo-kcal-label">kcal totais (refeições principais)</div>
+      </div>
+      <div class="resumo-macros">
+        <div class="resumo-macro resumo-ptn">
+          <div class="resumo-macro-val" id="resumoPtn">—</div>
+          <div class="resumo-macro-label">PTN</div>
+        </div>
+        <div class="resumo-macro resumo-cho">
+          <div class="resumo-macro-val" id="resumoCho">—</div>
+          <div class="resumo-macro-label">CHO</div>
+        </div>
+        <div class="resumo-macro resumo-lip">
+          <div class="resumo-macro-val" id="resumoLip">—</div>
+          <div class="resumo-macro-label">LIP</div>
+        </div>
+      </div>
+      <div class="resumo-divider"></div>
+      <div class="resumo-title">Por refeição</div>
+      <div class="resumo-refeicao-list" id="resumoRefs">
+        <div style="font-size:12px;color:rgba(255,255,255,.25);text-align:center;padding:20px 0">Selecione um plano</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NOVO PLANO -->
+<div class="modal-overlay" id="modalNovoPlano">
+  <div class="modal">
+    <h3>Novo plano</h3>
+    <p id="modalNovoPlanoSub">Dê um nome para identificar este plano.</p>
+    <div class="form-row">
+      <label>Nome do plano</label>
+      <input class="inp" type="text" id="novoPlanoNome" placeholder="Ex: Dias de Musculação" style="margin-bottom:0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalNovoPlano')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarNovoPlano()">Criar plano</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR NOME PLANO -->
+<div class="modal-overlay" id="modalEditarPlano">
+  <div class="modal">
+    <h3>Renomear plano</h3>
+    <p>Altere o nome deste plano.</p>
+    <input type="hidden" id="editarPlanoId">
+    <div class="form-row">
+      <label>Nome do plano</label>
+      <input class="inp" type="text" id="editarPlanoNome" placeholder="Ex: Dias de Descanso" style="margin-bottom:0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalEditarPlano')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarEditarPlano()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ITEM -->
+<div class="modal-overlay" id="modalEditarItem">
+  <div class="modal">
+    <h3>Editar item</h3>
+    <p id="modalEditarItemSub">Ajuste os dados deste alimento.</p>
+    <input type="hidden" id="editItemId">
+    <div class="form-row">
+      <label>Quantidade (g)</label>
+      <input class="inp" type="number" id="editItemQty" placeholder="Ex: 120" style="margin-bottom:0">
+    </div>
+    <div class="form-row">
+      <label>Observação</label>
+      <input class="inp" type="text" id="editItemObs" placeholder="Ex: À vontade, 1 unidade grande…" style="margin-bottom:0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modalEditarItem')">Cancelar</button>
+      <button class="btn btn-navy" onclick="confirmarEditarItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SENHA      = 'apRova891@';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRk9wkkn11K1G-drSQZvEdVew2uVrKFETFauNo7ErrIWlpawD2_YlHild0wy-rPJMQWA/exec';
+
+// ── STATE ────────────────────────────────────────────────────
+let pacientes  = [];
+let alimentos  = [];
+let planos     = [];
+let itens      = [];
+let pacAtual   = null;
+let planoAtual = null;
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('ss_presc_auth')) {
+    mostrarApp();
+  } else {
+    document.getElementById('loadingOverlay').classList.add('hide');
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+});
+
+function fazerLogin() {
+  if (document.getElementById('senhaInput').value === SENHA) {
+    sessionStorage.setItem('ss_presc_auth', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    mostrarApp();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('senhaInput').value = '';
+  }
+}
+
+function sair() {
+  sessionStorage.removeItem('ss_presc_auth');
+  location.reload();
+}
+
+async function mostrarApp() {
+  document.getElementById('appShell').style.display = 'block';
+  document.getElementById('loadingOverlay').classList.remove('hide');
+  await Promise.all([carregarPacientes(), carregarAlimentos()]);
+  document.getElementById('loadingOverlay').classList.add('hide');
+}
+
+// ── CARREGAR DADOS ───────────────────────────────────────────
+async function carregarPacientes() {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?acao=pacientes');
+    const data = await res.json();
+    pacientes  = (data.pacientes || []).filter(p => p.status === 'Ativo');
+    renderPacientes();
+  } catch (e) { toast('Erro ao carregar pacientes.'); }
+}
+
+async function carregarAlimentos() {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?acao=alimentos');
+    const data = await res.json();
+    alimentos  = data.alimentos || [];
+  } catch (e) { toast('Erro ao carregar banco de alimentos.'); }
+}
+
+async function carregarPlanos(codigo) {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?acao=planos&codigo=' + codigo);
+    const data = await res.json();
+    planos     = data.planos || [];
+  } catch (e) { planos = []; }
+}
+
+async function carregarItens(idPlano) {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?acao=itens&id=' + idPlano);
+    const data = await res.json();
+    itens      = data.itens || [];
+  } catch (e) { itens = []; }
+}
+
+// ── RENDER PACIENTES ─────────────────────────────────────────
+function renderPacientes() {
+  const q   = (document.getElementById('searchPac')?.value || '').toLowerCase();
+  const fil = pacientes.filter(p => p.nome.toLowerCase().includes(q));
+  const el  = document.getElementById('pacList');
+
+  if (!fil.length) {
+    el.innerHTML = '<div class="empty"><p>Nenhum paciente encontrado.</p></div>';
+    return;
+  }
+
+  el.innerHTML = fil.map(p => {
+    const ini = iniciais(p.nome);
+    return `<div class="pac-item ${pacAtual?.id === p.id ? 'active' : ''}" onclick="selecionarPaciente('${p.id}')">
+      <div class="pac-name">${p.nome}</div>
+      <div class="pac-meta">${p.pacote}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── SELECIONAR PACIENTE ──────────────────────────────────────
+async function selecionarPaciente(id) {
+  pacAtual   = pacientes.find(p => p.id === id);
+  planoAtual = null;
+  itens      = [];
+
+  document.getElementById('loadingOverlay').classList.remove('hide');
+  await carregarPlanos(pacAtual.codigo);
+  document.getElementById('loadingOverlay').classList.add('hide');
+
+  renderPacientes();
+  renderMainArea();
+  atualizarResumo();
+}
+
+// ── RENDER ÁREA CENTRAL ──────────────────────────────────────
+function renderMainArea() {
+  if (!pacAtual) return;
+
+  const ini = iniciais(pacAtual.nome);
+  const el  = document.getElementById('mainArea');
+
+  let html = `
+    <div class="pac-header">
+      <div class="pac-avatar">${ini}</div>
+      <div class="pac-header-info">
+        <div class="pac-header-name">${pacAtual.nome}</div>
+        <div class="pac-header-meta">${pacAtual.pacote} · ${planos.length} plano(s)</div>
+      </div>
+    </div>
+
+    <div class="planos-header">
+      <div class="planos-label">Planos alimentares</div>
+    </div>
+    <div class="planos-tabs" id="planosTabs">
+      ${planos.map(p => `
+        <div class="plano-tab ${planoAtual?.id === p.id ? 'active' : ''}" onclick="selecionarPlano('${p.id}')">
+          ${p.nome}
+        </div>
+      `).join('')}
+      <div class="plano-tab plano-tab-add" onclick="abrirNovoPlano()">+ Novo plano</div>
+    </div>
+    <div id="planoConteudo">
+  `;
+
+  if (!planoAtual) {
+    html += `<div class="empty-state" style="padding:40px 0">
+      <div class="empty-state-icon">📋</div>
+      <h3>Selecione um plano</h3>
+      <p>Escolha um plano acima ou crie um novo.</p>
+    </div>`;
+  } else {
+    html += renderPlanoConteudo();
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderPlanoConteudo() {
+  // Agrupa itens por refeição
+  const refeicoes = {};
+  itens.forEach(item => {
+    if (!refeicoes[item.refeicao]) refeicoes[item.refeicao] = [];
+    refeicoes[item.refeicao].push(item);
+  });
+
+  const nomeRefeicoes = [...new Set(itens.map(i => i.refeicao))];
+
+  let html = '';
+
+  // Botão excluir plano
+  html += `<div style="display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px">
+    <button class="btn btn-ghost btn-sm" onclick="abrirEditarPlano('${planoAtual.id}','${planoAtual.nome.replace(/'/g,"\\'")}')">✏️ Renomear</button>
+    <button class="btn btn-danger btn-sm" onclick="excluirPlanoConfirm('${planoAtual.id}')">🗑 Excluir plano</button>
+  </div>`;
+
+  // Adicionar refeição
+  html += `<div class="add-refeicao-row">
+    <input class="add-refeicao-input" type="text" id="novaRefeicaoInput" placeholder="Nome da refeição (ex: Café da manhã, Pré-treino…)" onkeydown="if(event.key==='Enter')adicionarRefeicao()">
+    <button class="btn btn-navy btn-sm" onclick="adicionarRefeicao()">+ Refeição</button>
+  </div>`;
+
+  if (nomeRefeicoes.length === 0) {
+    html += `<div class="empty" style="padding:40px 0"><p>Nenhuma refeição ainda.<br>Adicione a primeira refeição acima.</p></div>`;
+    return html;
+  }
+
+  // Render cada refeição
+  nomeRefeicoes.forEach((nomeRef, idx) => {
+    const itemsRef   = refeicoes[nomeRef] || [];
+    const principais = itemsRef.filter(i => i.tipo === 'Principal');
+    const subs       = itemsRef.filter(i => i.tipo === 'Substituição');
+
+    // Calcula macros da refeição (só principais)
+    const totKcal = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.kcal : 0), 0);
+    const totPtn  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.ptn  : 0), 0);
+    const totCho  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.cho  : 0), 0);
+    const totLip  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.lip  : 0), 0);
+
+    const blockId = 'ref_' + idx;
+
+    html += `<div class="refeicao-block">
+      <div class="refeicao-header" onclick="toggleRefeicao('${blockId}')">
+        <span class="refeicao-toggle open" id="tog_${blockId}">▶</span>
+        <span class="refeicao-nome">${nomeRef}</span>
+        <div class="refeicao-macros">
+          <span class="macro-pill macro-ptn">${totPtn.toFixed(1)}g P</span>
+          <span class="macro-pill macro-cho">${totCho.toFixed(1)}g C</span>
+          <span class="macro-pill macro-lip">${totLip.toFixed(1)}g G</span>
+          <span class="macro-kcal">${totKcal.toFixed(0)} kcal</span>
+        </div>
+        <div class="refeicao-actions" onclick="event.stopPropagation()">
+          <button class="icon-btn danger" title="Excluir refeição" onclick="excluirRefeicao('${nomeRef}')">🗑</button>
+        </div>
+      </div>
+      <div class="refeicao-body open" id="${blockId}">`;
+
+    // Itens principais
+    principais.forEach(item => {
+      const temSub = subs.some(s => s.observacao && s.observacao.includes('sub:' + item.id));
+      html += renderItem(item, false);
+      // Mostra substituições deste item
+      subs.filter(s => s.observacao && s.observacao.includes('sub:' + item.id)).forEach(sub => {
+        html += renderItem(sub, true);
+      });
+    });
+
+    // Subs sem referência a item específico (subs de refeição inteira)
+    const subsSemRef = subs.filter(s => !s.observacao || !s.observacao.includes('sub:'));
+    subsSemRef.forEach(sub => {
+      html += renderItem(sub, true);
+    });
+
+    // Adicionar item
+    html += `
+        <div class="add-item-row">
+          <div class="autocomplete-wrap">
+            <input class="add-item-search" type="text" placeholder="Buscar alimento…"
+              id="busca_${blockId}"
+              oninput="buscarAlimento('${blockId}', this.value)"
+              onkeydown="autocompleteKeydown(event, '${blockId}')"
+              autocomplete="off">
+            <div class="autocomplete-list" id="ac_${blockId}" style="display:none"></div>
+          </div>
+          <input class="add-item-qty" type="number" placeholder="g" id="qty_${blockId}" value="">
+          <select class="add-item-tipo" id="tipo_${blockId}">
+            <option value="Principal">Principal</option>
+            <option value="Substituição">Substituição</option>
+          </select>
+          <input class="add-item-obs" type="text" placeholder="Obs (opcional)" id="obs_${blockId}">
+          <button class="btn btn-navy btn-sm" onclick="adicionarItem('${nomeRef}','${blockId}')">Adicionar</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  return html;
+}
+
+function renderItem(item, isSub) {
+  const qtdLabel = item.quantidade > 0 ? item.quantidade + 'g' : (item.observacao && !item.observacao.includes('sub:') ? item.observacao : 'À vontade');
+  const obsLabel = item.observacao && item.observacao.includes('sub:') ? '' : (item.observacao || '');
+
+  return `<div class="item-row ${isSub ? 'substituto' : ''}">
+    <div class="item-indicator"></div>
+    <div class="item-nome">${item.alimento}${obsLabel && !isSub ? ' <span style="font-size:11px;color:var(--muted);font-weight:400">— '+obsLabel+'</span>' : ''}</div>
+    <div class="item-qtd">${qtdLabel}</div>
+    <div class="item-macros">
+      ${item.quantidade > 0 ? `
+        <span>${item.ptn.toFixed(1)}P</span>
+        <span>${item.cho.toFixed(1)}C</span>
+        <span>${item.lip.toFixed(1)}G</span>
+        <span style="color:var(--navy)">${item.kcal.toFixed(0)}kcal</span>
+      ` : '<span style="color:var(--muted)">à vontade</span>'}
+    </div>
+    <div class="item-actions">
+      <button class="icon-btn" title="Editar" onclick="abrirEditarItem('${item.id}','${item.alimento.replace(/'/g,"\\'")}',${item.quantidade},'${(item.observacao||'').replace(/'/g,"\\'")}')">✏️</button>
+      <button class="icon-btn danger" title="Remover" onclick="removerItem('${item.id}')">✕</button>
+    </div>
+  </div>`;
+}
+
+// ── TOGGLE REFEIÇÃO ──────────────────────────────────────────
+function toggleRefeicao(id) {
+  const body = document.getElementById(id);
+  const tog  = document.getElementById('tog_' + id);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (tog) tog.classList.toggle('open', !isOpen);
+}
+
+// ── SELECIONAR PLANO ─────────────────────────────────────────
+async function selecionarPlano(id) {
+  planoAtual = planos.find(p => p.id === id);
+  document.getElementById('loadingOverlay').classList.remove('hide');
+  await carregarItens(id);
+  document.getElementById('loadingOverlay').classList.add('hide');
+  renderMainArea();
+  atualizarResumo();
+}
+
+// ── NOVO PLANO ───────────────────────────────────────────────
+function abrirNovoPlano() {
+  document.getElementById('modalNovoPlanoSub').textContent = 'Novo plano para ' + pacAtual.nome.split(' ')[0] + '.';
+  document.getElementById('novoPlanoNome').value = '';
+  abrirModal('modalNovoPlano');
+  setTimeout(() => document.getElementById('novoPlanoNome').focus(), 100);
+}
+
+async function confirmarNovoPlano() {
+  const nome = document.getElementById('novoPlanoNome').value.trim();
+  if (!nome) { toast('Digite um nome para o plano.'); return; }
+
+  fecharModal('modalNovoPlano');
+  document.getElementById('loadingOverlay').classList.remove('hide');
+
+  try {
+    const res  = await post({ acao: 'salvarPlano', codigo: pacAtual.codigo, nome });
+    const data = await res.json();
+    await carregarPlanos(pacAtual.codigo);
+    planoAtual = planos.find(p => p.id === data.id) || planos[planos.length - 1];
+    itens      = [];
+    document.getElementById('loadingOverlay').classList.add('hide');
+    renderMainArea();
+    atualizarResumo();
+    toast('Plano "' + nome + '" criado!');
+  } catch (e) {
+    document.getElementById('loadingOverlay').classList.add('hide');
+    toast('Erro ao criar plano.');
+  }
+}
+
+// ── EDITAR PLANO ─────────────────────────────────────────────
+function abrirEditarPlano(id, nome) {
+  document.getElementById('editarPlanoId').value  = id;
+  document.getElementById('editarPlanoNome').value = nome;
+  abrirModal('modalEditarPlano');
+  setTimeout(() => document.getElementById('editarPlanoNome').focus(), 100);
+}
+
+async function confirmarEditarPlano() {
+  const id   = document.getElementById('editarPlanoId').value;
+  const nome = document.getElementById('editarPlanoNome').value.trim();
+  if (!nome) { toast('Digite um nome.'); return; }
+
+  fecharModal('modalEditarPlano');
+  try {
+    await post({ acao: 'salvarPlano', id, nome });
+    planoAtual.nome = nome;
+    await carregarPlanos(pacAtual.codigo);
+    planoAtual = planos.find(p => p.id === id);
+    renderMainArea();
+    toast('Plano renomeado!');
+  } catch (e) { toast('Erro ao renomear.'); }
+}
+
+// ── EXCLUIR PLANO ─────────────────────────────────────────────
+async function excluirPlanoConfirm(id) {
+  if (!confirm('Excluir este plano e todos os seus itens? Esta ação não pode ser desfeita.')) return;
+  document.getElementById('loadingOverlay').classList.remove('hide');
+  try {
+    await post({ acao: 'excluirPlano', id });
+    planoAtual = null;
+    itens      = [];
+    await carregarPlanos(pacAtual.codigo);
+    document.getElementById('loadingOverlay').classList.add('hide');
+    renderMainArea();
+    atualizarResumo();
+    toast('Plano excluído.');
+  } catch (e) {
+    document.getElementById('loadingOverlay').classList.add('hide');
+    toast('Erro ao excluir.');
+  }
+}
+
+// ── ADICIONAR REFEIÇÃO ───────────────────────────────────────
+function adicionarRefeicao() {
+  const input = document.getElementById('novaRefeicaoInput');
+  const nome  = input?.value.trim();
+  if (!nome) { toast('Digite o nome da refeição.'); return; }
+
+  // Verifica duplicata
+  const nomes = [...new Set(itens.map(i => i.refeicao))];
+  if (nomes.includes(nome)) { toast('Já existe uma refeição com esse nome.'); return; }
+
+  // Adiciona um item placeholder para a refeição aparecer
+  // A refeição só aparece quando tiver pelo menos 1 item — por isso criamos um item vazio marcador
+  // Na verdade, vamos só atualizar o state local e re-renderizar
+  // A refeição vazia aparece com a linha de adicionar item
+  const novaRefeicao = { id: 'local_' + Date.now(), idPlano: planoAtual.id, ordem: itens.length, refeicao: nome, tipo: 'Principal', alimento: '', quantidade: 0, kcal: 0, ptn: 0, cho: 0, lip: 0, observacao: '__placeholder__' };
+  itens.push(novaRefeicao);
+  renderMainArea();
+
+  // Foca no campo de busca da nova refeição
+  setTimeout(() => {
+    const nomeRefeicoes = [...new Set(itens.map(i => i.refeicao))];
+    const idx = nomeRefeicoes.indexOf(nome);
+    const busca = document.getElementById('busca_ref_' + idx);
+    if (busca) busca.focus();
+  }, 100);
+}
+
+// ── AUTOCOMPLETE ─────────────────────────────────────────────
+let acIndexAtual = {};
+
+function buscarAlimento(blockId, q) {
+  const lista = document.getElementById('ac_' + blockId);
+  if (!lista) return;
+  acIndexAtual[blockId] = -1;
+
+  if (!q || q.length < 2) { lista.style.display = 'none'; return; }
+
+  const ql  = q.toLowerCase();
+  const res = alimentos.filter(a => a.nome.toLowerCase().includes(ql)).slice(0, 8);
+
+  if (!res.length) { lista.style.display = 'none'; return; }
+
+  lista.innerHTML = res.map((a, i) => `
+    <div class="autocomplete-item" data-idx="${i}" onclick="selecionarAlimento('${blockId}', ${alimentos.indexOf(a)})">
+      <div class="autocomplete-item-name">${a.nome}</div>
+      <div class="autocomplete-item-meta">${a.grupo} · ${a.kcal} kcal/100g · P:${a.proteina}g C:${a.carboidrato}g G:${a.gordura}g</div>
+    </div>
+  `).join('');
+  lista._resultados = res;
+  lista.style.display = 'block';
+}
+
+function autocompleteKeydown(e, blockId) {
+  const lista = document.getElementById('ac_' + blockId);
+  if (!lista || lista.style.display === 'none') return;
+  const items = lista.querySelectorAll('.autocomplete-item');
+  let idx = acIndexAtual[blockId] ?? -1;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    idx = Math.min(idx + 1, items.length - 1);
+    acIndexAtual[blockId] = idx;
+    items.forEach((el, i) => el.classList.toggle('selected', i === idx));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    idx = Math.max(idx - 1, 0);
+    acIndexAtual[blockId] = idx;
+    items.forEach((el, i) => el.classList.toggle('selected', i === idx));
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (idx >= 0 && lista._resultados) {
+      const alIdx = alimentos.indexOf(lista._resultados[idx]);
+      selecionarAlimento(blockId, alIdx);
+    }
+  } else if (e.key === 'Escape') {
+    lista.style.display = 'none';
+  }
+}
+
+function selecionarAlimento(blockId, alimentoIdx) {
+  const a     = alimentos[alimentoIdx];
+  const busca = document.getElementById('busca_' + blockId);
+  const lista = document.getElementById('ac_' + blockId);
+  const qty   = document.getElementById('qty_' + blockId);
+
+  if (!a || !busca) return;
+  busca.value          = a.nome;
+  busca.dataset.alIdx  = alimentoIdx;
+  lista.style.display  = 'none';
+
+  // Sugere quantidade da medida caseira
+  if (a.pesoMedida && a.pesoMedida > 0 && qty) {
+    qty.value       = a.pesoMedida;
+    qty.placeholder = a.pesoMedida + 'g';
+  }
+  qty?.focus();
+}
+
+// ── ADICIONAR ITEM ───────────────────────────────────────────
+async function adicionarItem(nomeRef, blockId) {
+  const busca  = document.getElementById('busca_' + blockId);
+  const qtyEl  = document.getElementById('qty_'   + blockId);
+  const tipoEl = document.getElementById('tipo_'  + blockId);
+  const obsEl  = document.getElementById('obs_'   + blockId);
+
+  const alIdx  = parseInt(busca?.dataset.alIdx ?? -1);
+  const qty    = parseFloat(qtyEl?.value) || 0;
+  const tipo   = tipoEl?.value || 'Principal';
+  const obs    = obsEl?.value.trim() || '';
+
+  if (alIdx < 0 || !alimentos[alIdx]) {
+    toast('Selecione um alimento da lista.');
+    return;
+  }
+
+  const al = alimentos[alIdx];
+
+  // Calcula macros proporcionais
+  const fator = qty / 100;
+  const kcal  = qty > 0 ? +(al.kcal       * fator).toFixed(2) : 0;
+  const ptn   = qty > 0 ? +(al.proteina   * fator).toFixed(2) : 0;
+  const cho   = qty > 0 ? +(al.carboidrato * fator).toFixed(2) : 0;
+  const lip   = qty > 0 ? +(al.gordura    * fator).toFixed(2) : 0;
+
+  const ordem = itens.filter(i => i.refeicao === nomeRef).length;
+
+  try {
+    const res  = await post({
+      acao: 'salvarItem', idPlano: planoAtual.id,
+      ordem, refeicao: nomeRef, tipo,
+      alimento: al.nome, quantidade: qty,
+      kcal, ptn, cho, lip, observacao: obs,
+    });
+    const data = await res.json();
+
+    // Remove placeholder se existir
+    const placeholderIdx = itens.findIndex(i => i.refeicao === nomeRef && i.observacao === '__placeholder__');
+    if (placeholderIdx >= 0) itens.splice(placeholderIdx, 1);
+
+    itens.push({
+      id: data.id, idPlano: planoAtual.id, ordem,
+      refeicao: nomeRef, tipo,
+      alimento: al.nome, quantidade: qty,
+      kcal, ptn, cho, lip, observacao: obs,
+    });
+
+    renderMainArea();
+    atualizarResumo();
+    toast('Alimento adicionado!');
+
+    // Limpa campos
+    if (busca) { busca.value = ''; delete busca.dataset.alIdx; }
+    if (qtyEl) qtyEl.value = '';
+    if (obsEl) obsEl.value = '';
+
+  } catch (e) { toast('Erro ao adicionar item.'); }
+}
+
+// ── EDITAR ITEM ──────────────────────────────────────────────
+function abrirEditarItem(id, nome, qty, obs) {
+  document.getElementById('editItemId').value  = id;
+  document.getElementById('modalEditarItemSub').textContent = nome;
+  document.getElementById('editItemQty').value = qty || '';
+  document.getElementById('editItemObs').value = obs && obs.includes('sub:') ? '' : (obs || '');
+  abrirModal('modalEditarItem');
+  setTimeout(() => document.getElementById('editItemQty').focus(), 100);
+}
+
+async function confirmarEditarItem() {
+  const id  = document.getElementById('editItemId').value;
+  const qty = parseFloat(document.getElementById('editItemQty').value) || 0;
+  const obs = document.getElementById('editItemObs').value.trim();
+
+  const item = itens.find(i => i.id === id);
+  if (!item) return;
+
+  const al = alimentos.find(a => a.nome === item.alimento);
+  let kcal = item.kcal, ptn = item.ptn, cho = item.cho, lip = item.lip;
+
+  if (al && qty > 0) {
+    const f = qty / 100;
+    kcal = +(al.kcal        * f).toFixed(2);
+    ptn  = +(al.proteina    * f).toFixed(2);
+    cho  = +(al.carboidrato * f).toFixed(2);
+    lip  = +(al.gordura     * f).toFixed(2);
+  } else if (qty === 0) {
+    kcal = ptn = cho = lip = 0;
+  }
+
+  fecharModal('modalEditarItem');
+
+  try {
+    await post({ acao: 'salvarItem', id, quantidade: qty, kcal, ptn, cho, lip, observacao: obs });
+    Object.assign(item, { quantidade: qty, kcal, ptn, cho, lip, observacao: obs });
+    renderMainArea();
+    atualizarResumo();
+    toast('Item atualizado!');
+  } catch (e) { toast('Erro ao atualizar.'); }
+}
+
+// ── REMOVER ITEM ─────────────────────────────────────────────
+async function removerItem(id) {
+  try {
+    await post({ acao: 'excluirItem', id });
+    itens = itens.filter(i => i.id !== id);
+    renderMainArea();
+    atualizarResumo();
+    toast('Item removido.');
+  } catch (e) { toast('Erro ao remover.'); }
+}
+
+// ── EXCLUIR REFEIÇÃO ─────────────────────────────────────────
+async function excluirRefeicao(nomeRef) {
+  if (!confirm('Excluir a refeição "' + nomeRef + '" e todos os seus alimentos?')) return;
+
+  const ids = itens.filter(i => i.refeicao === nomeRef).map(i => i.id);
+  document.getElementById('loadingOverlay').classList.remove('hide');
+
+  try {
+    await Promise.all(ids.map(id => post({ acao: 'excluirItem', id })));
+    itens = itens.filter(i => i.refeicao !== nomeRef);
+    document.getElementById('loadingOverlay').classList.add('hide');
+    renderMainArea();
+    atualizarResumo();
+    toast('Refeição excluída.');
+  } catch (e) {
+    document.getElementById('loadingOverlay').classList.add('hide');
+    toast('Erro ao excluir refeição.');
+  }
+}
+
+// ── RESUMO ───────────────────────────────────────────────────
+function atualizarResumo() {
+  if (!planoAtual || !itens.length) {
+    document.getElementById('resumoKcal').textContent = '—';
+    document.getElementById('resumoPtn').textContent  = '—';
+    document.getElementById('resumoCho').textContent  = '—';
+    document.getElementById('resumoLip').textContent  = '—';
+    document.getElementById('resumoRefs').innerHTML   = '<div style="font-size:12px;color:rgba(255,255,255,.25);text-align:center;padding:20px 0">Selecione um plano</div>';
+    return;
+  }
+
+  const nomeRefs = [...new Set(itens.map(i => i.refeicao))];
+  let totalKcal = 0, totalPtn = 0, totalCho = 0, totalLip = 0;
+  let resumoHtml = '';
+
+  nomeRefs.forEach(ref => {
+    const principais = itens.filter(i => i.refeicao === ref && i.tipo === 'Principal' && i.observacao !== '__placeholder__');
+    const kcal = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.kcal : 0), 0);
+    const ptn  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.ptn  : 0), 0);
+    const cho  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.cho  : 0), 0);
+    const lip  = principais.reduce((s, i) => s + (i.quantidade > 0 ? i.lip  : 0), 0);
+
+    totalKcal += kcal; totalPtn += ptn; totalCho += cho; totalLip += lip;
+
+    resumoHtml += `<div class="resumo-ref-item">
+      <div class="resumo-ref-nome">${ref}</div>
+      <div class="resumo-ref-macros">
+        <span>${ptn.toFixed(1)}P</span>
+        <span>${cho.toFixed(1)}C</span>
+        <span>${lip.toFixed(1)}G</span>
+        <span style="color:var(--yellow)">${kcal.toFixed(0)}kcal</span>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('resumoKcal').textContent = totalKcal.toFixed(0);
+  document.getElementById('resumoPtn').textContent  = totalPtn.toFixed(1) + 'g';
+  document.getElementById('resumoCho').textContent  = totalCho.toFixed(1) + 'g';
+  document.getElementById('resumoLip').textContent  = totalLip.toFixed(1) + 'g';
+  document.getElementById('resumoRefs').innerHTML   = resumoHtml;
+}
+
+// ── UTILITÁRIOS ──────────────────────────────────────────────
+function iniciais(nome) {
+  return nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+}
+
+async function post(dados) {
+  return fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(dados),
+  });
+}
+
+function abrirModal(id)  { document.getElementById(id).classList.add('open'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// Fecha autocomplete ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('.autocomplete-wrap')) {
+    document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
+  }
+});
+</script>
+</body>
+</html>
