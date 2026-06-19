@@ -349,20 +349,36 @@ async function carregarPacientes() {
   } catch (e) { toast('Erro ao carregar pacientes.'); }
 }
 
+// Converte qualquer valor para número, tratando vírgula como separador decimal
+function toNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  if (typeof v === 'number') return v;
+  return parseFloat(String(v).replace(',', '.')) || 0;
+}
+
 async function carregarAlimentos() {
   try {
     const res  = await fetch(SCRIPT_URL + '?acao=alimentos');
     const data = await res.json();
-    // CORRIGIDO: trata array direto OU dentro de chaves diferentes
+    // Trata array direto OU dentro de chaves diferentes
+    let lista = [];
     if (Array.isArray(data)) {
-      alimentos = data;
+      lista = data;
     } else if (Array.isArray(data.alimentos)) {
-      alimentos = data.alimentos;
+      lista = data.alimentos;
     } else if (Array.isArray(data.data)) {
-      alimentos = data.data;
-    } else {
-      alimentos = [];
+      lista = data.data;
     }
+    // Garante que todos os valores numéricos são números de verdade
+    alimentos = lista.map(a => ({
+      ...a,
+      kcal:        toNum(a.kcal),
+      proteina:    toNum(a.proteina),
+      carboidrato: toNum(a.carboidrato),
+      gordura:     toNum(a.gordura),
+      fibra:       toNum(a.fibra),
+      pesoMedida:  toNum(a.pesoMedida),
+    }));
   } catch (e) {
     alimentos = [];
     toast('Erro ao carregar banco de alimentos.');
