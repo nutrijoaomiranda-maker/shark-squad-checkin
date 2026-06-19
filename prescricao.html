@@ -84,8 +84,8 @@
   .plano-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
   .plano-tab-add{border-style:dashed;color:var(--muted)}
   .plano-tab-add:hover{border-color:var(--navy);color:var(--navy);border-style:solid}
-  .refeicao-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
-  .refeicao-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s}
+  .refeicao-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:visible;box-shadow:var(--shadow-sm)}
+  .refeicao-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s;border-radius:var(--r) var(--r) 0 0}
   .refeicao-header:hover{background:var(--surface2)}
   .refeicao-toggle{font-size:12px;color:var(--muted);width:18px;flex-shrink:0;transition:transform .2s}
   .refeicao-toggle.open{transform:rotate(90deg)}
@@ -98,7 +98,7 @@
   .macro-kcal{font-size:12px;font-weight:700;color:var(--navy)}
   .refeicao-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
   .refeicao-header:hover .refeicao-actions{opacity:1}
-  .refeicao-body{padding:0 18px 14px;display:none}
+  .refeicao-body{padding:0 18px 14px;display:none;overflow:visible}
   .refeicao-body.open{display:block}
   .item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
   .item-row:last-child{border-bottom:none}
@@ -515,7 +515,10 @@ function renderPlanoConteudo() {
               autocomplete="off">
             <div class="autocomplete-list" id="ac_${blockId}" style="display:none"></div>
           </div>
-          <input class="add-item-qty" type="number" placeholder="g" id="qty_${blockId}" value="">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <input class="add-item-qty" type="number" placeholder="g" id="qty_${blockId}" value="">
+            <span id="medida_${blockId}" style="font-size:11px;color:var(--muted);display:none;white-space:nowrap"></span>
+          </div>
           <select class="add-item-tipo" id="tipo_${blockId}">
             <option value="Principal">Principal</option>
             <option value="Substituição">Substituição</option>
@@ -533,10 +536,22 @@ function renderPlanoConteudo() {
 function renderItem(item, isSub) {
   const qtdLabel = item.quantidade > 0 ? item.quantidade + 'g' : (item.observacao && !item.observacao.includes('sub:') ? item.observacao : 'À vontade');
   const obsLabel = item.observacao && item.observacao.includes('sub:') ? '' : (item.observacao || '');
+
+  // Calcula equivalência em medida caseira
+  let medidaLabel = '';
+  if (item.quantidade > 0 && item.medida && item.pesoMedida && item.pesoMedida > 0) {
+    const qtdMedidas = item.quantidade / item.pesoMedida;
+    const qtdFormatada = Number.isInteger(qtdMedidas) ? qtdMedidas : qtdMedidas.toFixed(1);
+    medidaLabel = qtdFormatada + ' ' + item.medida;
+  }
+
   return `<div class="item-row ${isSub ? 'substituto' : ''}">
     <div class="item-indicator"></div>
     <div class="item-nome">${item.alimento}${obsLabel && !isSub ? ' <span style="font-size:11px;color:var(--muted);font-weight:400">— '+obsLabel+'</span>' : ''}</div>
-    <div class="item-qtd">${qtdLabel}</div>
+    <div class="item-qtd">
+      ${qtdLabel}
+      ${medidaLabel ? `<span style="font-size:11px;color:var(--muted);display:block;margin-top:1px">${medidaLabel}</span>` : ''}
+    </div>
     <div class="item-macros">
       ${item.quantidade > 0 ? `<span>${item.ptn.toFixed(1)}P</span><span>${item.cho.toFixed(1)}C</span><span>${item.lip.toFixed(1)}G</span><span style="color:var(--navy)">${item.kcal.toFixed(0)}kcal</span>` : '<span style="color:var(--muted)">à vontade</span>'}
     </div>
@@ -709,6 +724,17 @@ function selecionarAlimento(blockId, alimentoIdx) {
     qty.value       = a.pesoMedida;
     qty.placeholder = a.pesoMedida + 'g';
   }
+  // Mostra preview de medida caseira no placeholder
+  if (a.medida && a.pesoMedida && a.pesoMedida > 0) {
+    const medidaInfo = document.getElementById('medida_' + blockId);
+    if (medidaInfo) {
+      medidaInfo.textContent = '1 ' + a.medida + ' = ' + a.pesoMedida + 'g';
+      medidaInfo.style.display = 'inline';
+    }
+  } else {
+    const medidaInfo = document.getElementById('medida_' + blockId);
+    if (medidaInfo) medidaInfo.style.display = 'none';
+  }
   qty?.focus();
 }
 
@@ -734,13 +760,15 @@ async function adicionarItem(nomeRef, blockId) {
     const data = await res.json();
     const placeholderIdx = itens.findIndex(i => i.refeicao === nomeRef && i.observacao === '__placeholder__');
     if (placeholderIdx >= 0) itens.splice(placeholderIdx, 1);
-    itens.push({ id: data.id, idPlano: planoAtual.id, ordem, refeicao: nomeRef, tipo, alimento: al.nome, quantidade: qty, kcal, ptn, cho, lip, observacao: obs });
+    itens.push({ id: data.id, idPlano: planoAtual.id, ordem, refeicao: nomeRef, tipo, alimento: al.nome, quantidade: qty, kcal, ptn, cho, lip, observacao: obs, medida: al.medida || '', pesoMedida: al.pesoMedida || 0 });
     renderMainArea();
     atualizarResumo();
     toast('Alimento adicionado!');
     if (busca) { busca.value = ''; delete busca.dataset.alIdx; }
     if (qtyEl) qtyEl.value = '';
     if (obsEl) obsEl.value = '';
+    const medidaInfo = document.getElementById('medida_' + blockId);
+    if (medidaInfo) { medidaInfo.textContent = ''; medidaInfo.style.display = 'none'; }
   } catch (e) { toast('Erro ao adicionar item.'); }
 }
 
